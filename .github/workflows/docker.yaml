@@ -5,7 +5,7 @@ on:
         branches: ["main"]
 env:
     REGISTRY: ghcr.io
-    IMAGE_NAME_APP: ${{ github.repository }}_app
+    IMAGE_NAME_APP: ${{ github.repository }}
 jobs:
     Image:
         runs-on: ubuntu-latest
@@ -39,7 +39,6 @@ jobs:
               id: push
               uses: docker/build-push-action@v6.7.0
               with:
-                  context: ./App
                   push: true
                   tags: ${{ steps.meta.outputs.tags }}
                   labels: ${{ steps.meta.outputs.labels }}
