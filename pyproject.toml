@@ -1,0 +1,16 @@
+[project]
+name = "app"
+version = "0.1.0"
+description = "App part of the Chatacter Backend"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi[standard]>=0.112.2",
+    "langchain-community>=0.2.15",
+    "langchain-groq>=0.1.9",
+    "nltk>=3.9.1",
+    "psutil>=6.0.0",
+    "qdrant-client[fastembed-gpu]>=1.11.1",
+    "transformers>=4.44.2",
+    "unstructured[all-docs]>=0.15.9",
+]
