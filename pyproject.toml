@@ -28,3 +28,6 @@ build-backend = "hatchling.build"
 [tool.pyright]
 venvPath = "."
 venv = ".venv"
+
+[tool.typos.default.extend-words]
+chatacter = "chatacter"
