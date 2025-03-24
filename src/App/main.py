@@ -62,14 +62,3 @@ def get_video(character: str) -> FileResponse:
         media_type="video/mp4",
         filename="VIDEO.mp4",
     )
-
-
-if __name__ == "__main__":
-    import uvicorn
-
-    uvicorn.run(
-        app="app:app",
-        host="localhost",
-        port=8000,
-        reload=True,
-    )

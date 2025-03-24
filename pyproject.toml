@@ -3,7 +3,10 @@ name = "app"
 version = "0.1.0"
 description = "App part of the Chatacter Backend"
 readme = "README.md"
-requires-python = ">=3.10"
+authors = [
+    { name = "Mohamed Hisham Abdelzaher", email = "mohamed.hisham.abdelzaher@gmail.com" }
+]
+requires-python = ">=3.12"
 dependencies = [
     "fastapi[standard]>=0.112.2",
     "langchain-community>=0.2.15",
@@ -14,3 +17,10 @@ dependencies = [
     "transformers>=4.44.2",
     "unstructured[all-docs]>=0.15.9",
 ]
+
+[project.scripts]
+App = "App:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
