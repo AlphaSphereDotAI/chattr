@@ -1,5 +1,5 @@
 [project]
-name = "app"
+name = "chatacter_app"
 version = "0.1.0"
 description = "App part of the Chatacter Backend"
 readme = "README.md"
