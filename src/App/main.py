@@ -3,8 +3,8 @@ from typing import Any
 
 import gradio
 
-from agents.llm import get_response
-from settings import Settings, load_settings
+from .agents.llm import get_response
+from .settings import Settings, load_settings
 
 global settings
 settings: Settings = load_settings()
