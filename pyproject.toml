@@ -8,6 +8,7 @@ authors = [
 ]
 requires-python = ">=3.12"
 dependencies = [
+    "gradio>=5.23.0",
     "qdrant-client[fastembed-gpu]>=1.11.1",
 ]
 
@@ -17,6 +18,9 @@ App = "App:main"
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/App"]
 
 [tool.pyright]
 venvPath = "."
