@@ -1,6 +1,6 @@
 from typing import List
 
-from chatacter.search import get_search_results
+from .search import get_search_results
 from langchain_community.document_loaders import RecursiveUrlLoader
 from langchain_core.documents.base import Document
 from pydantic import StrictStr
