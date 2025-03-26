@@ -3,7 +3,7 @@ variable "IMAGE" {
 }
 target "default" {
   name = "chatacter_backend_app"
-	context = .
+  context = "."
   tags = [ "${IMAGE}:dev", "${IMAGE}:latest" ]
   dockerfile = "Dockerfile"
   platforms = [ "linux/amd64", "linux/arm64" ]
