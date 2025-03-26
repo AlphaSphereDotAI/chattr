@@ -1,5 +1,6 @@
 .flox/
 .github/
 .vscode/
+.venv/
 README.md
 renovate.json
