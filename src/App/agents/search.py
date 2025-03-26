@@ -1,25 +1,24 @@
-from typing import Any, Dict, List
-
-from langchain_community.utilities import SearxSearchWrapper
+from agno.agent import Agent
+from agno.models.groq import Groq
+from agno.tools.googlesearch import GoogleSearchTools
 from pydantic import StrictInt, StrictStr
 
-search = SearxSearchWrapper(searx_host="http://localhost:8080")
-search.headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
-}
-
-
-def get_search_results(
-    query: StrictStr, num_results: StrictInt = 10
-) -> List[StrictStr]:
-    results: List[Dict[Any, Any]] = search.results(query=query, num_results=num_results)
-    links: List[StrictStr] = []
-    for result in results:
-        if result["link"] is not None:
-            print(result["link"])
-            links.append(result["link"])
-    return links
-
+agent = Agent(
+    model=Groq(id="llama-3.3-70b-versatile"),
+    tools=[GoogleSearchTools()],
+    description="You are a news agent that helps users find the latest news.",
+    instructions=[
+        "Given a topic by the user, respond with 4 latest news items about that topic.",
+        "Search for 10 news items and select the top 4 unique items.",
+        "Search in English and in French.",
+    ],
+    show_tool_calls=True,
+    debug_mode=True,
+)
 
 if __name__ == "__main__":
-    print(get_search_results(query="What is the capital of France"))
+    agent.print_response(
+        message="Mistral AI",
+        markdown=True,
+        show_full_reasoning=True,
+    )

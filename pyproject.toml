@@ -4,13 +4,15 @@ version = "0.1.0"
 description = "App part of the Chatacter Backend"
 readme = "README.md"
 authors = [
-    { name = "Mohamed Hisham Abdelzaher", email = "mohamed.hisham.abdelzaher@gmail.com" }
+    { name = "Mohamed Hisham Abdelzaher", email = "mohamed.hisham.abdelzaher@gmail.com" },
 ]
 requires-python = ">=3.12"
 dependencies = [
-    "agno>=1.2.3",
-    "gradio>=5.23.0",
-    "qdrant-client[fastembed-gpu]>=1.11.1",
+    "agno>=1.2.4",
+    "googlesearch-python>=1.3.0",
+    "gradio>=5.23.1",
+    "groq>=0.20.0",
+    "pycountry>=24.6.1",
 ]
 
 [project.gui-scripts]
@@ -29,3 +31,6 @@ venv = ".venv"
 
 [tool.typos.default.extend-words]
 chatacter = "chatacter"
+
+[dependency-groups]
+dev = ["ruff>=0.11.2"]
