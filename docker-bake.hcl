@@ -4,7 +4,7 @@ variable "IMAGE" {
 
 target "default" {
   context    = "."
-  tags       = ["${IMAGE}:dev", "${IMAGE}:latest"]
+  tags       = ["${IMAGE}:latest"] #,"${IMAGE}:dev"]
   dockerfile = "Dockerfile"
   platforms  = ["linux/amd64", "linux/arm64"]
   labels = {
