@@ -5,7 +5,7 @@ colorFrom: gray
 colorTo: blue
 sdk: gradio
 app_file: app.py
-pinned: false
+pinned: true
 short_description: Chat with Characters
 ---
 
