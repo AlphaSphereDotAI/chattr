@@ -13,7 +13,9 @@ jobs:
               with:
                   enable-cache: true
             - name: Create requirements.txt
-              run: uv export --no-dev --output-file requirements.txt
+              run: uv export --no-dev --frozen --no-hashes --output-file requirements.txt
+            # - name: Create packages.txt
+            #   run: echo "transformers" > packages.txt
             - name: Remove Unnecessary Files
               run: |
                   rm -rd .github
