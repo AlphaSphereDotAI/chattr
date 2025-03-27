@@ -1,31 +1,52 @@
-FROM ghcr.io/prefix-dev/pixi:jammy-cuda-12.3.1
-
-SHELL ["/bin/bash", "-c"]
+FROM ghcr.io/astral-sh/uv:debian-slim
 
 WORKDIR /app
 
+# Enable bytecode compilation, Copy from the cache instead of linking since it's a mounted volume
 ENV DEBIAN_FRONTEND=noninteractive \
     UV_NO_CACHE=true \
-    PATH="/root/.pixi/bin:${PATH}"
+    UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy 
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends clang gcc g++ libglib2.0-0 libgl1-mesa-glx && \
-    apt-get full-upgrade -y && \
-    apt-get autoremove && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+# Set to true to enable dev mode
+ARG DEV=false
 
-COPY pyproject.toml .
+# Install the project's dependencies using the lockfile and settings
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    if [${DEV} = "true"]; then \
+    uv sync --frozen --no-install-project; \
+    elif [${DEV} = "false"]; then \
+    uv sync --frozen --no-install-project --no-dev; \
+    else \
+    echo "Invalid value for DEV"; \
+    fi
 
-RUN pixi global install uv && \
-    uv python install 3.11 && \
-    uv lock --upgrade && \
-    uv sync && \
-    uv run python -m nltk.downloader punkt && \
-    uv run python -m nltk.downloader averaged_perceptron_tagger
+ADD . /app
+RUN --mount=type=cache,target=/root/.cache/uv \
+    if [${DEV} = "true"]; then \
+    uv sync --frozen; \
+    elif [${DEV} = "false"]; then \
+    uv sync --frozen --no-dev; \
+    else \
+    echo "Invalid value for DEV"; \
+    fi
 
-COPY . .
+# Place executables in the environment at the front of the path
+ENV PATH=/app/.venv/bin:$PATH
 
-EXPOSE 8000
+# Reset the entrypoint, don't invoke `uv`
+ENTRYPOINT []
 
-CMD ["uv", "run", "fastapi", "dev", "--host", "0.0.0.0", "--port", "8000"]
+ARG PORT=8000
+
+EXPOSE $PORT
+
+CMD if [${DEV} = "true"]; then \
+    fastapi dev --host 0.0.0.0 --port ${PORT}; \
+    elif [${DEV} = "false"]; then \
+    fastapi run --host 0.0.0.0 --port ${PORT}; \
+    else \
+    echo "Invalid value for DEV"; \
+    fi
