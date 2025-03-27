@@ -1,0 +1,40 @@
+name: Push to huggingface
+on: [push]
+jobs:
+    Sync:
+        runs-on: ubuntu-latest
+        env:
+            HF_HUB_ENABLE_HF_TRANSFER: 1
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4.0.0
+            - name: Install uv
+              uses: astral-sh/setup-uv@v5.4.0
+              with:
+                  enable-cache: true
+            - name: Create requirements.txt
+              run: uv export --no-dev --output-file requirements.txt
+            - name: Remove Unnecessary Files
+              run: |
+                  rm -rd .github
+                  rm Dockerfile
+                  rm .gitignore
+                  rm .dockerignore
+                  rm .deepsource.toml
+                  rm .python-version
+                  rm docker-bake.hcl
+                  rm pyproject.toml
+                  rm renovate.json
+                  rm uv.lock
+            - name: Login to HuggingFace Hub
+              uses: osbm/huggingface-login@v0.0.2
+              with:
+                  username: MH0386
+                  key: ${{ secrets.HF_TOKEN }}
+                  add_to_git_credentials: true
+            - name: Enable hf_transfer
+              run: pip install huggingface_hub[hf_transfer]
+            - name: Check if logged in
+              run: huggingface-cli whoami
+            - name: Upload
+              run: huggingface-cli upload AlphaSphereDotAI/Chatacter . . --repo-type space
