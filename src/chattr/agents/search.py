@@ -1,7 +1,6 @@
 from agno.agent import Agent
 from agno.models.groq import Groq
 from agno.tools.googlesearch import GoogleSearchTools
-from pydantic import StrictInt, StrictStr
 
 agent = Agent(
     model=Groq(id="llama-3.3-70b-versatile"),
