@@ -13,7 +13,7 @@ dependencies = [
 ]
 
 [project.scripts]
-vocalizr = "chattr.__main__:main"
+chattr = "chattr.__main__:main"
 
 [build-system]
 requires = ["uv_build"]
