@@ -106,7 +106,7 @@ jobs:
     needs: build_image
     runs-on: ubuntu-latest
     services:
-      vocalizr:
+      Chattr:
         image: ${{ needs.build_image.outputs.image_tag }}
         ports:
           - 7860:7860
@@ -118,9 +118,9 @@ jobs:
           --health-retries 15
     steps:
       - name: Echo URL
-        run: echo "Vocalizr available on localhost:${{ job.services.vocalizr.ports['7860'] }}"
+        run: echo "Chattr available on localhost:${{ job.services.Chattr.ports['7860'] }}"
       - name: Run curl
-        run: curl -o ./output.txt -f -I -s http://localhost:${{ job.services.vocalizr.ports['7860'] }}/
+        run: curl -o ./output.txt -f -I -s http://localhost:${{ job.services.Chattr.ports['7860'] }}/
       - name: Summary
         run: |
           echo "# curl Output" >> $GITHUB_STEP_SUMMARY
