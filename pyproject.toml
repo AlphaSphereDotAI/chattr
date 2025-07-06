@@ -1,29 +1,23 @@
 [project]
-name = "chatacter_app"
+name = "chattr"
 version = "0.1.0"
 description = "App part of the Chatacter Backend"
 readme = "README.md"
 authors = [
-    { name = "Mohamed Hisham Abdelzaher", email = "mohamed.hisham.abdelzaher@gmail.com" },
+  { name = "Mohamed Hisham Abdelzaher", email = "mohamed.hisham.abdelzaher@gmail.com" },
 ]
 requires-python = ">=3.12"
 dependencies = [
-    "agno>=1.2.4",
-    "googlesearch-python>=1.3.0",
-    "gradio>=5.23.1",
-    "groq>=0.20.0",
-    "pycountry>=24.6.1",
+  "gradio[mcp]>=5.35.0",
+  "pycountry>=24.6.1",
 ]
 
-[project.gui-scripts]
-App = "App:main"
+[project.scripts]
+vocalizr = "chattr.__main__:main"
 
-[tool.pyright]
-venvPath = "."
-venv = ".venv"
-
-[tool.typos.default.extend-words]
-chatacter = "chatacter"
+[build-system]
+requires = ["uv_build"]
+build-backend = "uv_build"
 
 [dependency-groups]
-dev = ["ruff>=0.11.2"]
+dev = ["watchfiles>=1.0.5", "ruff>=0.12.2", "ty>=0.0.1a10"]
