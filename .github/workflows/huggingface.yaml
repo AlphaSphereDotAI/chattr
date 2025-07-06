@@ -17,7 +17,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   huggingface:
-    name: Upload Vocalizr to HuggingFace Space
+    name: Upload Chattr to HuggingFace Space
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -47,4 +47,4 @@ jobs:
       - name: Check if logged in
         run: huggingface-cli whoami
       - name: Upload
-        run: huggingface-cli upload AlphaSphereDotAI/Vocalizr . . --repo-type space
+        run: huggingface-cli upload AlphaSphereDotAI/Chattr . . --repo-type space
