@@ -19,7 +19,7 @@ class Settings(BaseModel):
     assets: AssetsSettings = AssetsSettings()
     character: str = str()
     host: HostSettings = HostSettings()
-    vector_database_name: str = "chatacter"
+    vector_database_name: str = "chattr"
 
 
 @lru_cache
