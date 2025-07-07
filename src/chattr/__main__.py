@@ -6,7 +6,7 @@ from chainlit import (
     LangchainCallbackHandler,
 )
 from chainlit.cli import run_chainlit
-from chattr import logger
+from chattr import logger, GRAPH
 from langchain.schema.runnable.config import RunnableConfig
 from langchain_core.messages import HumanMessage
 
@@ -22,7 +22,7 @@ def main() -> None:
         cb = LangchainCallbackHandler()
         final_answer = Message(content="")
 
-        for msg, metadata in graph.stream(
+        for msg, metadata in GRAPH.graph.stream(
             {"messages": [HumanMessage(content=msg.content)]},
             stream_mode="messages",
             config=RunnableConfig(callbacks=[cb], **config),
