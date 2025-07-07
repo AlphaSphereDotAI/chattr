@@ -8,11 +8,13 @@ from langgraph.graph.message import MessagesState
 from langgraph.graph.state import CompiledStateGraph
 from langgraph.prebuilt import ToolNode
 
+from chattr import GROQ_MODEL_NAME, GROQ_MODEL_TEMPERATURE
+
 
 class Graph:
     def __init__(self):
         self.tools = [self.get_weather]
-        self.model = ChatGroq(model="llama-3.1-8b-instant", temperature=0)
+        self.model = ChatGroq(GROQ_MODEL_NAME, GROQ_MODEL_TEMPERATURE)
         self.final_model = ChatGroq(model="llama-3.1-8b-instant", temperature=0)
         self.model = self.model.bind_tools(self.tools)
         self.final_model = self.final_model.with_config(tags=["final_node"])
