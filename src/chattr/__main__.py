@@ -1,8 +1,15 @@
-from chainlit import on_chat_start, on_message, Message, context, LangchainCallbackHandler
+from chainlit import (
+    on_chat_start,
+    on_message,
+    Message,
+    context,
+    LangchainCallbackHandler,
+)
 from chainlit.cli import run_chainlit
 from chattr import logger
 from langchain.schema.runnable.config import RunnableConfig
-from langchain_core.messages import SystemMessage, HumanMessage
+from langchain_core.messages import HumanMessage
+
 
 def main() -> None:
     @on_chat_start
@@ -28,6 +35,7 @@ def main() -> None:
                 await final_answer.stream_token(msg.content)
 
         await final_answer.send()
+
     run_chainlit(__file__)
 
 
