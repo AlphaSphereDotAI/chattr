@@ -1,8 +1,8 @@
 #file: noinspection ComposeUnknownKeys
-name: Vocalizr
+name: Chattr
 services:
-  vocalizr:
-    image: ghcr.io/alphaspheredotai/vocalizr:latest@sha256:48759f8e1b11578ece55ea1703e0d83f2857e0c41c8ec4190a596f2cacc5e784
+  chattr:
+    image: ghcr.io/alphaspheredotai/chattr:latest
     ports:
       - "7860:7860"
     volumes:
