@@ -1,5 +1,3 @@
-from functools import lru_cache
-
 from pydantic import BaseModel
 
 
@@ -20,13 +18,3 @@ class Settings(BaseModel):
     character: str = str()
     host: HostSettings = HostSettings()
     vector_database_name: str = "chattr"
-
-
-@lru_cache
-def load_settings() -> Settings:
-    return Settings()
-
-
-if __name__ == "__main__":
-    settings: Settings = load_settings()
-    print(settings.model_dump_json(indent=4))

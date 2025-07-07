@@ -1,22 +1,34 @@
-from gradio import Blocks
-
-from vocalizr import DEBUG, SERVER_NAME, SERVER_PORT
-from vocalizr.gui import app_block
-
+from chainlit import on_chat_start, on_message, Message, context, LangchainCallbackHandler
+from chainlit.cli import run_chainlit
+from chattr import logger
+from langchain.schema.runnable.config import RunnableConfig
+from langchain_core.messages import SystemMessage, HumanMessage
 
 def main() -> None:
-    """Launch the Gradio voice generation web application."""
-    app: Blocks = app_block()
-    app.queue(api_open=True).launch(
-        server_name=SERVER_NAME,
-        server_port=SERVER_PORT,
-        debug=DEBUG,
-        mcp_server=True,
-        show_api=True,
-        enable_monitoring=True,
-        show_error=True,
-        pwa=True,
-    )
+    @on_chat_start
+    def on_start() -> None:
+        logger.info("A new chat session has started!")
+
+    @on_message
+    async def on_messaging(msg: Message):
+        config = {"configurable": {"thread_id": context.session.id}}
+        cb = LangchainCallbackHandler()
+        final_answer = Message(content="")
+
+        for msg, metadata in graph.stream(
+            {"messages": [HumanMessage(content=msg.content)]},
+            stream_mode="messages",
+            config=RunnableConfig(callbacks=[cb], **config),
+        ):
+            if (
+                msg.content
+                and not isinstance(msg, HumanMessage)
+                and metadata["langgraph_node"] == "final"
+            ):
+                await final_answer.stream_token(msg.content)
+
+        await final_answer.send()
+    run_chainlit(__file__)
 
 
 if __name__ == "__main__":
