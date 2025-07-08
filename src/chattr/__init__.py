@@ -3,14 +3,19 @@ from os import getenv
 from pathlib import Path
 from loguru import logger
 from chattr.graph import Graph
-
 from dotenv import load_dotenv
+
 load_dotenv()
+
 SERVER_URL: str = getenv(key="SERVER_URL", default="localhost")
 SERVER_PORT: int = getenv(key="SERVER_PORT", default=7860)
 CURRENT_DATE: str = datetime.now().strftime(format="%Y-%m-%d_%H-%M-%S")
-MCP_VOICE_GENERATOR: str = getenv(key="MCP_VOICE_GENERATOR", default="http://localhost:8001/")
-MCP_VIDEO_GENERATOR: str = getenv(key="MCP_VIDEO_GENERATOR", default="http://localhost:8002/")
+MCP_VOICE_GENERATOR: str = getenv(
+    key="MCP_VOICE_GENERATOR", default="http://localhost:8001/"
+)
+MCP_VIDEO_GENERATOR: str = getenv(
+    key="MCP_VIDEO_GENERATOR", default="http://localhost:8002/"
+)
 VECTOR_DATABASE_NAME: str = getenv(key="VECTOR_DATABASE_NAME", default="chattr")
 GROQ_MODEL_NAME: str = getenv(key="GROQ_MODEL_NAME", default="llama-3.1-8b-instant")
 GROQ_MODEL_TEMPERATURE: float = getenv(key="GROQ_MODEL_TEMPERATURE", default=0.0)
