@@ -30,7 +30,7 @@ jobs:
       - name: Install the project
         run: uv sync --frozen
       - name: MegaLinter
-        uses: oxsecurity/megalinter@v8
+        uses: oxsecurity/megalinter/flavors/ci_light@v8
         id: ml
         env:
           MEGALINTER_CONFIG: .github/megalinter.yaml
