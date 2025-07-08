@@ -17,6 +17,7 @@ APPLY_FIXES_EVENT: all
 DISABLE:
   # - COPYPASTE # Uncomment to disable checks of excessive copy-pastes
   - SPELL # Comment to enable checks of spelling mistakes
+  - PYTHON_BLACK
 
 SHOW_ELAPSED_TIME: true
 
