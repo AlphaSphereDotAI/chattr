@@ -33,10 +33,6 @@ jobs:
         uses: oxsecurity/megalinter@v8
         id: ml
         env:
-          APPLY_FIXES: all
-          APPLY_FIXES_EVENT: all
-          APPLY_FIXES_MODE: commit
-          VALIDATE_ALL_CODEBASE: true
           MEGALINTER_CONFIG: .github/megalinter.yaml
       - name: Archive production artifacts
         uses: actions/upload-artifact@v4
