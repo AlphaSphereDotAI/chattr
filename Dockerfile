@@ -40,7 +40,7 @@ RUN groupadd app && \
 
 WORKDIR /home/app
 
-COPY --from=builder --chown=app:app /app/.venv /app/.venv
+COPY --from=builder --chown=app:app --chmod=555 /app/.venv /app/.venv
 
 USER app
 
