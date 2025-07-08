@@ -22,17 +22,17 @@ def main() -> None:
         cb = LangchainCallbackHandler()
         final_answer = Message(content="")
 
-        for msg, metadata in GRAPH.graph.stream(
+        for stream_msg, metadata in GRAPH.graph.stream(
             {"messages": [HumanMessage(content=msg.content)]},
             stream_mode="messages",
             config=RunnableConfig(callbacks=[cb], **config),
         ):
             if (
-                msg.content
-                and not isinstance(msg, HumanMessage)
+                stream_msg.content
+                and not isinstance(stream_msg, HumanMessage)
                 and metadata["langgraph_node"] == "final"
             ):
-                await final_answer.stream_token(msg.content)
+                await final_answer.stream_token(stream_msg.content)
 
         await final_answer.send()
 
