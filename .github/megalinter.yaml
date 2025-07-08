@@ -1,33 +1,14 @@
-# Configuration file for MegaLinter
-#
-# See all available variables at https://megalinter.io/latest/config-file/ and in
-# linters documentation
-
-# all, none, or list of linter keys
 APPLY_FIXES: all
 APPLY_FIXES_EVENT: all
 APPLY_FIXES_MODE: commit
-# If you use ENABLE variable, all other languages/formats/tooling-formats will
-# be disabled by default
-# ENABLE:
-
-# If you use ENABLE_LINTERS variable, all other linters will be disabled by
-# default
-# ENABLE_LINTERS:
 DISABLE:
-  # - COPYPASTE # Uncomment to disable checks of excessive copy-pastes
-  - SPELL # Comment to enable checks of spelling mistakes
+  - SPELL
   - PYTHON_BLACK
   - PYTHON_PYLINT
   - PYTHON_FLAKE8
   - JAVASCRIPT_PRETTIER
   - PYTHON_MYPY
-
 SHOW_ELAPSED_TIME: true
-
-# Uncomment if you want MegaLinter to detect errors but not block CI to pass
-# DISABLE_ERRORS: true
-
 GITHUB_STATUS_REPORTER: true
 SARIF_REPORTER: true
 PYTHON_DEFAULT_STYLE: ruff
