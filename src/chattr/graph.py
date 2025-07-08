@@ -14,7 +14,7 @@ from chattr import GROQ_MODEL_NAME, GROQ_MODEL_TEMPERATURE
 class Graph:
     def __init__(self):
         self.tools = [self.get_weather]
-        self.model = ChatGroq(GROQ_MODEL_NAME, GROQ_MODEL_TEMPERATURE)
+        self.model = ChatGroq(model=GROQ_MODEL_NAME, temperature=GROQ_MODEL_TEMPERATURE)
         self.final_model = ChatGroq(model="llama-3.1-8b-instant", temperature=0)
         self.model = self.model.bind_tools(self.tools)
         self.final_model = self.final_model.with_config(tags=["final_node"])
@@ -40,12 +40,12 @@ class Graph:
         # If the LLM makes a tool call, then we route to the "tools" node
         return "tools" if last_message.tool_calls else "final"
 
-    def call_model(self, state: MessagesState):
+    def call_model(self, state: MessagesState) -> MessagesState:
         messages = state["messages"]
         response = self.model.invoke(messages)
         return {"messages": [response]}
 
-    def call_final_model(self, state: MessagesState):
+    def call_final_model(self, state: MessagesState) -> MessagesState:
         messages = state["messages"]
         last_ai_message = messages[-1]
         response = self.final_model.invoke(
@@ -59,7 +59,7 @@ class Graph:
         return {"messages": [response]}
 
     @tool
-    def get_weather(self, city: Literal["nyc", "sf"]):
+    def get_weather(self, city: Literal["nyc", "sf"]) -> str:
         """Use this to get weather information."""
         if city == "nyc":
             return "It might be cloudy in nyc"
