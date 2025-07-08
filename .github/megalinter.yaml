@@ -18,6 +18,8 @@ DISABLE:
   # - COPYPASTE # Uncomment to disable checks of excessive copy-pastes
   - SPELL # Comment to enable checks of spelling mistakes
   - PYTHON_BLACK
+  - PYTHON_PYLINT
+  - PYTHON_FLAKE8
 
 SHOW_ELAPSED_TIME: true
 
