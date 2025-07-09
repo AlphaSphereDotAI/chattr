@@ -8,12 +8,11 @@ authors = [
 ]
 requires-python = ">=3.12"
 dependencies = [
-    "chainlit>=2.6.0",
-    "grandalf>=0.8",
-    "langchain>=0.3.26",
-    "langchain-groq>=0.3.5",
-    "langgraph>=0.5.1",
-    "loguru>=0.7.3",
+  "chainlit>=2.6.0",
+  "langchain>=0.3.26",
+  "langchain-groq>=0.3.5",
+  "langgraph>=0.5.1",
+  "loguru>=0.7.3",
 ]
 
 [project.scripts]
@@ -24,4 +23,4 @@ requires = ["uv_build"]
 build-backend = "uv_build"
 
 [dependency-groups]
-dev = ["ruff>=0.12.2", "ty>=0.0.1a10"]
+dev = ["ruff>=0.12.2", "ty>=0.0.1a12"]

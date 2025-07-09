@@ -6,12 +6,15 @@ from chainlit import (
     LangchainCallbackHandler,
 )
 from chainlit.cli import run_chainlit
-from chattr import logger, GRAPH
+from chattr import logger
 from langchain.schema.runnable.config import RunnableConfig
 from langchain_core.messages import HumanMessage
+from chattr.graph import Graph
 
 
 def main() -> None:
+    graph: Graph = Graph()
+
     @on_chat_start
     def on_start() -> None:
         logger.info("A new chat session has started!")
@@ -22,7 +25,7 @@ def main() -> None:
         cb = LangchainCallbackHandler()
         final_answer = Message(content="")
 
-        for stream_msg, metadata in GRAPH.graph.stream(
+        for stream_msg, metadata in graph.graph.stream(
             {"messages": [HumanMessage(content=msg.content)]},
             stream_mode="messages",
             config=RunnableConfig(callbacks=[cb], **config),
