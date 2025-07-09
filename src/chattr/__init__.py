@@ -2,7 +2,6 @@ from datetime import datetime
 from os import getenv
 from pathlib import Path
 from loguru import logger
-from chattr.graph import Graph
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -37,8 +36,6 @@ AUDIO_DIR.mkdir(exist_ok=True)
 VIDEO_DIR.mkdir(exist_ok=True)
 LOG_DIR.mkdir(exist_ok=True)
 
-GRAPH = Graph()
-
 logger.add(
     sink=LOG_FILE_PATH,
     format="{time:YYYY-MM-DD at HH:mm:ss} | {level} | {message}",
@@ -51,4 +48,3 @@ logger.info(f"Assets directory: {ASSETS_DIR}")
 logger.info(f"Log directory: {LOG_DIR}")
 logger.info(f"Audio file path: {AUDIO_FILE_PATH}")
 logger.info(f"Log file path: {LOG_FILE_PATH}")
-logger.info(f"Graph: {GRAPH}")
