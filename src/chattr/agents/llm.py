@@ -12,7 +12,7 @@ from qdrant_client.fastembed_common import QueryResponse
 chat = ChatGroq(
     model="llama3-70b-8192",
     verbose=True,
-)  # type: ignore
+)
 
 
 def get_response(query: str, character: str) -> tuple[str, str]:
