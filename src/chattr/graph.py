@@ -51,5 +51,7 @@ class Graph:
             return "It's always sunny in sf"
         else:
             raise AssertionError("Unknown city")
+
+
 if __name__ == "__main__":
     Graph().draw()
