@@ -15,7 +15,7 @@ jobs:
     needs: compatibility
     permissions:
       contents: write
-      pull-requests: write      
+      pull-requests: write
       checks: write
     steps:
       - name: Checkout repository
