@@ -30,6 +30,8 @@ jobs:
         run: uv sync --frozen
       - name: Trunk Code Quality
         uses: trunk-io/trunk-action@75699af9e26881e564e9d832ef7dc3af25ec031b # v1
+        with:
+          arguments: --fix 
       - name: Commit and push applied linter fixes
         uses: stefanzweifel/git-auto-commit-action@v6
         if: success() || failure()
