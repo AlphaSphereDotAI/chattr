@@ -18,14 +18,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-      - name: Install uv
-        uses: astral-sh/setup-uv@bd01e18f51369d5a26f1651c3cb451d3417e3bba # v6
-        with:
-          enable-cache: true
-          cache-dependency-glob: "uv.lock"
-          activate-environment: true
-      - name: Install the project
-        run: uv sync --frozen
       - name: Trunk install
         uses: trunk-io/trunk-action/setup@v1
       - name: Apply linters fixes if exist
@@ -34,12 +26,6 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v6
         if: success() || failure()
         with:
-          branch: >-
-            ${{
-              github.event.pull_request.head.ref ||
-              github.head_ref ||
-              github.ref
-            }}
           commit_message: "[Trunk] Apply linters fixes"
   trunk:
     name: Trunk Code Quality
