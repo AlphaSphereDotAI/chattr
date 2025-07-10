@@ -5,7 +5,6 @@ services:
     ports:
       - "7860:7860"
     volumes:
-      - huggingface:/home/app/hf
       - results:/home/app/results
       - logs:/home/app/logs
     post_start:
@@ -29,7 +28,6 @@ services:
       retries: 5
       start_period: 40s
       start_interval: 5s
-volumes:
-  huggingface:
+volumes:  
   results:
   logs:
