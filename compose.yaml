@@ -12,7 +12,7 @@ services:
       - command: chown -R app:app /home/app
         user: root
     environment:
-      - SERVER_PORT=7860
+      SERVER_PORT: 7860
     healthcheck:
       test:
         - "CMD"
