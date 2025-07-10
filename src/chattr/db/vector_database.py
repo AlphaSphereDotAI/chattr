@@ -4,7 +4,8 @@ from pydantic import StrictStr
 from qdrant_client import QdrantClient
 from qdrant_client.fastembed_common import QueryResponse
 
-client = QdrantClient(host="localhost", port=6333)
+client = QdrantClient(host="localhost", 
+                      port=6333)
 
 
 def get_chunks(url: StrictStr) -> List[Element]:
