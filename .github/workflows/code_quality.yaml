@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          fetch-depth: 0
       - name: Trunk install
         uses: trunk-io/trunk-action/setup@v1
       - name: Apply linters fixes if exist
