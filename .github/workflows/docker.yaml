@@ -85,7 +85,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        commands: [ "quickview", "cves", "recommendations" ]
+        commands:
+          - "quickview"
+          - "cves"
+          - "recommendations"
     steps:
       - name: Login to the Container registry
         uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3
@@ -112,16 +115,13 @@ jobs:
           - 7860:7860
         options: >-
           --health-cmd "curl -o /dev/null -f -s -w 'Status: %{http_code}, Time: %{time_total}s' http://localhost:7860/"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-start-period 15s
-          --health-retries 15
+          --health-interval 10s --health-timeout 5s --health-start-period 15s --health-retries 15
     steps:
       - name: Echo URL
         run: echo "Chattr available on localhost:${{ job.services.chattr.ports['7860'] }}"
       - name: Run curl
         run: curl -o ./output.txt -f -I -s http://localhost:${{ job.services.chattr.ports['7860'] }}/
       - name: Summary
-        run: |
+        run: |-
           echo "# curl Output" >> $GITHUB_STEP_SUMMARY
           cat ./output.txt >> $GITHUB_STEP_SUMMARY
