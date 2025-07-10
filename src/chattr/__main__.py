@@ -1,14 +1,15 @@
 from chainlit import (
-    on_chat_start,
-    on_message,
+    LangchainCallbackHandler,
     Message,
     context,
-    LangchainCallbackHandler,
+    on_chat_start,
+    on_message,
 )
 from chainlit.cli import run_chainlit
-from chattr import logger
 from langchain.schema.runnable.config import RunnableConfig
 from langchain_core.messages import HumanMessage
+
+from chattr import logger
 from chattr.graph import Graph
 
 
