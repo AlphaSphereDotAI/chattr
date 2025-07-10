@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-SERVER_URL: str = getenv(key="SERVER_URL", default="localhost")
+SERVER_URL: str = getenv(key="SERVER_URL", default="127.0.0.1")
 SERVER_PORT: int = getenv(key="SERVER_PORT", default=7860)
 CURRENT_DATE: str = datetime.now().strftime(format="%Y-%m-%d_%H-%M-%S")
 MCP_VOICE_GENERATOR: str = getenv(
