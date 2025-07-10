@@ -1,4 +1,4 @@
-name: Code Analysis
+name: Code Quality
 on:
   push:
     branches:
@@ -9,6 +9,37 @@ concurrency:
   cancel-in-progress: true
 permissions: read-all
 jobs:
+  format:
+    name: Format
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@bd01e18f51369d5a26f1651c3cb451d3417e3bba # v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+          activate-environment: true
+      - name: Install the project
+        run: uv sync --frozen
+      - name: Trunk install
+        uses: trunk-io/trunk-action/setup@v1
+      - name: Apply linters fixes if exist
+        run: $TRUNK_PATH check --ci --all --fix
+      - name: Commit and push applied linter fixes
+        uses: stefanzweifel/git-auto-commit-action@v6
+        if: success() || failure()
+        with:
+          branch: >-
+            ${{
+              github.event.pull_request.head.ref ||
+              github.head_ref ||
+              github.ref
+            }}
+          commit_message: "[Trunk] Apply linters fixes"
   trunk:
     name: Trunk Code Quality
     runs-on: ubuntu-latest
@@ -30,19 +61,6 @@ jobs:
         run: uv sync --frozen
       - name: Trunk Code Quality
         uses: trunk-io/trunk-action@75699af9e26881e564e9d832ef7dc3af25ec031b # v1
-        with:
-          arguments: --fix
-      - name: Commit and push applied linter fixes
-        uses: stefanzweifel/git-auto-commit-action@v6
-        if: success() || failure()
-        with:
-          branch: >-
-            ${{
-              github.event.pull_request.head.ref ||
-              github.head_ref ||
-              github.ref
-            }}
-          commit_message: "[Trunk] Apply linters fixes"
   compatibility:
     name: Check Dependency Compatibility
     runs-on: ubuntu-latest
