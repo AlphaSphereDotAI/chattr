@@ -23,7 +23,7 @@ jobs:
       - name: Trunk install
         uses: trunk-io/trunk-action/setup@v1
       - name: Apply linters fixes if exist
-        run: $TRUNK_PATH check --ci --fix
+        run: $TRUNK_PATH check --fix --ci
       - name: Commit and push applied linter fixes
         uses: stefanzweifel/git-auto-commit-action@v6
         if: success() || failure()
