@@ -42,7 +42,7 @@ lint:
 actions:
   enabled:
     - commitizen
-    - commitlint
+    #    - commitlint
     - trufflehog-pre-commit
     #    - uv-check
     - uv-lock

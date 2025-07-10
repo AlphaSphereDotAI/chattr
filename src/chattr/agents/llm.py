@@ -1,13 +1,14 @@
 import time
 from typing import List
 
-from .crawler import crawl
-from .vector_database import add_data, get_chunks, query_db
 from langchain.chains import LLMChain
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_groq import ChatGroq
 from pydantic import StrictStr
 from qdrant_client.fastembed_common import QueryResponse
+
+from .crawler import crawl
+from .vector_database import add_data, get_chunks, query_db
 
 chat = ChatGroq(
     model="llama3-70b-8192",

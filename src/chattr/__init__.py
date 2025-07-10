@@ -1,8 +1,9 @@
 from datetime import datetime
 from os import getenv
 from pathlib import Path
-from loguru import logger
+
 from dotenv import load_dotenv
+from loguru import logger
 
 load_dotenv()
 
