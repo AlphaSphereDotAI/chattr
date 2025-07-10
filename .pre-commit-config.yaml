@@ -25,12 +25,14 @@ repos:
     hooks:
       - id: uv-sync
       - id: uv-lock
-        args: [ --offline ]
+        args:
+          - --offline
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.12.1
     hooks:
       - id: ruff-check
-        args: [ --fix ]
+        args:
+          - --fix
       - id: ruff-format
   - repo: https://github.com/gitleaks/gitleaks
     rev: v8.27.2
