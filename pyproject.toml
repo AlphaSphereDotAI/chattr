@@ -8,10 +8,10 @@ authors = [
 ]
 requires-python = ">=3.12"
 dependencies = [
-  "chainlit>=2.6.0",
+  "gradio>=5.36.2",
   "langchain>=0.3.26",
-  "langchain-groq>=0.3.5",
-  "langgraph>=0.5.1",
+  "langchain-openai>=0.3.27",
+  "langgraph>=0.5.2",
   "loguru>=0.7.3",
 ]
 
