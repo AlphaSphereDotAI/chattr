@@ -4,7 +4,7 @@ from langchain_core.tools import tool
 
 
 @tool
-def get_weather( city: Literal["nyc", "sf"]) -> str:
+def get_weather(city: Literal["nyc", "sf"]) -> str:
     """Use this to get weather information."""
     if city == "nyc":
         return "It might be cloudy in nyc"
