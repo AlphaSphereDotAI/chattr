@@ -27,9 +27,7 @@ def create_graph() -> CompiledStateGraph:
     _model = _model.bind_tools(_tools, parallel_tool_calls=False)
 
     def call_model(state: MessagesState) -> MessagesState:
-        return {
-            "messages": [_model.invoke([SYSTEM_MESSAGE] + state["messages"])]
-        }
+        return {"messages": [_model.invoke([SYSTEM_MESSAGE] + state["messages"])]}
 
     _builder: StateGraph = StateGraph(MessagesState)
     _builder.add_node("agent", call_model)
@@ -42,9 +40,7 @@ def create_graph() -> CompiledStateGraph:
 
 
 def draw_graph(graph: CompiledStateGraph) -> None:
-    graph.get_graph().draw_mermaid_png(
-        output_file_path=ASSETS_DIR / "graph.png"
-    )
+    graph.get_graph().draw_mermaid_png(output_file_path=ASSETS_DIR / "graph.png")
 
 
 if __name__ == "__main__":
