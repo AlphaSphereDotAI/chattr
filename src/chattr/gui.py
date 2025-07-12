@@ -31,20 +31,16 @@ def app_block() -> Blocks:
 
     history = [
         ChatMessage(role="assistant", content="How can I help you?"),
-        ChatMessage(role="user", content="Can you make me a plot of quarterly sales?"),
         ChatMessage(
-            role="assistant", content="I am happy to provide you that report and plot."
+            role="user", content="Can you make me a plot of quarterly sales?"
+        ),
+        ChatMessage(
+            role="assistant",
+            content="I am happy to provide you that report and plot.",
         ),
     ]
     with Blocks() as app:
         chatbot: Chatbot = Chatbot(history, type="messages")
         stream_btn: Button = Button(value="Generate", variant="primary")
         stream_btn.click(generate_response, chatbot, chatbot)
-        # with Row():
-        #     with Column():
-        #         with Row():
-        #         speed: Slider = Slider(
-        #     with Column():
-        #         out_audio: Audio = Audio(
-        #         with Row():
     return app
