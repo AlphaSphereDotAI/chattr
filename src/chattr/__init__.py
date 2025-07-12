@@ -16,19 +16,13 @@ MCP_VOICE_GENERATOR: str = getenv(
 MCP_VIDEO_GENERATOR: str = getenv(
     key="MCP_VIDEO_GENERATOR", default="http://localhost:8002/"
 )
-VECTOR_DATABASE_NAME: str = getenv(
-    key="VECTOR_DATABASE_NAME", default="chattr"
-)
+VECTOR_DATABASE_NAME: str = getenv(key="VECTOR_DATABASE_NAME", default="chattr")
 DOCKER_MODEL_RUNNER_URL: str = getenv(
     key="DOCKER_MODEL_RUNNER_URL", default="http://127.0.0.1:12434/engines/v1"
 )
-GROQ_URL: str = getenv(
-    key="MODEL_URL", default="https://api.groq.com/openai/v1"
-)
+GROQ_URL: str = getenv(key="MODEL_URL", default="https://api.groq.com/openai/v1")
 GROQ_MODEL_NAME: str = getenv(key="GROQ_MODEL_NAME", default="llama3-70b-8192")
-GROQ_MODEL_TEMPERATURE: float = getenv(
-    key="GROQ_MODEL_TEMPERATURE", default=0.0
-)
+GROQ_MODEL_TEMPERATURE: float = getenv(key="GROQ_MODEL_TEMPERATURE", default=0.0)
 
 BASE_DIR: Path = Path.cwd()
 ASSETS_DIR: Path = BASE_DIR / "assets"
