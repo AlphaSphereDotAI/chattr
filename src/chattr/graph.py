@@ -12,20 +12,23 @@ from chattr import ASSETS_DIR
 from chattr.tools import get_weather
 
 SYSTEM_MESSAGE: SystemMessage = SystemMessage(
-        content="You are a helpful assistant that can answer questions about the weather."
-    )
+    content="You are a helpful assistant that can answer questions about the weather."
+)
+
 
 def create_graph() -> CompiledStateGraph:
     _model: ChatOpenAI = ChatOpenAI(
         base_url="http://127.0.0.1:12434/engines/v1",
         model="ai/qwen3:0.6B-Q4_0",
         api_key="not-needed",
-        temperature=0.0
+        temperature=0.0,
     )
     _tools: List[BaseTool] = [get_weather]
     _model = _model.bind_tools(_tools, parallel_tool_calls=False)
-    def call_model( state: MessagesState) -> MessagesState:
+
+    def call_model(state: MessagesState) -> MessagesState:
         return {"messages": [_model.invoke([SYSTEM_MESSAGE] + state["messages"])]}
+
     _builder: StateGraph = StateGraph(MessagesState)
     _builder.add_node("agent", call_model)
     _builder.add_node("tools", ToolNode(_tools))
@@ -34,18 +37,22 @@ def create_graph() -> CompiledStateGraph:
     _builder.add_edge("tools", "agent")
     graph: CompiledStateGraph = _builder.compile()
     return graph
-def draw_graph(graph: CompiledStateGraph)-> None:
-    graph.get_graph().draw_mermaid_png(        output_file_path=ASSETS_DIR / "graph.png"    )
+
+
+def draw_graph(graph: CompiledStateGraph) -> None:
+    graph.get_graph().draw_mermaid_png(output_file_path=ASSETS_DIR / "graph.png")
 
 
 if __name__ == "__main__":
     g = create_graph()
 
-    messages =       g.invoke({"messages":  [
+    messages = g.invoke(
+        {
+            "messages": [
+                HumanMessage(content="What is the weather in nyc?"),
+            ]
+        }
+    )
 
-            HumanMessage(content="What is the weather in nyc?"),
-        ]
-                                    })
-    
-    for m in messages['messages']:
+    for m in messages["messages"]:
         m.pretty_print()
