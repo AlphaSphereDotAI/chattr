@@ -1,7 +1,7 @@
 name: Chattr
 services:
   chattr:
-    image: ghcr.io/alphaspheredotai/chattr:latest
+    image: ghcr.io/alphaspheredotai/chattr:latest@sha256:c2239e3a8504384eeb6646371c78c60eb48e1246a11e9d22ad8e0be065159ab9
     ports:
       - "7860:7860"
     volumes:
@@ -28,6 +28,11 @@ services:
       retries: 5
       start_period: 40s
       start_interval: 5s
+    secrets:
+      - groq_api_key
 volumes:
   results:
   logs:
+secrets:
+  groq_api_key:
+    file: groq_api_key.txt
