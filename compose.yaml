@@ -35,4 +35,4 @@ volumes:
   logs:
 secrets:
   groq_api_key:
-     file: groq_api_key.txt
+    file: groq_api_key.txt
