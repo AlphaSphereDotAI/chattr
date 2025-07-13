@@ -29,9 +29,7 @@ def app_block() -> Blocks:
 
     history = [
         ChatMessage(role="assistant", content="How can I help you?"),
-        ChatMessage(
-            role="user", content="Can you make me a plot of quarterly sales?"
-        ),
+        ChatMessage(role="user", content="Can you make me a plot of quarterly sales?"),
         ChatMessage(
             role="assistant",
             content="I am happy to provide you that report and plot.",
