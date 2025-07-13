@@ -5,9 +5,9 @@ from gradio import Blocks, Button, Chatbot, ChatMessage, Row, Textbox
 def generate_response(history, thread_id):
     """
     Appends an assistant message about a quarterly sales plot to the chat history for the specified thread ID.
-    
+
     If the thread ID is 0, raises a Gradio error prompting for a valid thread ID.
-    
+
     Returns:
         The updated chat history including the new assistant message.
     """
@@ -28,7 +28,7 @@ def generate_response(history, thread_id):
 def app_block() -> Blocks:
     """
     Constructs and returns the main Gradio chat application interface with a thread ID input, chatbot display, and control buttons.
-    
+
     Returns:
         Blocks: The complete Gradio Blocks interface for the chat application.
     """
