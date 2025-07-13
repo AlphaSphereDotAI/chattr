@@ -23,13 +23,14 @@ VECTOR_DATABASE_NAME: str = getenv(
 DOCKER_MODEL_RUNNER_URL: str = getenv(
     key="DOCKER_MODEL_RUNNER_URL", default="http://127.0.0.1:12434/engines/v1"
 )
+DOCKER_MODEL_RUNNER_MODEL_NAME: str = getenv(
+    key="DOCKER_MODEL_RUNNER_MODEL_NAME",
+    default="ai/qwen3:0.6B-Q4_0",
+)
 GROQ_URL: str = getenv(
     key="MODEL_URL", default="https://api.groq.com/openai/v1"
 )
 GROQ_MODEL_NAME: str = getenv(key="GROQ_MODEL_NAME", default="llama3-70b-8192")
-GROQ_MODEL_TEMPERATURE: float = getenv(
-    key="GROQ_MODEL_TEMPERATURE", default=0.0
-)
 
 BASE_DIR: Path = Path.cwd()
 ASSETS_DIR: Path = BASE_DIR / "assets"
@@ -53,6 +54,17 @@ MODEL_URL: str = (
     if get(DOCKER_MODEL_RUNNER_URL).status_code == 200
     else GROQ_URL
 )
+MODEL_NAME: str = (
+    DOCKER_MODEL_RUNNER_MODEL_NAME
+    if MODEL_URL == DOCKER_MODEL_RUNNER_URL
+    else GROQ_MODEL_NAME
+)
+MODEL_API_KEY: str = (
+    "not-needed"
+    if MODEL_URL == DOCKER_MODEL_RUNNER_URL
+    else getenv("GROQ_API_KEY")
+)
+MODEL_TEMPERATURE: float = getenv(key="MODEL_TEMPERATURE", default=0.0)
 
 logger.add(
     sink=LOG_FILE_PATH,
@@ -66,3 +78,5 @@ logger.info(f"Log directory: {LOG_DIR}")
 logger.info(f"Audio file path: {AUDIO_FILE_PATH}")
 logger.info(f"Log file path: {LOG_FILE_PATH}")
 logger.info(f"Model URL is going to be used is {MODEL_URL}")
+logger.info(f"Model name is going to be used is {MODEL_NAME}")
+logger.info(f"Model temperature is going to be used is {MODEL_TEMPERATURE}")
