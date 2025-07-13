@@ -17,9 +17,7 @@ MCP_VOICE_GENERATOR: str = getenv(
 MCP_VIDEO_GENERATOR: str = getenv(
     key="MCP_VIDEO_GENERATOR", default="http://localhost:8002/"
 )
-VECTOR_DATABASE_NAME: str = getenv(
-    key="VECTOR_DATABASE_NAME", default="chattr"
-)
+VECTOR_DATABASE_NAME: str = getenv(key="VECTOR_DATABASE_NAME", default="chattr")
 DOCKER_MODEL_RUNNER_URL: str = getenv(
     key="DOCKER_MODEL_RUNNER_URL", default="http://127.0.0.1:12434/engines/v1"
 )
