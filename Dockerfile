@@ -7,9 +7,11 @@ ENV UV_LINK_MODE=copy \
 COPY --from=ghcr.io/astral-sh/uv:latest@sha256:2fd1b38e3398a256d6af3f71f0e2ba6a517b249998726a64d8cfbe55ab34af5e \
     /uv /uvx /bin/
 
+USER nonroot
+
 WORKDIR /app
 
-RUN --mount=type=cache,target=/root/.cache/uv \
+RUN --mount=type=cache,target=/home/nonroot/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     --mount=type=bind,source=README.md,target=README.md \
@@ -17,7 +19,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 COPY . /app
 
-RUN --mount=type=cache,target=/root/.cache/uv \
+RUN --mount=type=cache,target=/home/nonroot/.cache/uv \
     uv sync --no-dev --locked --no-editable
 
 FROM cgr.dev/chainguard/wolfi-base:latest AS production
