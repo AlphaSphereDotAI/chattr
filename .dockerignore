@@ -1,6 +1,9 @@
-.flox/
+**/__pycache__/
+.deepsource.toml
+.env
 .github/
-.vscode/
+.idea/
+.mypy_cache/
+.ruff_cache/
 .venv/
-README.md
-renovate.json
+.vscode/
