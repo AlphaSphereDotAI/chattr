@@ -15,12 +15,6 @@ services:
     secrets:
       - groq_api_key
     healthcheck:
-
-# (rest of your service definitions…)
-
-secrets:
-  groq_api_key:
-    external: true   # provide via `docker secret create …` or an .env-file mount
       test:
         - "CMD"
         - "curl"
@@ -39,3 +33,6 @@ secrets:
 volumes:
   results:
   logs:
+secrets:
+  groq_api_key:
+    external: true   # provide via `docker secret create …` or an .env-file mount
