@@ -29,7 +29,6 @@ SHELL ["/bin/bash", "-c"]
 ENV SERVER_PORT=7860 \
     SERVER_NAME=0.0.0.0
 
-# skipcq: DOK-DL3008
 RUN groupadd app && \
     useradd -m -g app -s /bin/bash app && \
     apt-get update > /dev/null && \

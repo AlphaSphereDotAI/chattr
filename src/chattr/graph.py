@@ -51,7 +51,7 @@ if __name__ == "__main__":
     g = create_graph()
 
     messages = g.invoke(
-        {"messages": [HumanMessage(content="What is the weather in nyc?")]}
+        {"messages": [HumanMessage(content="What is the weather in sf?")]}
     )
 
     for m in messages["messages"]:
