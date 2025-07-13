@@ -12,8 +12,15 @@ services:
         user: root
     environment:
       SERVER_PORT: 7860
-      GROQ_API_KEY: ${GROQ_API_KEY}
+    secrets:
+      - groq_api_key
     healthcheck:
+
+# (rest of your service definitions…)
+
+secrets:
+  groq_api_key:
+    external: true   # provide via `docker secret create …` or an .env-file mount
       test:
         - "CMD"
         - "curl"
