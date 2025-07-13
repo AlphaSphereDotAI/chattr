@@ -1,4 +1,4 @@
-FROM cgr.dev/chainguard/wolfi-base:latest@sha256:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef AS builder
+FROM cgr.dev/chainguard/wolfi-base:latest AS builder
 
 ENV UV_LINK_MODE=copy \
     UV_COMPILE_BYTECODE=1 \
