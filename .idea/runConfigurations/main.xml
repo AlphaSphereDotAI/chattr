@@ -3,16 +3,16 @@
     <option name="args">
       <list />
     </option>
-    <option name="checkSync" value="true" />
+    <option name="checkSync" value="false" />
     <option name="env">
       <map />
     </option>
     <option name="runType" value="SCRIPT" />
-    <option name="scriptOrModule" value="D:\Dev\chattr\src\chattr\__main__.py" />
+    <option name="scriptOrModule" value="D:\Development\chattr\src\chattr\__main__.py" />
     <option name="uvArgs">
       <list />
     </option>
-    <option name="uvSdkKey" />
+    <option name="uvSdkKey" value="uv (chattr)" />
     <method v="2" />
   </configuration>
 </component>
