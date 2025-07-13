@@ -58,7 +58,7 @@ MODEL_NAME: str = (
 MODEL_API_KEY: str = (
     "not-needed" if MODEL_URL == DOCKER_MODEL_RUNNER_URL else getenv("GROQ_API_KEY")
 )
-MODEL_TEMPERATURE: float = getenv(key="MODEL_TEMPERATURE", default=0.0)
+MODEL_TEMPERATURE: float = float(getenv(key="MODEL_TEMPERATURE", default=0.0))
 
 logger.add(
     sink=LOG_FILE_PATH,
