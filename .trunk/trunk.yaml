@@ -23,13 +23,13 @@ lint:
     - gitleaks@8.27.2
     - actionlint@1.7.7
     - bandit@1.8.6
-    - checkov@3.2.447
+    - checkov@3.2.450
     - git-diff-check
     - hadolint@2.12.1-beta
     - isort@6.0.1
     - markdownlint@0.45.0
     - oxipng@9.1.5
-    - renovate@41.25.0
+    - renovate@41.30.5
     - ruff@0.12.2:
         commands:
           - lint
@@ -59,3 +59,6 @@ actions:
     - trunk-upgrade-available
     - trunk-check-pre-push-always
     - trunk-check-pre-commit
+tools:
+  enabled:
+    - uv@0.7.20
