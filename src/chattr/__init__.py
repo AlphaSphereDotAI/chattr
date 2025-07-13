@@ -9,7 +9,7 @@ from requests import get
 load_dotenv()
 
 SERVER_URL: str = getenv(key="SERVER_URL", default="127.0.0.1")
-SERVER_PORT: int = getenv(key="SERVER_PORT", default=7860)
+SERVER_PORT: int = int(getenv(key="SERVER_PORT", default="7860"))
 CURRENT_DATE: str = datetime.now().strftime(format="%Y-%m-%d_%H-%M-%S")
 MCP_VOICE_GENERATOR: str = getenv(
     key="MCP_VOICE_GENERATOR", default="http://localhost:8001/"
@@ -17,7 +17,9 @@ MCP_VOICE_GENERATOR: str = getenv(
 MCP_VIDEO_GENERATOR: str = getenv(
     key="MCP_VIDEO_GENERATOR", default="http://localhost:8002/"
 )
-VECTOR_DATABASE_NAME: str = getenv(key="VECTOR_DATABASE_NAME", default="chattr")
+VECTOR_DATABASE_NAME: str = getenv(
+    key="VECTOR_DATABASE_NAME", default="chattr"
+)
 DOCKER_MODEL_RUNNER_URL: str = getenv(
     key="DOCKER_MODEL_RUNNER_URL", default="http://127.0.0.1:12434/engines/v1"
 )
@@ -49,7 +51,7 @@ LOG_DIR.mkdir(exist_ok=True)
 
 MODEL_URL: str = (
     DOCKER_MODEL_RUNNER_URL
-    if get(DOCKER_MODEL_RUNNER_URL).status_code == 200
+    if get(DOCKER_MODEL_RUNNER_URL, timeout=10).status_code == 200
     else GROQ_URL
 )
 MODEL_NAME: str = (
