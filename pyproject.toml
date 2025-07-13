@@ -10,6 +10,7 @@ requires-python = ">=3.12"
 dependencies = [
   "gradio>=5.36.2",
   "langchain>=0.3.26",
+  "langchain-mcp-adapters>=0.1.9",
   "langchain-openai>=0.3.27",
   "langgraph>=0.5.2",
   "loguru>=0.7.3",

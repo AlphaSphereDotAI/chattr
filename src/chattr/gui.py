@@ -1,22 +1,20 @@
-from gradio import (
-    Blocks,
-    Button,
-    Chatbot,
-    ChatMessage,
-)
+import gradio
+from gradio import Blocks, Button, Chatbot, ChatMessage, Row, Textbox
 
 
-def generate_response(history):
+def generate_response(history, thread_id):
+    if thread_id == 0:
+        gradio.Error("Please enter a thread ID.")
     history.append(
         ChatMessage(
             role="assistant",
-            content="The weather API says it is 20 degrees Celsius in New York.",
+            content=f"Here is the plot of quarterly sales for {thread_id}.",
             metadata={
                 "title": "🛠️ Used tool Weather API",
-                "id": "",
-                "parent_id": "",
-                "duration": "",
-                "status": "",
+                # "id": "",
+                # "parent_id": "",
+                # "duration": "",
+                # "status": "",
             },
         )
     )
@@ -40,7 +38,18 @@ def app_block() -> Blocks:
         ),
     ]
     with Blocks() as app:
+        with Row():
+            thread_id: Textbox = Textbox(
+                label="Thread ID", info="Enter Thread ID"
+            )
+
         chatbot: Chatbot = Chatbot(history, type="messages")
-        stream_btn: Button = Button(value="Generate", variant="primary")
-        stream_btn.click(generate_response, chatbot, chatbot)
+
+        with Row():
+            generate_btn: Button = Button(value="Generate", variant="primary")
+            stop_btn: Button = Button(value="Stop", variant="stop")
+        _event = generate_btn.click(
+            generate_response, [chatbot, thread_id], chatbot
+        )
+        stop_btn.click(cancels=[_event])
     return app
