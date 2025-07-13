@@ -1,0 +1,28 @@
+[project]
+name = "chattr"
+version = "0.1.0"
+description = "App part of the Chatacter Backend"
+readme = "README.md"
+authors = [
+  { name = "Mohamed Hisham Abdelzaher", email = "mohamed.hisham.abdelzaher@gmail.com" },
+]
+requires-python = ">=3.12"
+dependencies = [
+  "gradio>=5.36.2",
+  "langchain>=0.3.26",
+  "langchain-mcp-adapters>=0.1.9",
+  "langchain-openai>=0.3.27",
+  "langgraph>=0.5.2",
+  "loguru>=0.7.3",
+  "python-dotenv>=1.1.1",
+]
+
+[project.scripts]
+chattr = "chattr.__main__:main"
+
+[build-system]
+requires = ["uv_build"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = ["ruff>=0.12.2", "ty>=0.0.1a12"]
