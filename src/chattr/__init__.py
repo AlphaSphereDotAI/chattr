@@ -17,7 +17,9 @@ MCP_VOICE_GENERATOR: str = getenv(
 MCP_VIDEO_GENERATOR: str = getenv(
     key="MCP_VIDEO_GENERATOR", default="http://localhost:8002/"
 )
-VECTOR_DATABASE_NAME: str = getenv(key="VECTOR_DATABASE_NAME", default="chattr")
+VECTOR_DATABASE_NAME: str = getenv(
+    key="VECTOR_DATABASE_NAME", default="chattr"
+)
 DOCKER_MODEL_RUNNER_URL: str = getenv(
     key="DOCKER_MODEL_RUNNER_URL", default="http://127.0.0.1:12434/engines/v1"
 )
@@ -25,7 +27,9 @@ DOCKER_MODEL_RUNNER_MODEL_NAME: str = getenv(
     key="DOCKER_MODEL_RUNNER_MODEL_NAME",
     default="ai/qwen3:0.6B-Q4_0",
 )
-GROQ_URL: str = getenv(key="MODEL_URL", default="https://api.groq.com/openai/v1")
+GROQ_URL: str = getenv(
+    key="MODEL_URL", default="https://api.groq.com/openai/v1"
+)
 GROQ_MODEL_NAME: str = getenv(key="GROQ_MODEL_NAME", default="llama3-70b-8192")
 
 BASE_DIR: Path = Path.cwd()
@@ -47,7 +51,7 @@ LOG_DIR.mkdir(exist_ok=True)
 
 MODEL_URL: str = (
     DOCKER_MODEL_RUNNER_URL
-    if get(DOCKER_MODEL_RUNNER_URL).status_code == 200
+    if get(DOCKER_MODEL_RUNNER_URL, timeout=10).status_code == 200
     else GROQ_URL
 )
 MODEL_NAME: str = (
@@ -56,7 +60,9 @@ MODEL_NAME: str = (
     else GROQ_MODEL_NAME
 )
 MODEL_API_KEY: str = (
-    "not-needed" if MODEL_URL == DOCKER_MODEL_RUNNER_URL else getenv("GROQ_API_KEY")
+    "not-needed"
+    if MODEL_URL == DOCKER_MODEL_RUNNER_URL
+    else getenv("GROQ_API_KEY")
 )
 MODEL_TEMPERATURE: float = float(getenv(key="MODEL_TEMPERATURE", default=0.0))
 
