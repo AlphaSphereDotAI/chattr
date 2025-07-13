@@ -12,7 +12,7 @@ def generate_response(history: list[ChatMessage], thread_id: str) -> list[ChatMe
         The updated chat history including the new assistant message.
     """
     if thread_id == 0:
-        gradio.Error("Please enter a thread ID.")
+        raise gradio.Error("Please enter a thread ID.")
     history.append(
         ChatMessage(
             role="assistant",
