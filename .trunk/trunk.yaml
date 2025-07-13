@@ -34,7 +34,10 @@ lint:
         commands:
           - lint
           - format
-    - taplo@0.9.3
+    - taplo@0.9.3:
+        commands:
+          - lint
+          - format
     - trufflehog@3.89.2
     - yamllint@1.37.1
   disabled:
