@@ -35,4 +35,4 @@ volumes:
   logs:
 secrets:
   groq_api_key:
-    external: true   # provide via `docker secret create …` or an .env-file mount
+    external: true # provide via `docker secret create …` or an .env-file mount
