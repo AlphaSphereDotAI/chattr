@@ -1,31 +1,127 @@
 name: Docker Images
 on:
-    workflow_dispatch:
-    pull_request:
-    push:
-        branches: ["main"]
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+  release:
+    types:
+      - published
+permissions:
+  contents: read
+  packages: write
+  attestations: write
+  id-token: write
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: true
 jobs:
-    Image:
-        runs-on: ubuntu-latest
-        permissions:
-            contents: read
-            packages: write
-            attestations: write
-            id-token: write
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v4.2.2
-            - name: Log in to the Container registry
-              uses: docker/login-action@v3.4.0
-              with:
-                  registry: ghcr.io
-                  username: ${{ github.actor }}
-                  password: ${{ secrets.TOKEN_KEY_GITHUB }}
-            - name: Set up QEMU
-              uses: docker/setup-qemu-action@v3.6.0
-            - name: Set up Docker Buildx
-              uses: docker/setup-buildx-action@v3.10.0
-            - name: Docker Buildx Bake
-              uses: docker/bake-action@v6.6.0
-              with:
-                  files: docker-bake.hcl
+  check_dockerfile:
+    name: Validate Dockerfile
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - name: Log in to the Container registry
+        uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.TOKEN_KEY_GITHUB }}
+      - name: Validate build configuration
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6
+        with:
+          call: check
+  build_image:
+    name: Build and push Docker image
+    needs: check_dockerfile
+    runs-on: ubuntu-latest
+    outputs:
+      image_tag: ${{ steps.meta.outputs.tags }}
+    steps:
+      - name: Free Disk Space
+        uses: jlumbroso/free-disk-space@main
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - name: Log in to the Container registry
+        uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.TOKEN_KEY_GITHUB }}
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@29109295f81e9208d7d86ff1c6c12d2833863392 # v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@902fa8ec7d6ecbf8d84d538b9b233a880e428804 # v5
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=${{ github.ref_name }},enable=${{ github.ref != 'refs/heads/main' }}
+      - name: Build
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6
+        id: push
+        with:
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          annotations: ${{ steps.meta.outputs.annotations }}
+      - name: Generate artifact attestation for App
+        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be # v2
+        with:
+          subject-name: ghcr.io/${{ github.repository }}
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true
+  docker_scout:
+    name: Docker Scout (${{ matrix.commands }})
+    needs: build_image
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        commands:
+          - "quickview"
+          - "cves"
+          - "recommendations"
+    steps:
+      - name: Login to the Container registry
+        uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.TOKEN_KEY_GITHUB }}
+      - name: Docker Scout
+        uses: docker/scout-action@aceeb83b88f2ae54376891227858dda7af647183 # v1
+        with:
+          command: ${{ matrix.commands }}
+          dockerhub-user: mh0386
+          dockerhub-password: ${{ secrets.TOKEN_KEY_DOCKER }}
+          image: ${{ needs.build_image.outputs.image_tag }}
+          github-token: ${{ secrets.TOKEN_KEY_GITHUB }}
+  api_test:
+    name: API Test
+    needs: build_image
+    runs-on: ubuntu-latest
+    services:
+      chattr:
+        image: ${{ needs.build_image.outputs.image_tag }}
+        ports:
+          - 7860:7860
+        options: >-
+          --health-cmd "curl -o /dev/null -f -s -w 'Status: %{http_code}, Time: %{time_total}s' http://localhost:7860/"
+          --health-interval 10s --health-timeout 5s --health-start-period 15s --health-retries 15
+    steps:
+      - name: Echo URL
+        run: echo "Chattr available on localhost:${{ job.services.chattr.ports['7860'] }}"
+      - name: Run curl
+        run: curl -o ./output.txt -f -I -s http://localhost:${{ job.services.chattr.ports['7860'] }}/
+      - name: Summary
+        run: |-
+          echo "# curl Output" >> $GITHUB_STEP_SUMMARY
+          cat ./output.txt >> $GITHUB_STEP_SUMMARY
