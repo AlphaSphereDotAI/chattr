@@ -113,6 +113,8 @@ jobs:
         image: ${{ needs.build_image.outputs.image_tag }}
         ports:
           - 7860:7860
+        env:          
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         options: >-
           --health-cmd "curl -o /dev/null -f -s -w 'Status: %{http_code}, Time: %{time_total}s' http://localhost:7860/"
           --health-interval 10s --health-timeout 5s --health-start-period 15s --health-retries 15
