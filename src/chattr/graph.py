@@ -1,7 +1,6 @@
-from typing import List
-
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_core.tools import BaseTool
+from langchain_mcp_adapters.client import MultiServerMCPClient
 from langchain_openai import ChatOpenAI
 from langgraph.graph import START, StateGraph
 from langgraph.graph.message import MessagesState
@@ -15,21 +14,29 @@ from chattr import (
     MODEL_TEMPERATURE,
     MODEL_URL,
 )
-from chattr.tools import get_weather
 
 SYSTEM_MESSAGE: SystemMessage = SystemMessage(
-    content="You are a helpful assistant that can answer questions about the weather."
+    content="You are a helpful assistant that can answer questions about the time."
 )
 
 
-def create_graph() -> CompiledStateGraph:
+async def create_graph() -> CompiledStateGraph:
+    _mcp_client = MultiServerMCPClient(
+        {
+            "time": {
+                "command": "docker",
+                "args": ["run", "-i", "--rm", "mcp/time"],
+                "transport": "stdio",
+            }
+        }
+    )
+    _tools: list[BaseTool] = await _mcp_client.get_tools()
     _model: ChatOpenAI = ChatOpenAI(
         base_url=MODEL_URL,
         model=MODEL_NAME,
         api_key=MODEL_API_KEY,
         temperature=MODEL_TEMPERATURE,
     )
-    _tools: List[BaseTool] = [get_weather]
     _model = _model.bind_tools(_tools, parallel_tool_calls=False)
 
     def call_model(state: MessagesState) -> MessagesState:
@@ -54,11 +61,16 @@ def draw_graph(graph: CompiledStateGraph) -> None:
 
 
 if __name__ == "__main__":
-    g = create_graph()
+    import asyncio
 
-    messages = g.invoke(
-        {"messages": [HumanMessage(content="What is the weather in sf?")]}
-    )
+    async def test_graph():
+        g: CompiledStateGraph = await create_graph()
 
-    for m in messages["messages"]:
-        m.pretty_print()
+        messages = await g.ainvoke(
+            {"messages": [HumanMessage(content="What is the time?")]}
+        )
+
+        for m in messages["messages"]:
+            m.pretty_print()
+
+    asyncio.run(test_graph())
