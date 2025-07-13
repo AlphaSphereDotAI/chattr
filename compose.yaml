@@ -1,0 +1,33 @@
+name: Chattr
+services:
+  chattr:
+    image: ghcr.io/alphaspheredotai/chattr:latest
+    ports:
+      - "7860:7860"
+    volumes:
+      - results:/home/app/results
+      - logs:/home/app/logs
+    post_start:
+      - command: chown -R app:app /home/app
+        user: root
+    environment:
+      SERVER_PORT: 7860
+    healthcheck:
+      test:
+        - "CMD"
+        - "curl"
+        - "-o"
+        - "/dev/null"
+        - "-f"
+        - "-s"
+        - "-w"
+        - "'Status: %{http_code},\tTime: %{time_total}s'"
+        - "http://localhost:7860/"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+      start_interval: 5s
+volumes:
+  results:
+  logs:
