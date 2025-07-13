@@ -8,7 +8,13 @@ from langgraph.graph.message import MessagesState
 from langgraph.graph.state import CompiledStateGraph
 from langgraph.prebuilt import ToolNode, tools_condition
 
-from chattr import ASSETS_DIR
+from chattr import (
+    ASSETS_DIR,
+    MODEL_API_KEY,
+    MODEL_NAME,
+    MODEL_TEMPERATURE,
+    MODEL_URL,
+)
 from chattr.tools import get_weather
 
 SYSTEM_MESSAGE: SystemMessage = SystemMessage(
@@ -18,10 +24,10 @@ SYSTEM_MESSAGE: SystemMessage = SystemMessage(
 
 def create_graph() -> CompiledStateGraph:
     _model: ChatOpenAI = ChatOpenAI(
-        base_url="http://127.0.0.1:12434/engines/v1",
-        model="ai/qwen3:0.6B-Q4_0",
-        api_key="not-needed",
-        temperature=0.0,
+        base_url=MODEL_URL,
+        model=MODEL_NAME,
+        api_key=MODEL_API_KEY,
+        temperature=MODEL_TEMPERATURE,
     )
     _tools: List[BaseTool] = [get_weather]
     _model = _model.bind_tools(_tools, parallel_tool_calls=False)
