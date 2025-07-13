@@ -23,7 +23,7 @@ SYSTEM_MESSAGE: SystemMessage = SystemMessage(
 async def create_graph() -> CompiledStateGraph:
     """
     Asynchronously creates and compiles a conversational state graph for a time-answering assistant with integrated external tools.
-    
+
     Returns:
         CompiledStateGraph: The compiled state graph ready for execution, with nodes for agent responses and tool invocation.
     """
@@ -48,10 +48,10 @@ async def create_graph() -> CompiledStateGraph:
     def call_model(state: MessagesState) -> MessagesState:
         """
         Generate a new message state by invoking the chat model with the system message prepended to the current messages.
-        
+
         Parameters:
             state (MessagesState): The current state containing a list of messages.
-        
+
         Returns:
             MessagesState: A new state with the model's response appended to the messages.
         """
