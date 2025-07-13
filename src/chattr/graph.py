@@ -46,9 +46,7 @@ async def create_graph() -> CompiledStateGraph:
         )
         _model = _model.bind_tools(_tools, parallel_tool_calls=False)
     except Exception as e:
-        raise RuntimeError(
-            f"Failed to initialize ChatOpenAI model: {e}"
-        ) from e
+        raise RuntimeError(f"Failed to initialize ChatOpenAI model: {e}") from e
 
     def call_model(state: MessagesState) -> MessagesState:
         """

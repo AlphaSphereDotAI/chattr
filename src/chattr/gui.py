@@ -2,9 +2,7 @@ import gradio
 from gradio import Blocks, Button, Chatbot, ChatMessage, Row, Textbox
 
 
-def generate_response(
-    history: list[ChatMessage], thread_id: str
-) -> list[ChatMessage]:
+def generate_response(history: list[ChatMessage], thread_id: str) -> list[ChatMessage]:
     """
     Appends an assistant message about a quarterly sales plot to the chat history for the specified thread ID.
 
