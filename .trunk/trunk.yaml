@@ -26,7 +26,6 @@ lint:
     - checkov@3.2.450
     - git-diff-check
     - hadolint@2.12.1-beta
-    - isort@6.0.1
     - markdownlint@0.45.0
     - oxipng@9.1.5
     - renovate@41.30.5
@@ -45,6 +44,7 @@ lint:
     - black
     - mypy
     - pylint
+    - isort
 actions:
   enabled:
     - commitizen
