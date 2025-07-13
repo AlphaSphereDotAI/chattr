@@ -11,10 +11,6 @@ def generate_response(history, thread_id):
             content=f"Here is the plot of quarterly sales for {thread_id}.",
             metadata={
                 "title": "🛠️ Used tool Weather API",
-                # "id": "",
-                # "parent_id": "",
-                # "duration": "",
-                # "status": "",
             },
         )
     )
@@ -37,17 +33,13 @@ def app_block() -> Blocks:
     ]
     with Blocks() as app:
         with Row():
-            thread_id: Textbox = Textbox(
-                label="Thread ID", info="Enter Thread ID"
-            )
+            thread_id: Textbox = Textbox(label="Thread ID", info="Enter Thread ID")
 
         chatbot: Chatbot = Chatbot(history, type="messages")
 
         with Row():
             generate_btn: Button = Button(value="Generate", variant="primary")
             stop_btn: Button = Button(value="Stop", variant="stop")
-        _event = generate_btn.click(
-            generate_response, [chatbot, thread_id], chatbot
-        )
+        _event = generate_btn.click(generate_response, [chatbot, thread_id], chatbot)
         stop_btn.click(cancels=[_event])
     return app
