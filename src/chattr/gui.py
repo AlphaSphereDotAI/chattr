@@ -2,7 +2,9 @@ import gradio
 from gradio import Blocks, Button, Chatbot, ChatMessage, Row, Textbox
 
 
-def generate_response(history: list[ChatMessage], thread_id: str) -> list[ChatMessage]:
+def generate_response(
+    history: list[ChatMessage], thread_id: str
+) -> list[ChatMessage]:
     """
     Appends an assistant message about a quarterly sales plot to the chat history for the specified thread ID.
 
@@ -33,7 +35,9 @@ def app_block() -> Blocks:
 
     history = [
         ChatMessage(role="assistant", content="How can I help you?"),
-        ChatMessage(role="user", content="Can you make me a plot of quarterly sales?"),
+        ChatMessage(
+            role="user", content="Can you make me a plot of quarterly sales?"
+        ),
         ChatMessage(
             role="assistant",
             content="I am happy to provide you that report and plot.",
@@ -41,13 +45,17 @@ def app_block() -> Blocks:
     ]
     with Blocks() as app:
         with Row():
-            thread_id: Textbox = Textbox(label="Thread ID", info="Enter Thread ID")
+            thread_id: Textbox = Textbox(
+                label="Thread ID", info="Enter Thread ID"
+            )
 
         chatbot: Chatbot = Chatbot(history, type="messages")
 
         with Row():
             generate_btn: Button = Button(value="Generate", variant="primary")
             stop_btn: Button = Button(value="Stop", variant="stop")
-        _event = generate_btn.click(generate_response, [chatbot, thread_id], chatbot)
+        _event = generate_btn.click(
+            generate_response, [chatbot, thread_id], chatbot
+        )
         stop_btn.click(cancels=[_event])
     return app
