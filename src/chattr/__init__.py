@@ -47,7 +47,7 @@ LOG_DIR.mkdir(exist_ok=True)
 
 MODEL_URL: str = (
     DOCKER_MODEL_RUNNER_URL
-    if get(DOCKER_MODEL_RUNNER_URL).status_code == 200
+    if get(DOCKER_MODEL_RUNNER_URL, timeout=5).status_code == 200
     else GROQ_URL
 )
 MODEL_NAME: str = (
