@@ -26,8 +26,8 @@ FROM python:3.13-slim@sha256:f2fdaec50160418e0c2867ba3e254755edd067171725886d5d3
 
 SHELL ["/bin/bash", "-c"]
 
-ENV SERVER_PORT=7860 \
-    SERVER_NAME=0.0.0.0
+ENV GRADIO_SERVER_PORT=7860 \
+    GRADIO_SERVER_NAME=0.0.0.0
 
 RUN groupadd app && \
     useradd -m -g app -s /bin/bash app && \
