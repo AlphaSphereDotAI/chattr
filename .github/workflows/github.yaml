@@ -55,7 +55,7 @@ jobs:
       - name: Update Project Version
         run: uv version ${{ needs.details.outputs.new_version }}
       - name: Build source and wheel distribution
-        run: uv build --all-packages
+        run: uv build
       - name: Upload artifacts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
