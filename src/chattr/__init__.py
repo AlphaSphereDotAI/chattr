@@ -4,6 +4,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 from loguru import logger
+from requests import get
 
 load_dotenv()
 
@@ -47,15 +48,21 @@ AUDIO_DIR.mkdir(exist_ok=True)
 VIDEO_DIR.mkdir(exist_ok=True)
 LOG_DIR.mkdir(exist_ok=True)
 
+MODEL_URL: str = (
+    DOCKER_MODEL_RUNNER_URL
+    if get(DOCKER_MODEL_RUNNER_URL).status_code == 200
+    else GROQ_URL
+)
+
 logger.add(
     sink=LOG_FILE_PATH,
     format="{time:YYYY-MM-DD at HH:mm:ss} | {level} | {message}",
     colorize=True,
 )
-
 logger.info(f"Current date: {CURRENT_DATE}")
 logger.info(f"Base directory: {BASE_DIR}")
 logger.info(f"Assets directory: {ASSETS_DIR}")
 logger.info(f"Log directory: {LOG_DIR}")
 logger.info(f"Audio file path: {AUDIO_FILE_PATH}")
 logger.info(f"Log file path: {LOG_FILE_PATH}")
+logger.info(f"Model URL is going to be used is {MODEL_URL}")
