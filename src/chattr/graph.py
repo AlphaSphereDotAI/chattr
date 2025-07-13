@@ -37,13 +37,16 @@ async def create_graph() -> CompiledStateGraph:
         }
     )
     _tools: list[BaseTool] = await _mcp_client.get_tools()
-    _model: ChatOpenAI = ChatOpenAI(
-        base_url=MODEL_URL,
-        model=MODEL_NAME,
-        api_key=MODEL_API_KEY,
-        temperature=MODEL_TEMPERATURE,
-    )
-    _model = _model.bind_tools(_tools, parallel_tool_calls=False)
+    try:
+        _model: ChatOpenAI = ChatOpenAI(
+            base_url=MODEL_URL,
+            model=MODEL_NAME,
+            api_key=MODEL_API_KEY,
+            temperature=MODEL_TEMPERATURE,
+        )
+        _model = _model.bind_tools(_tools, parallel_tool_calls=False)
+    except Exception as e:
+        raise RuntimeError(f"Failed to initialize ChatOpenAI model: {e}") from e
 
     def call_model(state: MessagesState) -> MessagesState:
         """
