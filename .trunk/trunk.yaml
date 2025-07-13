@@ -59,6 +59,3 @@ actions:
     - trunk-upgrade-available
     - trunk-check-pre-push-always
     - trunk-check-pre-commit
-tools:
-  enabled:
-    - uv@0.7.20
