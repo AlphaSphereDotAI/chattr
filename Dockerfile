@@ -2,7 +2,8 @@ FROM cgr.dev/chainguard/wolfi-base:latest AS builder
 
 ENV UV_LINK_MODE=copy \
     UV_COMPILE_BYTECODE=1 \
-    UV_PYTHON_PREFERENCE=only-managed
+    UV_PYTHON_PREFERENCE=only-managed \
+    UV_PYTHON_INSTALL_DIR=/home/nonroot/python
 
 COPY --from=ghcr.io/astral-sh/uv:latest@sha256:2fd1b38e3398a256d6af3f71f0e2ba6a517b249998726a64d8cfbe55ab34af5e \
     /uv /uvx /usr/bin/
@@ -31,7 +32,9 @@ RUN apk add --no-cache curl
 
 USER nonroot
 
-# WORKDIR /home/nonroot
+WORKDIR /home/nonroot
+
+COPY --from=builder --chown=nonroot:nonroot /home/nonroot/python /home/nonroot/python
 
 COPY --from=builder --chown=nonroot:nonroot --chmod=555 /app/.venv /app/.venv
 
