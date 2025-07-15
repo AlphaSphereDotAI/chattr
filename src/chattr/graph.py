@@ -43,7 +43,9 @@ async def create_graph() -> CompiledStateGraph:
             "transport": "stdio",
         }
     }
-    _mcp_client: MultiServerMCPClient = MultiServerMCPClient(_mcp_servers_config)
+    _mcp_client: MultiServerMCPClient = MultiServerMCPClient(
+        _mcp_servers_config
+    )
     _tools: list[BaseTool] = await _mcp_client.get_tools()
     try:
         _model: ChatOpenAI = ChatOpenAI(
@@ -54,7 +56,9 @@ async def create_graph() -> CompiledStateGraph:
         )
         _model = _model.bind_tools(_tools, parallel_tool_calls=False)
     except Exception as e:
-        raise RuntimeError(f"Failed to initialize ChatOpenAI model: {e}") from e
+        raise RuntimeError(
+            f"Failed to initialize ChatOpenAI model: {e}"
+        ) from e
 
     async def call_model(state: MessagesState) -> MessagesState:
         response = await _model.ainvoke([SYSTEM_MESSAGE] + state["messages"])
@@ -74,7 +78,9 @@ def draw_graph(graph: CompiledStateGraph) -> None:
     """
     Render the compiled state graph as a Mermaid PNG image and save it to the assets directory.
     """
-    graph.get_graph().draw_mermaid_png(output_file_path=ASSETS_DIR / "graph.png")
+    graph.get_graph().draw_mermaid_png(
+        output_file_path=ASSETS_DIR / "graph.png"
+    )
 
 
 if __name__ == "__main__":
