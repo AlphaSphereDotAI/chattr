@@ -1,3 +1,5 @@
+from os import getenv
+
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_core.tools import BaseTool
 from langchain_mcp_adapters.client import MultiServerMCPClient
@@ -10,14 +12,12 @@ from langgraph.prebuilt import ToolNode, tools_condition
 
 from chattr import (
     ASSETS_DIR,
-    MODEL_API_KEY,
-    MODEL_NAME,
     MODEL_TEMPERATURE,
-    MODEL_URL,
 )
+from typing import Dict, List
 
 SYSTEM_MESSAGE: SystemMessage = SystemMessage(
-    content="You are a helpful assistant that can answer questions about the time."
+    content="You are a helpful assistant that can answer questions about the time and generate audio files from text."
 )
 DB_URI = "redis://localhost:6379"
 
@@ -35,26 +35,38 @@ async def create_graph() -> CompiledStateGraph:
     Returns:
         CompiledStateGraph: The compiled state graph ready for execution, with nodes for agent responses and tool invocation.
     """
-    redis_saver: AsyncRedisSaver = await setup_redis()
-    _mcp_servers_config: dict[str, dict[str, str | list[str]]] = {
-        "time": {
-            "command": "docker",
-            "args": ["run", "-i", "--rm", "mcp/time"],
+    # redis_saver: AsyncRedisSaver = await setup_redis()
+    _mcp_servers_config: Dict[str, Dict[str, str | List[str]]] = {
+        "qdrant_mcp": {
+            "command": "uvx",
+            "args": ["mcp-server-qdrant"],
             "transport": "stdio",
-        }
+            "env": {
+                "QDRANT_URL": "http://localhost:6333",
+                "COLLECTION_NAME": "chattr",
+            },
+        },
+        # "vocalizr": {
+        #     "url": "http://localhost:8080/gradio_api/mcp/sse",
+        #     "transport": "sse",
+        # },
     }
-    _mcp_client: MultiServerMCPClient = MultiServerMCPClient(_mcp_servers_config)
+    _mcp_client: MultiServerMCPClient = MultiServerMCPClient(
+        _mcp_servers_config
+    )
     _tools: list[BaseTool] = await _mcp_client.get_tools()
     try:
         _model: ChatOpenAI = ChatOpenAI(
-            base_url=MODEL_URL,
-            model=MODEL_NAME,
-            api_key=MODEL_API_KEY,
+            base_url="https://api.groq.com/openai/v1",
+            model="llama3-70b-8192",
+            api_key=getenv("GROQ_API_KEY"),
             temperature=MODEL_TEMPERATURE,
         )
         _model = _model.bind_tools(_tools, parallel_tool_calls=False)
     except Exception as e:
-        raise RuntimeError(f"Failed to initialize ChatOpenAI model: {e}") from e
+        raise RuntimeError(
+            f"Failed to initialize ChatOpenAI model: {e}"
+        ) from e
 
     async def call_model(state: MessagesState) -> MessagesState:
         response = await _model.ainvoke([SYSTEM_MESSAGE] + state["messages"])
@@ -66,7 +78,9 @@ async def create_graph() -> CompiledStateGraph:
     _builder.add_edge(START, "agent")
     _builder.add_conditional_edges("agent", tools_condition)
     _builder.add_edge("tools", "agent")
-    graph: CompiledStateGraph = _builder.compile(checkpointer=redis_saver)
+    graph: CompiledStateGraph = _builder.compile(
+        # checkpointer=redis_saver
+    )
     return graph
 
 
@@ -74,7 +88,9 @@ def draw_graph(graph: CompiledStateGraph) -> None:
     """
     Render the compiled state graph as a Mermaid PNG image and save it to the assets directory.
     """
-    graph.get_graph().draw_mermaid_png(output_file_path=ASSETS_DIR / "graph.png")
+    graph.get_graph().draw_mermaid_png(
+        output_file_path=ASSETS_DIR / "graph.png"
+    )
 
 
 if __name__ == "__main__":
@@ -87,7 +103,13 @@ if __name__ == "__main__":
         g: CompiledStateGraph = await create_graph()
 
         messages = await g.ainvoke(
-            {"messages": [HumanMessage(content="What is the time?")]}
+            {
+                "messages": [
+                    HumanMessage(
+                        content="What is the time? and generate an audio file from the answer."
+                    )
+                ]
+            }
         )
 
         for m in messages["messages"]:
