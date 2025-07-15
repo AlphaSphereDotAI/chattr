@@ -13,6 +13,11 @@ from langgraph.prebuilt import ToolNode, tools_condition
 from chattr import (
     ASSETS_DIR,
     MODEL_TEMPERATURE,
+    MCP_VIDEO_GENERATOR,
+    MCP_VOICE_GENERATOR,
+    MODEL_URL,
+    MODEL_NAME,
+    MODEL_API_KEY,
 )
 from typing import Dict, List
 
@@ -36,7 +41,13 @@ async def create_graph() -> CompiledStateGraph:
         CompiledStateGraph: The compiled state graph ready for execution, with nodes for agent responses and tool invocation.
     """
     # redis_saver: AsyncRedisSaver = await setup_redis()
-    _mcp_servers_config: Dict[str, Dict[str, str | List[str]]] = {
+    _vocalizr_mcp_servers_config: Dict[str, Dict[str, str | List[str]]] = {
+        "vocalizr": {"url": MCP_VOICE_GENERATOR, "transport": "sse"}
+    }
+    _visualizr_mcp_servers_config: Dict[str, Dict[str, str | List[str]]] = {
+        "visualizr": {"url": MCP_VIDEO_GENERATOR, "transport": "sse"}
+    }
+    _chattr_mcp_servers_config: Dict[str, Dict[str, str | List[str]]] = {
         "qdrant_mcp": {
             "command": "uvx",
             "args": ["mcp-server-qdrant"],
@@ -45,46 +56,111 @@ async def create_graph() -> CompiledStateGraph:
                 "QDRANT_URL": "http://localhost:6333",
                 "COLLECTION_NAME": "chattr",
             },
-        },
-        # "vocalizr": {
-        #     "url": "http://localhost:8080/gradio_api/mcp/sse",
-        #     "transport": "sse",
-        # },
+        }
     }
-    _mcp_client: MultiServerMCPClient = MultiServerMCPClient(_mcp_servers_config)
-    _tools: list[BaseTool] = await _mcp_client.get_tools()
+    _vocalizr_mcp_client: MultiServerMCPClient = MultiServerMCPClient(
+        _vocalizr_mcp_servers_config
+    )
+    _visualizr_mcp_client: MultiServerMCPClient = MultiServerMCPClient(
+        _visualizr_mcp_servers_config
+    )
+    _chattr_mcp_client: MultiServerMCPClient = MultiServerMCPClient(
+        _chattr_mcp_servers_config
+    )
+    _vocalizr_tools: list[BaseTool] = await _vocalizr_mcp_client.get_tools()
+    _visualizr_tools: list[BaseTool] = await _visualizr_mcp_client.get_tools()
+    _chattr_tools: list[BaseTool] = await _chattr_mcp_client.get_tools()
     try:
         _model: ChatOpenAI = ChatOpenAI(
-            base_url="https://api.groq.com/openai/v1",
-            model="llama3-70b-8192",
-            api_key=getenv("GROQ_API_KEY"),
+            base_url=MODEL_URL,
+            model=MODEL_NAME,
+            api_key=MODEL_API_KEY,
             temperature=MODEL_TEMPERATURE,
         )
-        _model = _model.bind_tools(_tools, parallel_tool_calls=False)
     except Exception as e:
-        raise RuntimeError(f"Failed to initialize ChatOpenAI model: {e}") from e
+        raise RuntimeError(
+            f"Failed to initialize ChatOpenAI model: {e}"
+        ) from e
 
-    async def call_model(state: MessagesState) -> MessagesState:
-        response = await _model.ainvoke([SYSTEM_MESSAGE] + state["messages"])
+    _vocalizr_model = _model.bind_tools(
+        _vocalizr_tools,
+        parallel_tool_calls=False,
+    )
+    _visualizr_model = _model.bind_tools(
+        _visualizr_tools,
+        parallel_tool_calls=False,
+    )
+    _chattr_model = _model.bind_tools(
+        _chattr_tools,
+        parallel_tool_calls=False,
+    )
+
+    async def _vocalizr_call_model(state: MessagesState) -> MessagesState:
+        response = await _vocalizr_model.ainvoke(
+            [SYSTEM_MESSAGE] + state["messages"]
+        )
         return {"messages": response}
 
-    _builder: StateGraph = StateGraph(MessagesState)
-    _builder.add_node("agent", call_model)
-    _builder.add_node("tools", ToolNode(_tools))
-    _builder.add_edge(START, "agent")
-    _builder.add_conditional_edges("agent", tools_condition)
-    _builder.add_edge("tools", "agent")
-    graph: CompiledStateGraph = _builder.compile(
+    async def _visualizr_call_model(state: MessagesState) -> MessagesState:
+        response = await _visualizr_model.ainvoke(
+            [SYSTEM_MESSAGE] + state["messages"]
+        )
+        return {"messages": response}
+
+    async def _chattr_call_model(state: MessagesState) -> MessagesState:
+        response = await _chattr_model.ainvoke(
+            [SYSTEM_MESSAGE] + state["messages"]
+        )
+        return {"messages": response}
+
+    _vocalizr_graph_builder: StateGraph = StateGraph(MessagesState)
+    _vocalizr_graph_builder.add_node("agent", _vocalizr_call_model)
+    _vocalizr_graph_builder.add_node("tools", ToolNode(_vocalizr_tools))
+    _vocalizr_graph_builder.add_edge(START, "agent")
+    _vocalizr_graph_builder.add_conditional_edges("agent", tools_condition)
+    _vocalizr_graph_builder.add_edge("tools", "agent")
+    _vocalizr_graph: CompiledStateGraph = _vocalizr_graph_builder.compile(
         # checkpointer=redis_saver
+        debug=True,
+        name="vocalizr",
     )
-    return graph
+
+    _visualizr_graph_builder: StateGraph = StateGraph(MessagesState)
+    _visualizr_graph_builder.add_node("agent", _visualizr_call_model)
+    _visualizr_graph_builder.add_node("tools", ToolNode(_visualizr_tools))
+    _visualizr_graph_builder.add_edge(START, "agent")
+    _visualizr_graph_builder.add_conditional_edges("agent", tools_condition)
+    _visualizr_graph_builder.add_edge("tools", "agent")
+    _visualizr_graph: CompiledStateGraph = _visualizr_graph_builder.compile(
+        # checkpointer=redis_saver
+        debug=True,
+        name="visualizr",
+    )
+
+    _chattr_graph_builder: StateGraph = StateGraph(MessagesState)
+    _chattr_graph_builder.add_node("agent", _chattr_call_model)
+    _chattr_graph_builder.add_node("vocalizr", _vocalizr_graph)
+    _chattr_graph_builder.add_node("visualizr", _visualizr_graph)
+    _chattr_graph_builder.add_edge(START, "agent")
+
+    _chattr_graph_builder.add_conditional_edges("agent", tools_condition)
+    _chattr_graph_builder.add_edge("tools", "agent")
+    _chattr_graph: CompiledStateGraph = _chattr_graph_builder.compile(
+        # checkpointer=redis_saver
+        debug=True,
+        name="chattr",
+    )
+
+    return _chattr_graph
 
 
 def draw_graph(graph: CompiledStateGraph) -> None:
     """
     Render the compiled state graph as a Mermaid PNG image and save it to the assets directory.
     """
-    graph.get_graph().draw_mermaid_png(output_file_path=ASSETS_DIR / "graph.png")
+    graph.get_graph().draw_mermaid_png(
+        output_file_path=ASSETS_DIR / "graph.png"
+    )
 
 
 if __name__ == "__main__":

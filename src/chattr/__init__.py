@@ -12,12 +12,16 @@ SERVER_URL: str = getenv(key="SERVER_URL", default="127.0.0.1")
 SERVER_PORT: int = int(getenv(key="SERVER_PORT", default="7860"))
 CURRENT_DATE: str = datetime.now().strftime(format="%Y-%m-%d_%H-%M-%S")
 MCP_VOICE_GENERATOR: str = getenv(
-    key="MCP_VOICE_GENERATOR", default="http://localhost:8001/"
+    key="MCP_VOICE_GENERATOR",
+    default="http://localhost:8001/gradio_api/mcp/sse",
 )
 MCP_VIDEO_GENERATOR: str = getenv(
-    key="MCP_VIDEO_GENERATOR", default="http://localhost:8002/"
+    key="MCP_VIDEO_GENERATOR",
+    default="http://localhost:8002/gradio_api/mcp/sse",
 )
-VECTOR_DATABASE_NAME: str = getenv(key="VECTOR_DATABASE_NAME", default="chattr")
+VECTOR_DATABASE_NAME: str = getenv(
+    key="VECTOR_DATABASE_NAME", default="chattr"
+)
 DOCKER_MODEL_RUNNER_URL: str = getenv(
     key="DOCKER_MODEL_RUNNER_URL", default="http://127.0.0.1:12434/engines/v1"
 )
@@ -25,7 +29,9 @@ DOCKER_MODEL_RUNNER_MODEL_NAME: str = getenv(
     key="DOCKER_MODEL_RUNNER_MODEL_NAME",
     default="ai/qwen3:0.6B-Q4_0",
 )
-GROQ_URL: str = getenv(key="MODEL_URL", default="https://api.groq.com/openai/v1")
+GROQ_URL: str = getenv(
+    key="MODEL_URL", default="https://api.groq.com/openai/v1"
+)
 GROQ_MODEL_NAME: str = getenv(key="GROQ_MODEL_NAME", default="llama3-70b-8192")
 
 BASE_DIR: Path = Path.cwd()
@@ -45,7 +51,6 @@ AUDIO_DIR.mkdir(exist_ok=True)
 VIDEO_DIR.mkdir(exist_ok=True)
 LOG_DIR.mkdir(exist_ok=True)
 
-
 try:
     response: Response = get(DOCKER_MODEL_RUNNER_URL, timeout=10)
     response.raise_for_status()
@@ -62,7 +67,9 @@ MODEL_NAME: str = (
     else GROQ_MODEL_NAME
 )
 MODEL_API_KEY: str = (
-    "not-needed" if MODEL_URL == DOCKER_MODEL_RUNNER_URL else getenv("GROQ_API_KEY")
+    "not-needed"
+    if MODEL_URL == DOCKER_MODEL_RUNNER_URL
+    else getenv("GROQ_API_KEY")
 )
 MODEL_TEMPERATURE: float = float(getenv(key="MODEL_TEMPERATURE", default=0.0))
 
