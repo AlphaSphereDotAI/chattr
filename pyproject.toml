@@ -13,6 +13,7 @@ dependencies = [
   "langchain-mcp-adapters>=0.1.9",
   "langchain-openai>=0.3.27",
   "langgraph>=0.5.2",
+  "langgraph-checkpoint-redis>=0.0.8",
   "loguru>=0.7.3",
   "python-dotenv>=1.1.1",
 ]
@@ -25,4 +26,4 @@ requires = ["uv_build"]
 build-backend = "uv_build"
 
 [dependency-groups]
-dev = ["ruff>=0.12.2", "ty>=0.0.1a12"]
+dev = ["ruff>=0.12.2"]
