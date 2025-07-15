@@ -2,6 +2,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_core.tools import BaseTool
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from langchain_openai import ChatOpenAI
+from langgraph.checkpoint.redis.aio import AsyncRedisSaver
 from langgraph.graph import START, StateGraph
 from langgraph.graph.message import MessagesState
 from langgraph.graph.state import CompiledStateGraph
@@ -18,6 +19,13 @@ from chattr import (
 SYSTEM_MESSAGE: SystemMessage = SystemMessage(
     content="You are a helpful assistant that can answer questions about the time."
 )
+DB_URI = "redis://localhost:6379"
+
+
+async def setup_redis() -> AsyncRedisSaver:
+    async with AsyncRedisSaver.from_conn_string(DB_URI) as checkpointer:
+        await checkpointer.asetup()
+        return checkpointer
 
 
 async def create_graph() -> CompiledStateGraph:
@@ -27,14 +35,16 @@ async def create_graph() -> CompiledStateGraph:
     Returns:
         CompiledStateGraph: The compiled state graph ready for execution, with nodes for agent responses and tool invocation.
     """
-    _mcp_client = MultiServerMCPClient(
-        {
-            "time": {
-                "command": "docker",
-                "args": ["run", "-i", "--rm", "mcp/time"],
-                "transport": "stdio",
-            }
+    redis_saver: AsyncRedisSaver = await setup_redis()
+    _mcp_servers_config: dict[str, dict[str, str | list[str]]] = {
+        "time": {
+            "command": "docker",
+            "args": ["run", "-i", "--rm", "mcp/time"],
+            "transport": "stdio",
         }
+    }
+    _mcp_client: MultiServerMCPClient = MultiServerMCPClient(
+        _mcp_servers_config
     )
     _tools: list[BaseTool] = await _mcp_client.get_tools()
     try:
@@ -50,19 +60,9 @@ async def create_graph() -> CompiledStateGraph:
             f"Failed to initialize ChatOpenAI model: {e}"
         ) from e
 
-    def call_model(state: MessagesState) -> MessagesState:
-        """
-        Generate a new message state by invoking the chat model with the system message prepended to the current messages.
-
-        Parameters:
-            state (MessagesState): The current state containing a list of messages.
-
-        Returns:
-            MessagesState: A new state with the model's response appended to the messages.
-        """
-        return {
-            "messages": [_model.invoke([SYSTEM_MESSAGE] + state["messages"])]
-        }
+    async def call_model(state: MessagesState) -> MessagesState:
+        response = await _model.ainvoke([SYSTEM_MESSAGE] + state["messages"])
+        return {"messages": response}
 
     _builder: StateGraph = StateGraph(MessagesState)
     _builder.add_node("agent", call_model)
@@ -70,7 +70,7 @@ async def create_graph() -> CompiledStateGraph:
     _builder.add_edge(START, "agent")
     _builder.add_conditional_edges("agent", tools_condition)
     _builder.add_edge("tools", "agent")
-    graph: CompiledStateGraph = _builder.compile()
+    graph: CompiledStateGraph = _builder.compile(checkpointer=redis_saver)
     return graph
 
 
