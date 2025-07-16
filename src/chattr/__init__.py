@@ -4,7 +4,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 from loguru import logger
-from requests import get
+from requests import get, RequestException, Response
 
 load_dotenv()
 
@@ -12,10 +12,12 @@ SERVER_URL: str = getenv(key="SERVER_URL", default="127.0.0.1")
 SERVER_PORT: int = int(getenv(key="SERVER_PORT", default="7860"))
 CURRENT_DATE: str = datetime.now().strftime(format="%Y-%m-%d_%H-%M-%S")
 MCP_VOICE_GENERATOR: str = getenv(
-    key="MCP_VOICE_GENERATOR", default="http://localhost:8001/"
+    key="MCP_VOICE_GENERATOR",
+    default="http://localhost:8001/gradio_api/mcp/sse",
 )
 MCP_VIDEO_GENERATOR: str = getenv(
-    key="MCP_VIDEO_GENERATOR", default="http://localhost:8002/"
+    key="MCP_VIDEO_GENERATOR",
+    default="http://localhost:8002/gradio_api/mcp/sse",
 )
 VECTOR_DATABASE_NAME: str = getenv(
     key="VECTOR_DATABASE_NAME", default="chattr"
@@ -49,11 +51,16 @@ AUDIO_DIR.mkdir(exist_ok=True)
 VIDEO_DIR.mkdir(exist_ok=True)
 LOG_DIR.mkdir(exist_ok=True)
 
-MODEL_URL: str = (
-    DOCKER_MODEL_RUNNER_URL
-    if get(DOCKER_MODEL_RUNNER_URL, timeout=10).status_code == 200
-    else GROQ_URL
-)
+try:
+    response: Response = get(DOCKER_MODEL_RUNNER_URL, timeout=10)
+    response.raise_for_status()
+    MODEL_URL: str = DOCKER_MODEL_RUNNER_URL
+except RequestException as e:
+    logger.warning(
+        f"Failed to connect to Docker Model URL, using GROQ API fallback: {e!r}"
+    )
+    MODEL_URL: str = GROQ_URL
+
 MODEL_NAME: str = (
     DOCKER_MODEL_RUNNER_MODEL_NAME
     if MODEL_URL == DOCKER_MODEL_RUNNER_URL
