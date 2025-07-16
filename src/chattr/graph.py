@@ -78,9 +78,7 @@ async def create_graph() -> CompiledStateGraph:
             temperature=MODEL_TEMPERATURE,
         )
     except Exception as e:
-        raise RuntimeError(
-            f"Failed to initialize ChatOpenAI model: {e}"
-        ) from e
+        raise RuntimeError(f"Failed to initialize ChatOpenAI model: {e}") from e
 
     _vocalizr_model = _model.bind_tools(
         _vocalizr_tools,
@@ -96,21 +94,15 @@ async def create_graph() -> CompiledStateGraph:
     )
 
     async def _vocalizr_call_model(state: MessagesState) -> MessagesState:
-        response = await _vocalizr_model.ainvoke(
-            [SYSTEM_MESSAGE] + state["messages"]
-        )
+        response = await _vocalizr_model.ainvoke([SYSTEM_MESSAGE] + state["messages"])
         return {"messages": response}
 
     async def _visualizr_call_model(state: MessagesState) -> MessagesState:
-        response = await _visualizr_model.ainvoke(
-            [SYSTEM_MESSAGE] + state["messages"]
-        )
+        response = await _visualizr_model.ainvoke([SYSTEM_MESSAGE] + state["messages"])
         return {"messages": response}
 
     async def _chattr_call_model(state: MessagesState) -> MessagesState:
-        response = await _chattr_model.ainvoke(
-            [SYSTEM_MESSAGE] + state["messages"]
-        )
+        response = await _chattr_model.ainvoke([SYSTEM_MESSAGE] + state["messages"])
         return {"messages": response}
 
     _vocalizr_graph_builder: StateGraph = StateGraph(MessagesState)
@@ -158,9 +150,7 @@ def draw_graph(graph: CompiledStateGraph) -> None:
     """
     Render the compiled state graph as a Mermaid PNG image and save it to the assets directory.
     """
-    graph.get_graph().draw_mermaid_png(
-        output_file_path=ASSETS_DIR / "graph.png"
-    )
+    graph.get_graph().draw_mermaid_png(output_file_path=ASSETS_DIR / "graph.png")
 
 
 if __name__ == "__main__":
