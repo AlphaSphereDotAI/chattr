@@ -24,7 +24,7 @@ from typing import Dict, List
 SYSTEM_MESSAGE: SystemMessage = SystemMessage(
     content="You are a helpful assistant that can answer questions about the time and generate audio files from text."
 )
-DB_URI = "redis://localhost:6379"
+DB_URI = getenv("REDIS_URL", "redis://localhost:6379")
 
 
 async def setup_redis() -> AsyncRedisSaver:
