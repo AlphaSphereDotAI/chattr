@@ -68,6 +68,7 @@ MODEL_API_KEY: SecretStr = (
 )
 
 MODEL_TEMPERATURE: float = float(getenv(key="MODEL_TEMPERATURE", default=0.0))
+REDIS_URL = getenv("REDIS_URL", "redis://localhost:6379")
 
 logger.add(
     sink=LOG_FILE_PATH,
