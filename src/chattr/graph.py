@@ -105,7 +105,7 @@ if __name__ == "__main__":
         g: CompiledStateGraph = await create_graph()
         # draw_graph(g)
 
-        for response in g.stream(
+        async for response in g.astream(
             {
                 "messages": [
                     HumanMessage(content="What is the time? and store it in database")
@@ -114,6 +114,6 @@ if __name__ == "__main__":
             {"configurable": {"thread_id": "1"}},
             stream_mode="updates",
         ):
-            print(response)
+            print("------------------")
 
     asyncio.run(test_graph())
