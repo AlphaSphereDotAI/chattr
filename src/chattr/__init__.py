@@ -4,6 +4,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 from loguru import logger
+from pydantic import SecretStr
 from requests import get, RequestException, Response
 
 load_dotenv()
@@ -62,9 +63,10 @@ MODEL_NAME: str = (
     if MODEL_URL == DOCKER_MODEL_RUNNER_URL
     else GROQ_MODEL_NAME
 )
-MODEL_API_KEY: str = (
+MODEL_API_KEY: SecretStr = (
     "not-needed" if MODEL_URL == DOCKER_MODEL_RUNNER_URL else getenv("GROQ_API_KEY")
 )
+
 MODEL_TEMPERATURE: float = float(getenv(key="MODEL_TEMPERATURE", default=0.0))
 
 logger.add(
