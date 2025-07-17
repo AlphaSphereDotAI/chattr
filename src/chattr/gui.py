@@ -2,7 +2,6 @@ from gradio import (
     Blocks,
     ChatMessage,
     Error,
-    LikeData,
     TabbedInterface,
     ChatInterface,
     Request,
@@ -28,11 +27,6 @@ def generate_response(text, thread_id: str):
             metadata={"title": "🛠️ Used tool Weather API"},
         )
     ]
-
-
-def like(evt: LikeData):
-    print("User liked the response")
-    print(evt.index, evt.liked, evt.value)
 
 
 def random_response(message, history, request: Request):
