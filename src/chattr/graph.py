@@ -1,4 +1,5 @@
 from os import getenv
+from typing import Dict, List
 
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_core.tools import BaseTool
@@ -12,23 +13,20 @@ from langgraph.prebuilt import ToolNode, tools_condition
 
 from chattr import (
     ASSETS_DIR,
-    MODEL_TEMPERATURE,
-    MCP_VIDEO_GENERATOR,
-    MCP_VOICE_GENERATOR,
-    MODEL_URL,
-    MODEL_NAME,
     MODEL_API_KEY,
+    MODEL_NAME,
+    MODEL_TEMPERATURE,
+    MODEL_URL,
 )
-from typing import Dict, List
 
 SYSTEM_MESSAGE: SystemMessage = SystemMessage(
     content="You are a helpful assistant that can answer questions about the time and generate audio files from text."
 )
-DB_URI = getenv("REDIS_URL", "redis://localhost:6379")
+REDIS_URL = getenv("REDIS_URL", "redis://localhost:6379")
 
 
 async def setup_redis() -> AsyncRedisSaver:
-    async with AsyncRedisSaver.from_conn_string(DB_URI) as checkpointer:
+    async with AsyncRedisSaver.from_conn_string(REDIS_URL) as checkpointer:
         await checkpointer.asetup()
         return checkpointer
 
@@ -41,13 +39,8 @@ async def create_graph() -> CompiledStateGraph:
         CompiledStateGraph: The compiled state graph ready for execution, with nodes for agent responses and tool invocation.
     """
     # redis_saver: AsyncRedisSaver = await setup_redis()
-    _vocalizr_mcp_servers_config: Dict[str, Dict[str, str | List[str]]] = {
-        "vocalizr": {"url": MCP_VOICE_GENERATOR, "transport": "sse"}
-    }
-    _visualizr_mcp_servers_config: Dict[str, Dict[str, str | List[str]]] = {
-        "visualizr": {"url": MCP_VIDEO_GENERATOR, "transport": "sse"}
-    }
-    _chattr_mcp_servers_config: Dict[str, Dict[str, str | List[str]]] = {
+
+    _mcp_servers_config: Dict[str, Dict[str, str | List[str]]] = {
         "qdrant_mcp": {
             "command": "uvx",
             "args": ["mcp-server-qdrant"],
@@ -56,20 +49,13 @@ async def create_graph() -> CompiledStateGraph:
                 "QDRANT_URL": "http://localhost:6333",
                 "COLLECTION_NAME": "chattr",
             },
-        }
+        },
+        "time": {"command": "uvx", "args": ["mcp-server-time"], "transport": "stdio"},
+        # "visualizr": {"url": MCP_VIDEO_GENERATOR, "transport": "sse"},
+        # "vocalizr": {"url": MCP_VOICE_GENERATOR, "transport": "sse"}
     }
-    _vocalizr_mcp_client: MultiServerMCPClient = MultiServerMCPClient(
-        _vocalizr_mcp_servers_config
-    )
-    _visualizr_mcp_client: MultiServerMCPClient = MultiServerMCPClient(
-        _visualizr_mcp_servers_config
-    )
-    _chattr_mcp_client: MultiServerMCPClient = MultiServerMCPClient(
-        _chattr_mcp_servers_config
-    )
-    _vocalizr_tools: list[BaseTool] = await _vocalizr_mcp_client.get_tools()
-    _visualizr_tools: list[BaseTool] = await _visualizr_mcp_client.get_tools()
-    _chattr_tools: list[BaseTool] = await _chattr_mcp_client.get_tools()
+    _mcp_client: MultiServerMCPClient = MultiServerMCPClient(_mcp_servers_config)
+    _tools: list[BaseTool] = await _mcp_client.get_tools()
     try:
         _model: ChatOpenAI = ChatOpenAI(
             base_url=MODEL_URL,
@@ -80,70 +66,24 @@ async def create_graph() -> CompiledStateGraph:
     except Exception as e:
         raise RuntimeError(f"Failed to initialize ChatOpenAI model: {e}") from e
 
-    _vocalizr_model = _model.bind_tools(
-        _vocalizr_tools,
-        parallel_tool_calls=False,
-    )
-    _visualizr_model = _model.bind_tools(
-        _visualizr_tools,
-        parallel_tool_calls=False,
-    )
-    _chattr_model = _model.bind_tools(
-        _chattr_tools,
-        parallel_tool_calls=False,
-    )
+    _model = _model.bind_tools(_tools, parallel_tool_calls=False)
 
-    async def _vocalizr_call_model(state: MessagesState) -> MessagesState:
-        response = await _vocalizr_model.ainvoke([SYSTEM_MESSAGE] + state["messages"])
+    async def _call_model(state: MessagesState) -> MessagesState:
+        response = await _model.ainvoke([SYSTEM_MESSAGE] + state["messages"])
         return {"messages": response}
 
-    async def _visualizr_call_model(state: MessagesState) -> MessagesState:
-        response = await _visualizr_model.ainvoke([SYSTEM_MESSAGE] + state["messages"])
-        return {"messages": response}
-
-    async def _chattr_call_model(state: MessagesState) -> MessagesState:
-        response = await _chattr_model.ainvoke([SYSTEM_MESSAGE] + state["messages"])
-        return {"messages": response}
-
-    _vocalizr_graph_builder: StateGraph = StateGraph(MessagesState)
-    _vocalizr_graph_builder.add_node("agent", _vocalizr_call_model)
-    _vocalizr_graph_builder.add_node("tools", ToolNode(_vocalizr_tools))
-    _vocalizr_graph_builder.add_edge(START, "agent")
-    _vocalizr_graph_builder.add_conditional_edges("agent", tools_condition)
-    _vocalizr_graph_builder.add_edge("tools", "agent")
-    _vocalizr_graph: CompiledStateGraph = _vocalizr_graph_builder.compile(
+    _graph_builder: StateGraph = StateGraph(MessagesState)
+    _graph_builder.add_node("agent", _call_model)
+    _graph_builder.add_node("tools", ToolNode(_tools))
+    _graph_builder.add_edge(START, "agent")
+    _graph_builder.add_conditional_edges("agent", tools_condition)
+    _graph_builder.add_edge("tools", "agent")
+    _graph: CompiledStateGraph = _graph_builder.compile(
         # checkpointer=redis_saver
-        debug=True,
-        name="vocalizr",
+        debug=True
     )
 
-    _visualizr_graph_builder: StateGraph = StateGraph(MessagesState)
-    _visualizr_graph_builder.add_node("agent", _visualizr_call_model)
-    _visualizr_graph_builder.add_node("tools", ToolNode(_visualizr_tools))
-    _visualizr_graph_builder.add_edge(START, "agent")
-    _visualizr_graph_builder.add_conditional_edges("agent", tools_condition)
-    _visualizr_graph_builder.add_edge("tools", "agent")
-    _visualizr_graph: CompiledStateGraph = _visualizr_graph_builder.compile(
-        # checkpointer=redis_saver
-        debug=True,
-        name="visualizr",
-    )
-
-    _chattr_graph_builder: StateGraph = StateGraph(MessagesState)
-    _chattr_graph_builder.add_node("agent", _chattr_call_model)
-    _chattr_graph_builder.add_node("vocalizr", _vocalizr_graph)
-    _chattr_graph_builder.add_node("visualizr", _visualizr_graph)
-    _chattr_graph_builder.add_edge(START, "agent")
-
-    _chattr_graph_builder.add_conditional_edges("agent", tools_condition)
-    _chattr_graph_builder.add_edge("tools", "agent")
-    _chattr_graph: CompiledStateGraph = _chattr_graph_builder.compile(
-        # checkpointer=redis_saver
-        debug=True,
-        name="chattr",
-    )
-
-    return _chattr_graph
+    return _graph
 
 
 def draw_graph(graph: CompiledStateGraph) -> None:
@@ -161,13 +101,12 @@ if __name__ == "__main__":
         Asynchronously creates and tests the conversational state graph by sending a time-related query and printing the resulting messages.
         """
         g: CompiledStateGraph = await create_graph()
+        draw_graph(g)
 
         messages = await g.ainvoke(
             {
                 "messages": [
-                    HumanMessage(
-                        content="What is the time? and generate an audio file from the answer."
-                    )
+                    HumanMessage(content="What is the time? and store it in database")
                 ]
             }
         )
