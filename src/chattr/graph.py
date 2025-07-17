@@ -1,7 +1,7 @@
-from os import getenv
 from typing import Dict, List
 
 from langchain_core.messages import HumanMessage, SystemMessage
+from langchain_core.runnables import Runnable
 from langchain_core.tools import BaseTool
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from langchain_openai import ChatOpenAI
@@ -17,12 +17,12 @@ from chattr import (
     MODEL_NAME,
     MODEL_TEMPERATURE,
     MODEL_URL,
+    REDIS_URL,
 )
 
 SYSTEM_MESSAGE: SystemMessage = SystemMessage(
     content="You are a helpful assistant that can answer questions about the time and generate audio files from text."
 )
-REDIS_URL = getenv("REDIS_URL", "redis://localhost:6379")
 
 
 async def setup_redis() -> AsyncRedisSaver:
@@ -33,7 +33,8 @@ async def setup_redis() -> AsyncRedisSaver:
 
 async def create_graph() -> CompiledStateGraph:
     """
-    Asynchronously creates and compiles a conversational state graph for a time-answering assistant with integrated external tools.
+    Asynchronously creates and compiles a conversational state graph for a
+    time-answering assistant with integrated external tools.
 
     Returns:
         CompiledStateGraph: The compiled state graph ready for execution, with nodes for agent responses and tool invocation.
@@ -57,7 +58,7 @@ async def create_graph() -> CompiledStateGraph:
     _mcp_client: MultiServerMCPClient = MultiServerMCPClient(_mcp_servers_config)
     _tools: list[BaseTool] = await _mcp_client.get_tools()
     try:
-        _model: ChatOpenAI = ChatOpenAI(
+        _llm: ChatOpenAI = ChatOpenAI(
             base_url=MODEL_URL,
             model=MODEL_NAME,
             api_key=MODEL_API_KEY,
@@ -66,7 +67,7 @@ async def create_graph() -> CompiledStateGraph:
     except Exception as e:
         raise RuntimeError(f"Failed to initialize ChatOpenAI model: {e}") from e
 
-    _model = _model.bind_tools(_tools, parallel_tool_calls=False)
+    _model: Runnable = _llm.bind_tools(_tools, parallel_tool_calls=False)
 
     async def _call_model(state: MessagesState) -> MessagesState:
         response = await _model.ainvoke([SYSTEM_MESSAGE] + state["messages"])
@@ -98,7 +99,8 @@ if __name__ == "__main__":
 
     async def test_graph():
         """
-        Asynchronously creates and tests the conversational state graph by sending a time-related query and printing the resulting messages.
+        Asynchronously creates and tests the conversational state graph by
+        sending a time-related query and printing the resulting messages.
         """
         g: CompiledStateGraph = await create_graph()
         draw_graph(g)
