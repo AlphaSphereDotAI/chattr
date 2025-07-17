@@ -103,17 +103,17 @@ if __name__ == "__main__":
         sending a time-related query and printing the resulting messages.
         """
         g: CompiledStateGraph = await create_graph()
-        draw_graph(g)
+        # draw_graph(g)
 
-        messages = await g.ainvoke(
+        for response in g.stream(
             {
                 "messages": [
                     HumanMessage(content="What is the time? and store it in database")
                 ]
-            }
-        )
-
-        for m in messages["messages"]:
-            m.pretty_print()
+            },
+            {"configurable": {"thread_id": "1"}},
+            stream_mode="updates",
+        ):
+            print(response)
 
     asyncio.run(test_graph())
