@@ -1,6 +1,6 @@
 from typing import Dict, List
 
-from langchain_core.messages import HumanMessage, SystemMessage
+from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_core.runnables import Runnable
 from langchain_core.tools import BaseTool
 from langchain_mcp_adapters.client import MultiServerMCPClient
@@ -71,7 +71,7 @@ async def create_graph() -> CompiledStateGraph:
 
     async def _call_model(state: MessagesState) -> MessagesState:
         response = await _model.ainvoke([SYSTEM_MESSAGE] + state["messages"])
-        return {"messages": response}
+        return {"messages": [response]}
 
     _graph_builder: StateGraph = StateGraph(MessagesState)
     _graph_builder.add_node("agent", _call_model)
@@ -114,6 +114,14 @@ if __name__ == "__main__":
             {"configurable": {"thread_id": "1"}},
             stream_mode="updates",
         ):
-            print("------------------")
+            # print(response)
+            print("Tool call detected:", response["agent"]["messages"])
+            print("Tool call detected len:", len(response["agent"]["messages"]))
+            print("Tool call detected last:", response["agent"]["messages"][-1])
+            if response["agent"]["messages"][-1].tool_calls:
+                print(response["agent"]["messages"][-1].tool_calls[0])
+            else:
+                print(response["agent"]["messages"][-1].content)
+            print("=" * 20)
 
     asyncio.run(test_graph())
