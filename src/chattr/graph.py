@@ -115,13 +115,18 @@ if __name__ == "__main__":
             stream_mode="updates",
         ):
             # print(response)
-            print("Tool call detected:", response["agent"]["messages"])
-            print("Tool call detected len:", len(response["agent"]["messages"]))
-            print("Tool call detected last:", response["agent"]["messages"][-1])
-            if response["agent"]["messages"][-1].tool_calls:
-                print(response["agent"]["messages"][-1].tool_calls[0])
+            if response.keys() == {"agent"}:
+                print("Tool call detected:", response["agent"]["messages"])
+                print("Tool call detected len:", len(response["agent"]["messages"]))
+                print("Tool call detected last:", response["agent"]["messages"][-1])
+                if response["agent"]["messages"][-1].tool_calls:
+                    print(response["agent"]["messages"][-1].tool_calls[0])
+                else:
+                    print(response["agent"]["messages"][-1].content)
             else:
-                print(response["agent"]["messages"][-1].content)
+                print("Tool call detected:", response["tools"]["messages"])
+                print("Tool call detected len:", len(response["tools"]["messages"]))
+                print("Tool call detected last:", response["tools"]["messages"][-1])
             print("=" * 20)
 
     asyncio.run(test_graph())

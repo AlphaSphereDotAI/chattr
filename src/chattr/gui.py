@@ -8,7 +8,7 @@ from langgraph.graph.state import CompiledStateGraph
 from chattr.graph import create_graph
 
 
-async def generate_response(message, history):
+async def generate_response(message: str, history: list):
     graph_config: RunnableConfig = {"configurable": {"thread_id": "1"}}
     graph: CompiledStateGraph = await create_graph()
     async for response in graph.astream(
@@ -16,21 +16,36 @@ async def generate_response(message, history):
         graph_config,
         stream_mode="updates",
     ):
-        last_agent_message = response["agent"]["messages"][-1]
-        if last_agent_message.tool_calls:
-            # print(last_agent_message.tool_calls[0])
-            return ChatMessage(
-                role="assistant",
-                content=json.dumps(last_agent_message.tool_calls[0]["args"]),
-                metadata=MetadataDict(
-                    title=last_agent_message.tool_calls[0]["name"],
-                    id=last_agent_message.tool_calls[0]["id"],
-                ),
-            )
+        if response.keys() == {"agent"}:
+            last_agent_message = response["agent"]["messages"][-1]
+            if last_agent_message.tool_calls:
+                history.append(
+                    ChatMessage(
+                        role="assistant",
+                        content=json.dumps(last_agent_message.tool_calls[0]["args"]),
+                        metadata=MetadataDict(
+                            title=last_agent_message.tool_calls[0]["name"],
+                            id=last_agent_message.tool_calls[0]["id"],
+                        ),
+                    )
+                )
+            else:
+                history.append(
+                    ChatMessage(role="assistant", content=last_agent_message.content)
+                )
         else:
-            # print(last_agent_message.content)
-            return ChatMessage(role="assistant", content=last_agent_message.content)
-    return None
+            last_tool_message = response["tools"]["messages"][-1]
+            history.append(
+                ChatMessage(
+                    role="assistant",
+                    content=last_tool_message.content,
+                    metadata=MetadataDict(
+                        title=last_tool_message.name,
+                        id=last_tool_message.id,
+                    ),
+                )
+            )
+        yield history
 
 
 def app_block() -> Blocks:
