@@ -26,4 +26,4 @@ requires = ["uv_build"]
 build-backend = "uv_build"
 
 [dependency-groups]
-dev = ["ruff>=0.12.2", "ty>=0.0.1a12"]
+dev = ["ruff>=0.12.4", "ty>=0.0.1a12"]
