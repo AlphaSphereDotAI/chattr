@@ -1,61 +1,55 @@
-import gradio
-from gradio import Blocks, Button, Chatbot, ChatMessage, Row, Textbox
+import json
+
+from gradio import Blocks, TabbedInterface, ChatMessage, ChatInterface
+from gradio.components.chatbot import MetadataDict
+from langchain_core.messages import HumanMessage
+from langchain_core.runnables import RunnableConfig
+from langgraph.graph.state import CompiledStateGraph
+from chattr.graph import create_graph
 
 
-def generate_response(
-    history: list[ChatMessage], thread_id: str
-) -> list[ChatMessage]:
-    """
-    Appends an assistant message about a quarterly sales plot to the chat history for the specified thread ID.
-
-    If the thread ID is 0, raises a Gradio error prompting for a valid thread ID.
-
-    Returns:
-        The updated chat history including the new assistant message.
-    """
-    if thread_id == 0:
-        raise gradio.Error("Please enter a thread ID.")
-    history.append(
-        ChatMessage(
-            role="assistant",
-            content=f"Here is the plot of quarterly sales for {thread_id}.",
-            metadata={"title": "🛠️ Used tool Weather API"},
-        )
-    )
-    return history
+async def generate_response(message: str, history: list):
+    graph_config: RunnableConfig = {"configurable": {"thread_id": "1"}}
+    graph: CompiledStateGraph = await create_graph()
+    async for response in graph.astream(
+        {"messages": [HumanMessage(content=message)]},
+        graph_config,
+        stream_mode="updates",
+    ):
+        if response.keys() == {"agent"}:
+            last_agent_message = response["agent"]["messages"][-1]
+            if last_agent_message.tool_calls:
+                history.append(
+                    ChatMessage(
+                        role="assistant",
+                        content=json.dumps(
+                            last_agent_message.tool_calls[0]["args"], indent=4
+                        ),
+                        metadata=MetadataDict(
+                            title=last_agent_message.tool_calls[0]["name"],
+                            id=last_agent_message.tool_calls[0]["id"],
+                        ),
+                    )
+                )
+            else:
+                history.append(
+                    ChatMessage(role="assistant", content=last_agent_message.content)
+                )
+        else:
+            last_tool_message = response["tools"]["messages"][-1]
+            history.append(
+                ChatMessage(
+                    role="assistant",
+                    content=last_tool_message.content,
+                    metadata=MetadataDict(
+                        title=last_tool_message.name,
+                        id=last_tool_message.id,
+                    ),
+                )
+            )
+        yield history
 
 
 def app_block() -> Blocks:
-    """
-    Constructs and returns the main Gradio chat application interface with a thread ID input, chatbot display, and control buttons.
-
-    Returns:
-        Blocks: The complete Gradio Blocks interface for the chat application.
-    """
-
-    history = [
-        ChatMessage(role="assistant", content="How can I help you?"),
-        ChatMessage(
-            role="user", content="Can you make me a plot of quarterly sales?"
-        ),
-        ChatMessage(
-            role="assistant",
-            content="I am happy to provide you that report and plot.",
-        ),
-    ]
-    with Blocks() as app:
-        with Row():
-            thread_id: Textbox = Textbox(
-                label="Thread ID", info="Enter Thread ID"
-            )
-
-        chatbot: Chatbot = Chatbot(history, type="messages")
-
-        with Row():
-            generate_btn: Button = Button(value="Generate", variant="primary")
-            stop_btn: Button = Button(value="Stop", variant="stop")
-        _event = generate_btn.click(
-            generate_response, [chatbot, thread_id], chatbot
-        )
-        stop_btn.click(cancels=[_event])
-    return app
+    chat = ChatInterface(generate_response, type="messages", save_history=True)
+    return TabbedInterface([chat], ["Chattr"])
