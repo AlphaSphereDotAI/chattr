@@ -22,7 +22,9 @@ async def generate_response(message: str, history: list):
                 history.append(
                     ChatMessage(
                         role="assistant",
-                        content=json.dumps(last_agent_message.tool_calls[0]["args"]),
+                        content=json.dumps(
+                            last_agent_message.tool_calls[0]["args"], indent=4
+                        ),
                         metadata=MetadataDict(
                             title=last_agent_message.tool_calls[0]["name"],
                             id=last_agent_message.tool_calls[0]["id"],
@@ -49,12 +51,5 @@ async def generate_response(message: str, history: list):
 
 
 def app_block() -> Blocks:
-    """
-    Constructs and returns the main Gradio chat application interface with a thread ID input, chatbot display, and control buttons.
-
-    Returns:
-        Blocks: The complete Gradio Blocks interface for the chat application.
-    """
-
     chat = ChatInterface(generate_response, type="messages", save_history=True)
     return TabbedInterface([chat], ["Chattr"])
