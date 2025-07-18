@@ -5,7 +5,9 @@
     </option>
     <option name="checkSync" value="false" />
     <option name="env">
-      <map />
+      <map>
+        <entry key="DOCKER_MODEL_RUNNER_URL" value="&quot;&quot;" />
+      </map>
     </option>
     <option name="runType" value="SCRIPT" />
     <option name="scriptOrModule" value="D:\Development\chattr\src\chattr\__main__.py" />
