@@ -17,9 +17,8 @@ logger = getLogger(__name__)
 
 
 class Graph:
-    settings: Settings
-
-    def __init__(self):
+    def __init__(self, settings: Settings):
+        self.settings: Settings = settings
         self.system_message: SystemMessage = SystemMessage(
             content="You are a helpful assistant that can answer questions about the time and generate audio files from text."
         )
@@ -39,11 +38,11 @@ class Graph:
                 "args": ["mcp-server-time"],
                 "transport": "stdio",
             },
-            "visualizr": {
+            self.settings.video_generator_mcp.name: {
                 "url": self.settings.video_generator_mcp.url,
                 "transport": self.settings.video_generator_mcp.transport,
             },
-            "vocalizr": {
+            self.settings.voice_generator_mcp.name: {
                 "url": self.settings.voice_generator_mcp.url,
                 "transport": self.settings.voice_generator_mcp.transport,
             },
