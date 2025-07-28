@@ -34,11 +34,7 @@ class ModelSettings(BaseModel):
 
     @model_validator(mode="after")
     def check_api_key_exist(self) -> Self:
-        print("api_key:", self.api_key)
-        print("api_key:", self.api_key.get_secret_value())
-        if (
-            self.api_key is None or not self.api_key.get_secret_value()
-        ) and self.url == HttpUrl(url="https://api.groq.com/openai/v1"):
+        if self.url and not self.api_key.get_secret_value():
             raise ValueError("You need to provide `MODEL__API_KEY`")
         return self
 
