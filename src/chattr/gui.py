@@ -1,16 +1,29 @@
 import json
+from pathlib import Path
 
-from gradio import Blocks, TabbedInterface, ChatMessage, ChatInterface
+from gradio import (
+    Blocks,
+    Button,
+    Chatbot,
+    ChatMessage,
+    ClearButton,
+    Column,
+    LikeData,
+    PlayableVideo,
+    Row,
+    Textbox,
+)
 from gradio.components.chatbot import MetadataDict
 from langchain_core.messages import HumanMessage
 from langchain_core.runnables import RunnableConfig
 from langgraph.graph.state import CompiledStateGraph
-from chattr.graph import create_graph
+
+from chattr.graph import Graph
 
 
 async def generate_response(message: str, history: list):
     graph_config: RunnableConfig = {"configurable": {"thread_id": "1"}}
-    graph: CompiledStateGraph = await create_graph()
+    graph: CompiledStateGraph = Graph().get_graph()
     async for response in graph.astream(
         {"messages": [HumanMessage(content=message)]},
         graph_config,
@@ -47,9 +60,27 @@ async def generate_response(message: str, history: list):
                     ),
                 )
             )
-        yield history
+        yield "", history, Path("./t.mp4")
+
+def like(evt: LikeData):
+    print("User liked the response")
+    print(evt.index, evt.liked, evt.value)
 
 
 def app_block() -> Blocks:
-    chat = ChatInterface(generate_response, type="messages", save_history=True)
-    return TabbedInterface([chat], ["Chattr"])
+    with Blocks() as chat:
+        with Row():
+            with Column():
+                video = PlayableVideo()
+            with Column():
+                chatbot = Chatbot(
+                    type="messages", show_copy_button=True, show_share_button=True
+                )
+                msg = Textbox()
+                with Row():
+                    button = Button("Send", variant="primary")
+                    ClearButton([msg, chatbot], variant="stop")
+        chatbot.like(like)
+        button.click(generate_response, [msg, chatbot], [msg, chatbot, video])
+        msg.submit(generate_response, [msg, chatbot], [msg, chatbot, video])
+    return chat

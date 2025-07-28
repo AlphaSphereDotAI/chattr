@@ -1,91 +1,109 @@
-from datetime import datetime
 from logging import getLogger
 from pathlib import Path
 from typing import List, Literal, Self
 
 from pydantic import (
+    AnyUrl,
+    BaseModel,
+    DirectoryPath,
     Field,
-    FilePath,
     HttpUrl,
+    RedisDsn,
     SecretStr,
-    StrictFloat,
     StrictStr,
     model_validator,
 )
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from requests import head
 
 logger = getLogger(__name__)
 
 
-class ModelSettings(BaseSettings):
-    url: HttpUrl = Field(default="https://api.groq.com/openai/v1")
+class ModelSettings(BaseModel):
+    url: HttpUrl = Field(default=HttpUrl(url="https://api.groq.com/openai/v1"))
     name: StrictStr = Field(default="llama3-70b-8192")
-    api_key: SecretStr = Field(default="not-needed")
-    temperature: StrictFloat = Field(default=0.0, ge=0.0, le=1.0)
+    api_key: SecretStr = Field(default=SecretStr(None))
+    temperature: float = Field(default=0.0, ge=0.0, le=1.0)
 
     @model_validator(mode="after")
-    def check_local_path_conflict(self) -> Self:
+    def check_endpoint(self) -> Self:
         if 200 > head(self.url, timeout=10).status_code >= 300:
             logger.error("Model's endpoint is unreachable")
             raise ValueError("Model's endpoint is unreachable")
         return self
 
+    @model_validator(mode="after")
+    def check_api_key_exist(self) -> Self:
+        print("api_key:", self.api_key)
+        print("api_key:", self.api_key.get_secret_value())
+        if (
+            self.api_key is None or not self.api_key.get_secret_value()
+        ) and self.url == HttpUrl(url="https://api.groq.com/openai/v1"):
+            raise ValueError("You need to provide `MODEL__API_KEY`")
+        return self
 
-class ShortTermMemorySettings(BaseSettings):
-    url: HttpUrl = Field(default="redis://localhost:6379")
+
+class ShortTermMemorySettings(BaseModel):
+    url: AnyUrl = Field(default=RedisDsn(url="redis://localhost:6379"))
 
 
-class VectorDatabaseSettings(BaseSettings):
+class VectorDatabaseSettings(BaseModel):
     name: StrictStr = Field(default="chattr")
 
 
-class MCPSettings(BaseSettings):
-    url: HttpUrl = Field(default="http://localhost:8001/gradio_api/mcp/sse")
-    command: StrictStr = Field(default="uvx")
-    args: List[StrictStr] = Field(default="chattr")
-    transport: Literal["sse", "stdio"]
+class MCPSettings(BaseModel):
+    name: StrictStr = Field(default=None)
+    url: HttpUrl = Field(default=None)
+    command: StrictStr = Field(default=None)
+    args: List[StrictStr] = Field(default=[])
+    transport: Literal["sse", "stdio"] = Field(default=None)
+
+
+class DirectorySettings(BaseModel):
+    base: DirectoryPath = Field(default_factory=lambda: Path.cwd())
+    assets: DirectoryPath = Field(default_factory=lambda: Path.cwd() / "assets")
+    log: DirectoryPath = Field(default_factory=lambda: Path.cwd() / "logs")
+    image: DirectoryPath = Field(
+        default_factory=lambda: Path.cwd() / "assets" / "image"
+    )
+    audio: DirectoryPath = Field(
+        default_factory=lambda: Path.cwd() / "assets" / "audio"
+    )
+    video: DirectoryPath = Field(
+        default_factory=lambda: Path.cwd() / "assets" / "video"
+    )
+
+    @model_validator(mode="before")
+    def create_missing_dirs(cls, values: dict) -> dict:
+        directories: list[Path] = list(values.values())
+        for directory in directories:
+            directory.mkdir(exist_ok=True)
+        return values
 
 
 class Settings(BaseSettings):
     """Configuration for the Chattr app."""
 
-    model = ModelSettings()
-    short_term_memory = ShortTermMemorySettings()
-    vector_database = VectorDatabaseSettings()
-    voice_generator_mcp = MCPSettings(
-        url="http://localhost:8001/gradio_api/mcp/sse", transport="sse"
+    model_config = SettingsConfigDict(env_nested_delimiter="__")
+
+    model: ModelSettings = ModelSettings()
+    short_term_memory: ShortTermMemorySettings = ShortTermMemorySettings()
+    vector_database: VectorDatabaseSettings = VectorDatabaseSettings()
+    voice_generator_mcp: MCPSettings = MCPSettings(
+        url="http://localhost:8001/gradio_api/mcp/sse",
+        transport="sse",
+        name="voice_generator",
     )
-    video_generator_mcp = MCPSettings(
-        url="http://localhost:8002/gradio_api/mcp/sse", transport="sse"
+    video_generator_mcp: MCPSettings = MCPSettings(
+        url="http://localhost:8002/gradio_api/mcp/sse",
+        transport="sse",
+        name="video_generator",
     )
+    directory: DirectorySettings = DirectorySettings()
+    # log_file_path: FilePath = Field(default_factory=lambda: Path.cwd()  / "logs" / f"{datetime.now().strftime(format="%Y-%m-%d_%H-%M-%S")}.log")
+    # audio_file_path: FilePath = Field(default_factory=lambda: Path.cwd()/ "assets" / "audio" / f"{datetime.now().strftime(format="%Y-%m-%d_%H-%M-%S")}.wav")
+    # video_file_path: FilePath = Field(default_factory=lambda: Path.cwd() / "assets" / "video" / f"{datetime.now().strftime(format="%Y-%m-%d_%H-%M-%S")}.mp4")
 
-    current_date: StrictStr = Field(
-        default=datetime.now().strftime(format="%Y-%m-%d_%H-%M-%S")
-    )
 
-    base_dir: FilePath = Field(default=Path.cwd())
-    assets_dir: FilePath = base_dir / "assets"
-    log_dir: FilePath = base_dir / "logs"
-    image_dir: FilePath = assets_dir / "image"
-    audio_dir: FilePath = assets_dir / "audio"
-    video_dir: FilePath = assets_dir / "video"
-    log_file_path: FilePath = log_dir / f"{current_date}.log"
-    audio_file_path: FilePath = audio_dir / f"{current_date}.wav"
-    video_file_path: FilePath = video_dir / f"{current_date}.mp4"
-
-    def model_post_init(self, __context):
-        logger.info("Creating required directories...")
-        try:
-            self._create_required_dirs()
-            logger.debug(f"All directories created successfully at {self.base_dir}")
-        except Exception as e:
-            logger.error(f"Failed to create directories: {e}")
-            raise
-
-    def _create_required_dirs(self):
-        self.assets_dir.mkdir(exist_ok=True)
-        self.image_dir.mkdir(exist_ok=True)
-        self.audio_dir.mkdir(exist_ok=True)
-        self.video_dir.mkdir(exist_ok=True)
-        self.log_dir.mkdir(exist_ok=True)
+if __name__ == "__main__":
+    print(Settings().model_dump())
