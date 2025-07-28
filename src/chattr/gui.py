@@ -62,6 +62,7 @@ async def generate_response(message: str, history: list):
             )
         yield "", history, Path("./t.mp4")
 
+
 def like(evt: LikeData):
     print("User liked the response")
     print(evt.index, evt.liked, evt.value)
