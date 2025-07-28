@@ -11,7 +11,7 @@ from pydantic import (
     RedisDsn,
     SecretStr,
     StrictStr,
-    model_validator,
+    model_validator
 )
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from requests import head
@@ -20,9 +20,9 @@ logger = getLogger(__name__)
 
 
 class ModelSettings(BaseModel):
-    url: HttpUrl = Field(default=HttpUrl(url="https://api.groq.com/openai/v1"))
-    name: StrictStr = Field(default="llama3-70b-8192")
-    api_key: SecretStr = Field(default=SecretStr(None))
+    url: HttpUrl | None = Field(default=None)
+    name: StrictStr | None = Field(default=None)
+    api_key: SecretStr | None = Field(default=None)
     temperature: float = Field(default=0.0, ge=0.0, le=1.0)
 
     @model_validator(mode="after")
@@ -34,7 +34,9 @@ class ModelSettings(BaseModel):
 
     @model_validator(mode="after")
     def check_api_key_exist(self) -> Self:
-        if self.url and not self.api_key.get_secret_value():
+        print('url: ', self.url)
+        print('api: ', self.api_key)
+        if self.url and (self.api_key is None or not self.api_key.get_secret_value()):
             raise ValueError("You need to provide `MODEL__API_KEY`")
         return self
 
@@ -80,9 +82,11 @@ class DirectorySettings(BaseModel):
 class Settings(BaseSettings):
     """Configuration for the Chattr app."""
 
-    model_config = SettingsConfigDict(env_nested_delimiter="__")
+    model_config = SettingsConfigDict(env_nested_delimiter="__", env_parse_none_str="None",env_file=".env", extra='ignore')
 
-    model: ModelSettings = ModelSettings()
+    model: ModelSettings = ModelSettings(
+        url=HttpUrl(url="https://api.groq.com/openai/v1"), name="llama3-70b-8192"
+    )
     short_term_memory: ShortTermMemorySettings = ShortTermMemorySettings()
     vector_database: VectorDatabaseSettings = VectorDatabaseSettings()
     voice_generator_mcp: MCPSettings = MCPSettings(
