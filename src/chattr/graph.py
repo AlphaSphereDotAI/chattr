@@ -99,6 +99,9 @@ class Graph:
             output_file_path=self.settings.assets_dir / "graph.png"
         )
 
+    def get_graph(self) -> CompiledStateGraph:
+        return self._graph
+
 
 if __name__ == "__main__":
     import asyncio
