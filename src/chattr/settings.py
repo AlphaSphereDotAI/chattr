@@ -27,15 +27,13 @@ class ModelSettings(BaseModel):
 
     @model_validator(mode="after")
     def check_endpoint(self) -> Self:
-        if 200 > head(self.url, timeout=10).status_code >= 300:
+        if self.url and 200 > head(self.url, timeout=10).status_code >= 300:
             logger.error("Model's endpoint is unreachable")
             raise ValueError("Model's endpoint is unreachable")
         return self
 
     @model_validator(mode="after")
     def check_api_key_exist(self) -> Self:
-        print('url: ', self.url)
-        print('api: ', self.api_key)
         if self.url and (self.api_key is None or not self.api_key.get_secret_value()):
             raise ValueError("You need to provide `MODEL__API_KEY`")
         return self
@@ -84,9 +82,7 @@ class Settings(BaseSettings):
 
     model_config = SettingsConfigDict(env_nested_delimiter="__", env_parse_none_str="None",env_file=".env", extra='ignore')
 
-    model: ModelSettings = ModelSettings(
-        url=HttpUrl(url="https://api.groq.com/openai/v1"), name="llama3-70b-8192"
-    )
+    model: ModelSettings = ModelSettings(    )
     short_term_memory: ShortTermMemorySettings = ShortTermMemorySettings()
     vector_database: VectorDatabaseSettings = VectorDatabaseSettings()
     voice_generator_mcp: MCPSettings = MCPSettings(
