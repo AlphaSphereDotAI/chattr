@@ -34,9 +34,11 @@ class ModelSettings(BaseModel):
 
     @model_validator(mode="after")
     def check_api_key_exist(self) -> Self:
-        if self.url :
+        if self.url:
             if not self.api_key or not self.api_key.get_secret_value():
-                raise ValueError("You need to provide API Key for the Model provider via `MODEL__API_KEY`")
+                raise ValueError(
+                    "You need to provide API Key for the Model provider via `MODEL__API_KEY`"
+                )
             if not self.name:
                 raise ValueError("You need to provide Model name via `MODEL__API_KEY`")
         return self
