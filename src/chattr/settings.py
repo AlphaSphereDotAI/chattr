@@ -11,7 +11,7 @@ from pydantic import (
     RedisDsn,
     SecretStr,
     StrictStr,
-    model_validator
+    model_validator,
 )
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from requests import head
@@ -85,13 +85,18 @@ class DirectorySettings(BaseModel):
 class Settings(BaseSettings):
     """Configuration for the Chattr app."""
 
-    model_config = SettingsConfigDict(env_nested_delimiter="__", env_parse_none_str="None",env_file=".env", extra='ignore')
+    model_config = SettingsConfigDict(
+        env_nested_delimiter="__",
+        env_parse_none_str="None",
+        env_file=".env",
+        extra="ignore",
+    )
 
-    model: ModelSettings = ModelSettings(    )
+    model: ModelSettings = ModelSettings()
     short_term_memory: ShortTermMemorySettings = ShortTermMemorySettings()
     vector_database: VectorDatabaseSettings = VectorDatabaseSettings()
     voice_generator_mcp: MCPSettings = MCPSettings(
-        url="http://localhost:8001/gradio_api/mcp/sse",
+        url="http://localhost:8080/gradio_api/mcp/sse",
         transport="sse",
         name="voice_generator",
     )
