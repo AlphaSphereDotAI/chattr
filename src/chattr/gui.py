@@ -27,7 +27,9 @@ def app_block() -> Blocks:
                 audio = Audio(sources="upload", type="filepath")
             with Column():
                 chatbot = Chatbot(
-                    type="messages", show_copy_button=True, show_share_button=True,
+                    type="messages",
+                    show_copy_button=True,
+                    show_share_button=True,
                 )
                 msg = Textbox()
                 with Row():

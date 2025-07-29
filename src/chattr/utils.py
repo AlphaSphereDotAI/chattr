@@ -7,16 +7,16 @@ from pydantic import HttpUrl, ValidationError
 def is_url(value: Optional[str]) -> bool:
     """
     Check if a string is a valid URL.
-    
+
     Args:
         value: The string to check. Can be None.
-        
+
     Returns:
         bool: True if the string is a valid URL, False otherwise or if None.
     """
     if value is None:
         return False
-    
+
     try:
         HttpUrl(value)
         return True
@@ -36,6 +36,7 @@ def download(url: HttpUrl, path: Path) -> None:
         None
     """
     import requests
+
     response = requests.get(url, stream=True)
     with open(path, "wb") as f:
         for chunk in response.iter_content(chunk_size=8192):
