@@ -12,7 +12,7 @@ def is_url(value: Optional[str]) -> bool:
         value: The string to check. Can be None.
 
     Returns:
-        bool: True if the string is a valid URL, False otherwise or if None.
+        bool: True if the string is a valid URL, False otherwise.
     """
     if value is None:
         return False
