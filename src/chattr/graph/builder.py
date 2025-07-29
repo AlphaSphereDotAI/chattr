@@ -1,3 +1,4 @@
+"""This module contains the Graph class, which represents the main orchestration graph for the Chattr application."""
 from asyncio import run
 from json import dumps
 from logging import getLogger
