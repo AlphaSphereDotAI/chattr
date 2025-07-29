@@ -15,6 +15,7 @@ runtimes:
     - python@3.10.8
 lint:
   enabled:
+    - markdown-table-prettify@3.6.0
     - ty@0.0.1-alpha.16
     - trufflehog-git@3.90.2
     - pre-commit-hooks@5.0.0

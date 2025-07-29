@@ -1,9 +1,19 @@
+import json
 from logging import getLogger
+from pathlib import Path
 
+from gradio import ChatMessage
+from gradio.components.chatbot import MetadataDict
 from langchain_core.messages import HumanMessage, SystemMessage
-from langchain_core.runnables import Runnable
+from langchain_core.runnables import Runnable, RunnableConfig
 from langchain_core.tools import BaseTool
 from langchain_mcp_adapters.client import MultiServerMCPClient
+from langchain_mcp_adapters.sessions import (
+    SSEConnection,
+    StdioConnection,
+    StreamableHttpConnection,
+    WebsocketConnection,
+)
 from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.redis.aio import AsyncRedisSaver
 from langgraph.graph import START, StateGraph
@@ -12,9 +22,10 @@ from langgraph.graph.state import CompiledStateGraph
 from langgraph.prebuilt import ToolNode, tools_condition
 
 from chattr.settings import Settings
+from chattr.utils import download, is_url
 
 logger = getLogger(__name__)
-import asyncio
+from asyncio import run
 
 
 class Graph:
@@ -24,34 +35,33 @@ class Graph:
             content="You are a helpful assistant that can answer questions about the time and generate audio files from text."
         )
         # redis_saver: AsyncRedisSaver = await self.setup_redis()
-        self._mcp_servers_config: dict[str, dict[str, str | list[str]]] = {
-            "qdrant_mcp": {
-                "command": "uvx",
-                "args": ["mcp-server-qdrant"],
-                "transport": "stdio",
-                "env": {
+        self._mcp_servers_config: dict[str, StdioConnection | SSEConnection | StreamableHttpConnection | WebsocketConnection] = {
+            "vector_database": StdioConnection(
+                command="uvx",
+                args=["mcp-server-qdrant"],
+                env={
                     "QDRANT_URL": "http://localhost:6333",
                     "COLLECTION_NAME": "chattr",
                 },
-            },
-            "time": {
-                "command": "uvx",
-                "args": ["mcp-server-time"],
-                "transport": "stdio",
-            },
+                transport="stdio",
+            ),
+            "time": StdioConnection(
+                command="uvx",
+                args=["mcp-server-time"],
+                transport="stdio",
+            ),
             # self.settings.video_generator_mcp.name: {
-            #     "url": self.settings.video_generator_mcp.url,
+            #     "url": str(self.settings.video_generator_mcp.url),
             #     "transport": self.settings.video_generator_mcp.transport,
             # },
-            # self.settings.voice_generator_mcp.name: {
-            #     "url": self.settings.voice_generator_mcp.url,
-            #     "transport": self.settings.voice_generator_mcp.transport,
-            # },
+            self.settings.voice_generator_mcp.name: {
+                "url": str(self.settings.voice_generator_mcp.url),
+                "transport": self.settings.voice_generator_mcp.transport,
+            },
         }
-        self._tools: list[BaseTool] =  asyncio.run(
-self._setup_tools(
-            MultiServerMCPClient(self._mcp_servers_config)
-        ))
+        self._tools: list[BaseTool] = run(
+            self._setup_tools(MultiServerMCPClient(self._mcp_servers_config))
+        )
         try:
             self._llm: ChatOpenAI = ChatOpenAI(
                 base_url=str(self.settings.model.url),
@@ -102,6 +112,56 @@ self._setup_tools(
 
     def get_graph(self) -> CompiledStateGraph:
         return self._graph
+
+    async def generate_response(self,message: str, history: list):
+        graph_config: RunnableConfig = RunnableConfig(
+        configurable= {"thread_id": "1"}
+        )
+        async for response in self._graph.astream(
+            {"messages": [HumanMessage(content=message)]},
+            graph_config,
+            stream_mode="updates",
+        ):
+            if response.keys() == {"agent"}:
+                last_agent_message = response["agent"]["messages"][-1]
+                if last_agent_message.tool_calls:
+                    history.append(
+                        ChatMessage(
+                            role="assistant",
+                            content=json.dumps(
+                                last_agent_message.tool_calls[0]["args"], indent=4
+                            ),
+                            metadata=MetadataDict(
+                                title=last_agent_message.tool_calls[0]["name"],
+                                id=last_agent_message.tool_calls[0]["id"],
+                            ),
+                        )
+                    )
+                else:
+                    history.append(
+                        ChatMessage(
+                            role="assistant", content=last_agent_message.content
+                        )
+                    )
+            else:
+                last_tool_message = response["tools"]["messages"][-1]
+                history.append(
+                    ChatMessage(
+                        role="assistant",
+                        content=last_tool_message.content,
+                        metadata=MetadataDict(
+                            title=last_tool_message.name,
+                            id=last_tool_message.id,
+                        ),
+                    )
+                )
+                if is_url(last_tool_message.content):
+                    download(
+                        last_tool_message.content,
+                        Path(self.settings.directory.audio / f"{last_tool_message.id}.wav"),
+                    )
+                    yield "", history, Path(self.settings.directory.audio / f"{last_tool_message.id}.wav")
+            yield "", history, Path()
 
 
 if __name__ == "__main__":
