@@ -1,6 +1,5 @@
 import json
 from pathlib import Path
-
 from gradio import (
     Blocks,
     Button,
@@ -16,14 +15,12 @@ from gradio import (
 from gradio.components.chatbot import MetadataDict
 from langchain_core.messages import HumanMessage
 from langchain_core.runnables import RunnableConfig
-from langgraph.graph.state import CompiledStateGraph
 
-from chattr.graph import Graph
+from chattr.graph.runner import graph
 
 
 async def generate_response(message: str, history: list):
     graph_config: RunnableConfig = {"configurable": {"thread_id": "1"}}
-    graph: CompiledStateGraph = Graph().get_graph()
     async for response in graph.astream(
         {"messages": [HumanMessage(content=message)]},
         graph_config,
