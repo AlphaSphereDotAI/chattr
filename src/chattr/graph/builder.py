@@ -35,7 +35,13 @@ class Graph:
             content="You are a helpful assistant that can answer questions about the time and generate audio files from text."
         )
         # redis_saver: AsyncRedisSaver = await self.setup_redis()
-        self._mcp_servers_config: dict[str, StdioConnection | SSEConnection | StreamableHttpConnection | WebsocketConnection] = {
+        self._mcp_servers_config: dict[
+            str,
+            StdioConnection
+            | SSEConnection
+            | StreamableHttpConnection
+            | WebsocketConnection,
+        ] = {
             "vector_database": StdioConnection(
                 command="uvx",
                 args=["mcp-server-qdrant"],
@@ -113,10 +119,8 @@ class Graph:
     def get_graph(self) -> CompiledStateGraph:
         return self._graph
 
-    async def generate_response(self,message: str, history: list):
-        graph_config: RunnableConfig = RunnableConfig(
-        configurable= {"thread_id": "1"}
-        )
+    async def generate_response(self, message: str, history: list):
+        graph_config: RunnableConfig = RunnableConfig(configurable={"thread_id": "1"})
         async for response in self._graph.astream(
             {"messages": [HumanMessage(content=message)]},
             graph_config,
@@ -158,9 +162,19 @@ class Graph:
                 if is_url(last_tool_message.content):
                     download(
                         last_tool_message.content,
-                        Path(self.settings.directory.audio / f"{last_tool_message.id}.wav"),
+                        Path(
+                            self.settings.directory.audio
+                            / f"{last_tool_message.id}.wav"
+                        ),
                     )
-                    yield "", history, Path(self.settings.directory.audio / f"{last_tool_message.id}.wav")
+                    yield (
+                        "",
+                        history,
+                        Path(
+                            self.settings.directory.audio
+                            / f"{last_tool_message.id}.wav"
+                        ),
+                    )
             yield "", history, Path()
 
 
