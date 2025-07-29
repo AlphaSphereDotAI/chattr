@@ -1,4 +1,5 @@
 """This module contains the Graph class, which represents the main orchestration graph for the Chattr application."""
+
 from asyncio import run
 from json import dumps
 from logging import getLogger
@@ -166,7 +167,9 @@ class Graph:
         """
         return self._graph
 
-    async def generate_response(self, message: str, history: list[ChatMessage]) -> AsyncGenerator[tuple[str, list[ChatMessage], Path]]:
+    async def generate_response(
+        self, message: str, history: list[ChatMessage]
+    ) -> AsyncGenerator[tuple[str, list[ChatMessage], Path]]:
         """
         Generate a response to a user message and update the conversation history.
         This asynchronous method streams responses from the state graph and yields updated history and audio file paths as needed.
