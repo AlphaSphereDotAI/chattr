@@ -14,6 +14,7 @@ from langgraph.prebuilt import ToolNode, tools_condition
 from chattr.settings import Settings
 
 logger = getLogger(__name__)
+import asyncio
 
 
 class Graph:
@@ -38,21 +39,22 @@ class Graph:
                 "args": ["mcp-server-time"],
                 "transport": "stdio",
             },
-            self.settings.video_generator_mcp.name: {
-                "url": self.settings.video_generator_mcp.url,
-                "transport": self.settings.video_generator_mcp.transport,
-            },
-            self.settings.voice_generator_mcp.name: {
-                "url": self.settings.voice_generator_mcp.url,
-                "transport": self.settings.voice_generator_mcp.transport,
-            },
+            # self.settings.video_generator_mcp.name: {
+            #     "url": self.settings.video_generator_mcp.url,
+            #     "transport": self.settings.video_generator_mcp.transport,
+            # },
+            # self.settings.voice_generator_mcp.name: {
+            #     "url": self.settings.voice_generator_mcp.url,
+            #     "transport": self.settings.voice_generator_mcp.transport,
+            # },
         }
-        self._tools: list[BaseTool] = self.setup_tools(
+        self._tools: list[BaseTool] =  asyncio.run(
+self._setup_tools(
             MultiServerMCPClient(self._mcp_servers_config)
-        )
+        ))
         try:
             self._llm: ChatOpenAI = ChatOpenAI(
-                base_url=self.settings.model.url,
+                base_url=str(self.settings.model.url),
                 model=self.settings.model.name,
                 api_key=self.settings.model.api_key,
                 temperature=self.settings.model.temperature,
@@ -81,7 +83,7 @@ class Graph:
             debug=True
         )
 
-    async def setup_redis(self) -> AsyncRedisSaver:
+    async def _setup_redis(self) -> AsyncRedisSaver:
         async with AsyncRedisSaver.from_conn_string(
             self.settings.short_term_memory.url
         ) as checkpointer:
@@ -89,7 +91,7 @@ class Graph:
             return checkpointer
 
     @staticmethod
-    async def setup_tools(_mcp_client: MultiServerMCPClient) -> list[BaseTool]:
+    async def _setup_tools(_mcp_client: MultiServerMCPClient) -> list[BaseTool]:
         return await _mcp_client.get_tools()
 
     def draw_graph(self) -> None:
