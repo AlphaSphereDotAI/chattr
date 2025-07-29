@@ -175,7 +175,7 @@ class Graph:
             history: The conversation history as a list of ChatMessage objects.
 
         Returns:
-            AsyncGenerator[tuple[str, list, Path]]: Yields a tuple containing an empty string, the updated history, and a Path to an audio file if generated.
+            AsyncGenerator[tuple[str, list[ChatMessage], Path]]: Yields a tuple containing an empty string, the updated history, and a Path to an audio file if generated.
         """
         graph_config: RunnableConfig = RunnableConfig(configurable={"thread_id": "1"})
         async for response in self._graph.astream(
