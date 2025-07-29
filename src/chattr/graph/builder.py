@@ -36,13 +36,20 @@ class Graph:
     Args:
         settings: The application settings used to configure the graph and its components.
     """
+
     def __init__(self, settings: Settings):
         self.settings: Settings = settings
         self.system_message: SystemMessage = SystemMessage(
             content="You are a helpful assistant that can answer questions about the time and generate audio files from text."
         )
-        self._checkpointer: AsyncRedisSaver =  run(self._setup_checkpointer())
-        self._mcp_servers_config: dict[str, StdioConnection | SSEConnection | StreamableHttpConnection | WebsocketConnection] = self._create_mcp_config()
+        self._checkpointer: AsyncRedisSaver = run(self._setup_checkpointer())
+        self._mcp_servers_config: dict[
+            str,
+            StdioConnection
+            | SSEConnection
+            | StreamableHttpConnection
+            | WebsocketConnection,
+        ] = self._create_mcp_config()
         self._tools: list[BaseTool] = run(
             self._setup_tools(MultiServerMCPClient(self._mcp_servers_config))
         )
@@ -51,8 +58,10 @@ class Graph:
             self._tools, parallel_tool_calls=False
         )
         self._graph: CompiledStateGraph = self._build_state_graph()
+
     def _build_state_graph(self) -> CompiledStateGraph:
         """Build and compile the state graph."""
+
         async def _call_model(state: MessagesState) -> MessagesState:
             response = await self._model.ainvoke(
                 [self.system_message] + state["messages"]
@@ -67,7 +76,15 @@ class Graph:
         graph_builder.add_edge("tools", "agent")
         return graph_builder.compile(debug=True, checkpointer=self._checkpointer)
 
-    def _create_mcp_config(self) -> dict[str, StdioConnection | SSEConnection | StreamableHttpConnection | WebsocketConnection]:
+    def _create_mcp_config(
+        self,
+    ) -> dict[
+        str,
+        StdioConnection
+        | SSEConnection
+        | StreamableHttpConnection
+        | WebsocketConnection,
+    ]:
         """Create an MCP server configuration dictionary."""
         return {
             "vector_database": StdioConnection(
@@ -147,7 +164,7 @@ class Graph:
         """
         return self._graph
 
-    async def generate_response(self,message: str, history: list):
+    async def generate_response(self, message: str, history: list):
         """
         Generate a response to a user message and update the conversation history.
         This asynchronous method streams responses from the state graph and yields updated history and audio file paths as needed.
@@ -159,9 +176,7 @@ class Graph:
         Returns:
             AsyncGenerator[tuple[str, list, Path]]: Yields a tuple containing an empty string, the updated history, and a Path to an audio file if generated.
         """
-        graph_config: RunnableConfig = RunnableConfig(
-        configurable= {"thread_id": "1"}
-        )
+        graph_config: RunnableConfig = RunnableConfig(configurable={"thread_id": "1"})
         async for response in self._graph.astream(
             {"messages": [HumanMessage(content=message)]},
             graph_config,
@@ -203,7 +218,17 @@ class Graph:
                 if is_url(last_tool_message.content):
                     download(
                         last_tool_message.content,
-                        Path(self.settings.directory.audio / f"{last_tool_message.id}.wav"),
+                        Path(
+                            self.settings.directory.audio
+                            / f"{last_tool_message.id}.wav"
+                        ),
                     )
-                    yield "", history, Path(self.settings.directory.audio / f"{last_tool_message.id}.wav")
+                    yield (
+                        "",
+                        history,
+                        Path(
+                            self.settings.directory.audio
+                            / f"{last_tool_message.id}.wav"
+                        ),
+                    )
             yield "", history, Path()
