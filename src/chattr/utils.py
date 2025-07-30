@@ -1,3 +1,5 @@
+"""This module contains utility functions for the Chattr app."""
+
 from pathlib import Path
 from typing import Optional
 
@@ -40,4 +42,5 @@ def download(url: HttpUrl, path: Path) -> None:
     response = requests.get(url, stream=True)
     with open(path, "wb") as f:
         for chunk in response.iter_content(chunk_size=8192):
-            f.write(chunk)
+            if chunk:
+                f.write(chunk)

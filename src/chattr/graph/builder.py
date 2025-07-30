@@ -63,8 +63,13 @@ class Graph:
         self._graph: CompiledStateGraph = self._build_state_graph()
 
     def _build_state_graph(self) -> CompiledStateGraph:
-        """Build and compile the state graph."""
+        """
+        Construct and compile the state graph for the Chattr application.
+        This method defines the nodes and edges for the conversational agent and tool interactions.
 
+        Returns:
+            CompiledStateGraph: The compiled state graph is ready for execution.
+        """
         async def _call_model(state: MessagesState) -> MessagesState:
             response = await self._model.ainvoke(
                 [self.system_message] + state["messages"]
@@ -88,7 +93,14 @@ class Graph:
         | StreamableHttpConnection
         | WebsocketConnection,
     ]:
-        """Create an MCP server configuration dictionary."""
+        """
+        Create the configuration dictionary for MCP (Multi-Component Protocol) servers.
+        This method sets up the connection details for each MCP server used by the application.
+
+        Returns:
+            dict: A dictionary mapping server names to their connection configurations.
+        """
+
         return {
             "vector_database": StdioConnection(
                 command="uvx",
@@ -115,7 +127,16 @@ class Graph:
         }
 
     def _initialize_llm(self) -> ChatOpenAI:
-        """Initialize ChatOpenAI model with settings."""
+        """
+        Initialize the ChatOpenAI language model using the provided settings.
+        This method creates and returns a ChatOpenAI instance configured with the model's URL, name, API key, and temperature.
+
+        Returns:
+            ChatOpenAI: The initialized ChatOpenAI language model instance.
+
+        Raises:
+            Exception: If the model initialization fails.
+        """
         try:
             return ChatOpenAI(
                 base_url=str(self.settings.model.url),
@@ -133,11 +154,11 @@ class Graph:
         Returns:
             AsyncRedisSaver: Configured Redis saver instance for graph checkpointing.
         """
-        checkpointer: AsyncRedisSaver = AsyncRedisSaver.from_conn_string(
-            self.settings.short_term_memory.url
-        )
-        await checkpointer.asetup()
-        return checkpointer
+        async with AsyncRedisSaver.from_conn_string(
+            str(self.settings.short_term_memory.url)
+        ) as checkpointer:
+            await checkpointer.asetup()
+            return checkpointer
 
     @staticmethod
     async def _setup_tools(_mcp_client: MultiServerMCPClient) -> list[BaseTool]:
@@ -169,7 +190,7 @@ class Graph:
 
     async def generate_response(
         self, message: str, history: list[ChatMessage]
-    ) -> AsyncGenerator[tuple[str, list[ChatMessage], Path]]:
+    ) -> AsyncGenerator[tuple[str, list[ChatMessage], Path|None]]:
         """
         Generate a response to a user message and update the conversation history.
         This asynchronous method streams responses from the state graph and yields updated history and audio file paths as needed.
@@ -183,9 +204,9 @@ class Graph:
         """
         graph_config: RunnableConfig = RunnableConfig(configurable={"thread_id": "1"})
         async for response in self._graph.astream(
-            {"messages": [HumanMessage(content=message)]},
+            MessagesState(messages=[HumanMessage(content=message)]),
             graph_config,
-            stream_mode="updates",
+            stream_mode="updates"
         ):
             if response.keys() == {"agent"}:
                 last_agent_message = response["agent"]["messages"][-1]
@@ -221,19 +242,15 @@ class Graph:
                     )
                 )
                 if is_url(last_tool_message.content):
+                    logger.info(f"Downloading audio from {last_tool_message.content}")
+                    file_path: Path = self.settings.directory.audio / f"{last_tool_message.id}.aac"
                     download(
                         last_tool_message.content,
-                        Path(
-                            self.settings.directory.audio
-                            / f"{last_tool_message.id}.wav"
-                        ),
+                        file_path,
                     )
                     yield (
                         "",
                         history,
-                        Path(
-                            self.settings.directory.audio
-                            / f"{last_tool_message.id}.wav"
-                        ),
+                        file_path
                     )
-            yield "", history, Path()
+            yield "", history, None
