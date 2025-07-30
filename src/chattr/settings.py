@@ -1,4 +1,5 @@
 """This module contains the settings for the Chattr app."""
+
 from logging import getLogger
 from pathlib import Path
 from typing import List, Literal, Self
@@ -106,7 +107,14 @@ class DirectorySettings(BaseModel):
         Returns:
             dict: A dictionary of directory paths to validate and create.
         """
-        directories = [self.base, self.assets, self.log, self.image, self.audio, self.video ]
+        directories = [
+            self.base,
+            self.assets,
+            self.log,
+            self.image,
+            self.audio,
+            self.video,
+        ]
         logger.info(f"Creating directories: {directories}")
         for directory in directories:
             directory.mkdir(exist_ok=True)
@@ -138,6 +146,7 @@ class Settings(BaseSettings):
         name="video_generator",
     )
     directory: DirectorySettings = DirectorySettings()
+
 
 if __name__ == "__main__":
     print(Settings().model_dump())
