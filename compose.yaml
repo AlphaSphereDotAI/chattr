@@ -11,7 +11,7 @@ services:
       - command: chown -R app:app /home/app
         user: root
     environment:
-      SERVER_PORT: 7860
+      REDIS_URL: redis://localhost:6379
     healthcheck:
       test:
         - "CMD"
