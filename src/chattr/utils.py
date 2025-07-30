@@ -1,4 +1,5 @@
 """This module contains utility functions for the Chattr app."""
+
 from logging import getLogger
 from pathlib import Path
 from typing import Optional
@@ -7,6 +8,7 @@ from pydantic import HttpUrl, ValidationError
 from pydub import AudioSegment
 
 logger = getLogger(__name__)
+
 
 def is_url(value: Optional[str]) -> bool:
     """
@@ -46,6 +48,7 @@ def download(url: HttpUrl, path: Path) -> None:
         for chunk in response.iter_content(chunk_size=8192):
             if chunk:
                 f.write(chunk)
+
 
 def convert_audio_to_wav(input_path: Path, output_path: Path) -> None:
     """
