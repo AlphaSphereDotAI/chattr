@@ -70,6 +70,7 @@ class Graph:
         Returns:
             CompiledStateGraph: The compiled state graph is ready for execution.
         """
+
         async def _call_model(state: MessagesState) -> MessagesState:
             response = await self._model.ainvoke(
                 [self.system_message] + state["messages"]
@@ -190,7 +191,7 @@ class Graph:
 
     async def generate_response(
         self, message: str, history: list[ChatMessage]
-    ) -> AsyncGenerator[tuple[str, list[ChatMessage], Path|None]]:
+    ) -> AsyncGenerator[tuple[str, list[ChatMessage], Path | None]]:
         """
         Generate a response to a user message and update the conversation history.
         This asynchronous method streams responses from the state graph and yields updated history and audio file paths as needed.
@@ -206,7 +207,7 @@ class Graph:
         async for response in self._graph.astream(
             MessagesState(messages=[HumanMessage(content=message)]),
             graph_config,
-            stream_mode="updates"
+            stream_mode="updates",
         ):
             if response.keys() == {"agent"}:
                 last_agent_message = response["agent"]["messages"][-1]
@@ -243,14 +244,12 @@ class Graph:
                 )
                 if is_url(last_tool_message.content):
                     logger.info(f"Downloading audio from {last_tool_message.content}")
-                    file_path: Path = self.settings.directory.audio / f"{last_tool_message.id}.aac"
+                    file_path: Path = (
+                        self.settings.directory.audio / f"{last_tool_message.id}.aac"
+                    )
                     download(
                         last_tool_message.content,
                         file_path,
                     )
-                    yield (
-                        "",
-                        history,
-                        file_path
-                    )
+                    yield ("", history, file_path)
             yield "", history, None
