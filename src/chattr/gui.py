@@ -1,3 +1,4 @@
+"""This module contains the Gradio-based GUI for the Chattr app."""
 from gradio import (
     Audio,
     Blocks,
@@ -29,12 +30,12 @@ def app_block() -> Blocks:
                 chatbot = Chatbot(
                     type="messages",
                     show_copy_button=True,
-                    show_share_button=True,
+                    show_share_button=True
                 )
                 msg = Textbox()
                 with Row():
                     button = Button("Send", variant="primary")
-                    ClearButton([msg, chatbot], variant="stop")
+                    ClearButton([msg, chatbot, video], variant="stop")
         chatbot.like(like)
         button.click(graph.generate_response, [msg, chatbot], [msg, chatbot, audio])
         msg.submit(graph.generate_response, [msg, chatbot], [msg, chatbot, audio])

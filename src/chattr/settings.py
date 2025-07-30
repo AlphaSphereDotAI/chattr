@@ -1,9 +1,9 @@
+"""This module contains the settings for the Chattr app."""
 from logging import getLogger
 from pathlib import Path
 from typing import List, Literal, Self
 
 from pydantic import (
-    AnyUrl,
     BaseModel,
     DirectoryPath,
     Field,
@@ -27,6 +27,16 @@ class ModelSettings(BaseModel):
 
     @model_validator(mode="after")
     def check_endpoint(self) -> Self:
+        """
+        Validate that the model endpoint URL is reachable.
+        This method checks the HTTP status code of the provided URL and raises an error if it is not reachable.
+
+        Returns:
+            Self: The validated ModelSettings instance.
+
+        Raises:
+            ValueError: If the model's endpoint is unreachable.
+        """
         if self.url and 200 > head(self.url, timeout=10).status_code >= 300:
             logger.error("Model's endpoint is unreachable")
             raise ValueError("Model's endpoint is unreachable")
@@ -34,6 +44,16 @@ class ModelSettings(BaseModel):
 
     @model_validator(mode="after")
     def check_api_key_exist(self) -> Self:
+        """
+        Ensure that an API key and model name are provided if a model URL is set.
+        This method validates the presence of required credentials for the model provider.
+
+        Returns:
+            Self: The validated ModelSettings instance.
+
+        Raises:
+            ValueError: If the API key or model name is missing when a model URL is provided.
+        """
         if self.url:
             if not self.api_key or not self.api_key.get_secret_value():
                 raise ValueError(
@@ -45,7 +65,7 @@ class ModelSettings(BaseModel):
 
 
 class ShortTermMemorySettings(BaseModel):
-    url: AnyUrl = Field(default=RedisDsn(url="redis://localhost:6379"))
+    url: RedisDsn = Field(default=RedisDsn(url="redis://localhost:6379"))
 
 
 class VectorDatabaseSettings(BaseModel):
@@ -74,12 +94,24 @@ class DirectorySettings(BaseModel):
         default_factory=lambda: Path.cwd() / "assets" / "video"
     )
 
-    @model_validator(mode="before")
-    def create_missing_dirs(cls, values: dict) -> dict:
-        directories: list[Path] = list(values.values())
+    @model_validator(mode="after")
+    def create_missing_dirs(self) -> Self:
+        """
+        Ensure that all specified directories exist, creating them if necessary.
+        This method checks and creates any missing directories defined in the DirectorySettings.
+
+        Args:
+            values: A dictionary of directory paths to validate and create.
+
+        Returns:
+            dict: A dictionary of directory paths to validate and create.
+        """
+        directories = [self.base, self.assets, self.log, self.image, self.audio, self.video ]
+        logger.info(f"Creating directories: {directories}")
         for directory in directories:
             directory.mkdir(exist_ok=True)
-        return values
+            logger.info(f"Created directory: {directory}")
+        return self
 
 
 class Settings(BaseSettings):
@@ -106,10 +138,6 @@ class Settings(BaseSettings):
         name="video_generator",
     )
     directory: DirectorySettings = DirectorySettings()
-    # log_file_path: FilePath = Field(default_factory=lambda: Path.cwd()  / "logs" / f"{datetime.now().strftime(format="%Y-%m-%d_%H-%M-%S")}.log")
-    # audio_file_path: FilePath = Field(default_factory=lambda: Path.cwd()/ "assets" / "audio" / f"{datetime.now().strftime(format="%Y-%m-%d_%H-%M-%S")}.wav")
-    # video_file_path: FilePath = Field(default_factory=lambda: Path.cwd() / "assets" / "video" / f"{datetime.now().strftime(format="%Y-%m-%d_%H-%M-%S")}.mp4")
-
 
 if __name__ == "__main__":
     print(Settings().model_dump())
