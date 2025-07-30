@@ -12,7 +12,7 @@ def main() -> None:
         show_api=True,
         enable_monitoring=True,
         show_error=True,
-        pwa=True
+        pwa=True,
     )
 
 
