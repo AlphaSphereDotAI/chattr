@@ -180,15 +180,6 @@ class Graph:
             output_file_path=self.settings.directory.assets / "graph.png"
         )
 
-    def get_graph(self) -> CompiledStateGraph:
-        """
-        Retrieve the compiled state graph for the Chattr application.
-
-        Returns:
-            CompiledStateGraph: The compiled state graph instance.
-        """
-        return self._graph
-
     async def generate_response(
         self, message: str, history: list[ChatMessage]
     ) -> AsyncGenerator[tuple[str, list[ChatMessage], Path | None]]:
