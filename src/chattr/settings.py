@@ -119,11 +119,8 @@ class DirectorySettings(BaseModel):
         Ensure that all specified directories exist, creating them if necessary.
         This method checks and creates any missing directories defined in the DirectorySettings.
 
-        Args:
-            values: A dictionary of directory paths to validate and create.
-
         Returns:
-            dict: A dictionary of directory paths to validate and create.
+            Self: The validated DirectorySettings instance.
         """
         directories = [
             self.base,
