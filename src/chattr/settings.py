@@ -71,6 +71,24 @@ class ShortTermMemorySettings(BaseModel):
 
 class VectorDatabaseSettings(BaseModel):
     name: StrictStr = Field(default="chattr")
+    url: HttpUrl = Field(default="http://localhost:6333")
+
+    @model_validator(mode="after")
+    def check_endpoint(self) -> Self:
+        """
+        Validate that the Vector Database URL is reachable.
+        This method checks the HTTP status code of the provided URL and raises an error if it is not reachable.
+
+        Returns:
+            Self: The validated VectorDatabaseSettings instance.
+
+        Raises:
+            ValueError: If the Vector Database is unreachable.
+        """
+        if self.url and 200 > head(self.url, timeout=10).status_code >= 300:
+            logger.error("Vector Database is unreachable")
+            raise ValueError("Vector Database is unreachable")
+        return self
 
 
 class MCPSettings(BaseModel):
