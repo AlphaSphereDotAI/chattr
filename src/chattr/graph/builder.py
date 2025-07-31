@@ -238,9 +238,6 @@ class Graph:
                     file_path: Path = (
                         self.settings.directory.audio / f"{last_tool_message.id}.aac"
                     )
-                    download(
-                        last_tool_message.content,
-                        file_path,
-                    )
+                    download(last_tool_message.content, file_path)
                     yield "", history, file_path
             yield "", history, None
