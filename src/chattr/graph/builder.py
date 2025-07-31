@@ -242,5 +242,5 @@ class Graph:
                         last_tool_message.content,
                         file_path,
                     )
-                    yield ("", history, file_path)
+                    yield "", history, file_path
             yield "", history, None
