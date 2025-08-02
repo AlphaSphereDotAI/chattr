@@ -6,6 +6,7 @@ from typing import Optional
 
 from pydantic import HttpUrl, ValidationError
 from pydub import AudioSegment
+from requests import get
 
 logger = getLogger(__name__)
 
@@ -30,7 +31,7 @@ def is_url(value: Optional[str]) -> bool:
         return False
 
 
-def download(url: HttpUrl, path: Path) -> None:
+def download_file(url: HttpUrl, path: Path) -> None:
     """
     Download a file from a URL and save it to a local path.
 
@@ -41,9 +42,7 @@ def download(url: HttpUrl, path: Path) -> None:
     Returns:
         None
     """
-    import requests
-
-    response = requests.get(url, stream=True)
+    response = get(url, stream=True)
     with open(path, "wb") as f:
         for chunk in response.iter_content(chunk_size=8192):
             if chunk:
@@ -61,6 +60,7 @@ def convert_audio_to_wav(input_path: Path, output_path: Path) -> None:
     Returns:
         None
     """
-    audio = AudioSegment.from_file(input_path, format="acc")
-    audio.export(output_path, format="wav")
+    logger.info(f"Converting {input_path} to WAV format")
+    audio = AudioSegment.from_file(input_path, "acc")
+    audio.export(output_path, "wav")
     logger.info(f"Converted {input_path} to {output_path}")
