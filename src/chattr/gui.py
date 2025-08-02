@@ -22,6 +22,13 @@ def like(evt: LikeData):
 
 
 def app_block() -> Blocks:
+    """Creates and returns the main Gradio Blocks interface for the Chattr app.
+
+    This function sets up the user interface, including video, audio, chatbot, and input controls.
+
+    Returns:
+        Blocks: The constructed Gradio Blocks interface for the chat application.
+    """
     with Blocks() as chat:
         with Row():
             with Column():
