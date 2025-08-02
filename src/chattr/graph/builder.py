@@ -24,9 +24,10 @@ from langgraph.graph import START, StateGraph
 from langgraph.graph.message import MessagesState
 from langgraph.graph.state import CompiledStateGraph
 from langgraph.prebuilt import ToolNode, tools_condition
+from langgraph.store.redis.aio import AsyncRedisStore
 
 from chattr.settings import Settings
-from chattr.utils import download, is_url
+from chattr.utils import download_file, is_url
 
 logger = getLogger(__name__)
 
@@ -45,7 +46,9 @@ class Graph:
         self.system_message: SystemMessage = SystemMessage(
             content="You are a helpful assistant that can answer questions about the time and generate audio files from text."
         )
-        self._checkpointer: AsyncRedisSaver = run(self._setup_checkpointer())
+        initialized_memory: tuple[AsyncRedisStore, AsyncRedisSaver] = run(self._setup_memory())
+        self._long_term_memory: AsyncRedisStore = initialized_memory[0]
+        self._short_term_memory: AsyncRedisSaver = initialized_memory[1]
         self._mcp_servers_config: dict[
             str,
             StdioConnection
@@ -83,7 +86,7 @@ class Graph:
         graph_builder.add_edge(START, "agent")
         graph_builder.add_conditional_edges("agent", tools_condition)
         graph_builder.add_edge("tools", "agent")
-        return graph_builder.compile(debug=True, checkpointer=self._checkpointer)
+        return graph_builder.compile(debug=True, checkpointer=self._short_term_memory, store=self._long_term_memory)
 
     def _create_mcp_config(
         self,
@@ -149,17 +152,17 @@ class Graph:
             logger.error(f"Failed to initialize ChatOpenAI model: {e}")
             raise
 
-    async def _setup_checkpointer(self) -> AsyncRedisSaver:
+    async def _setup_memory(self) -> tuple[AsyncRedisStore, AsyncRedisSaver]:
         """Initialize and set up the Redis checkpointer for state persistence.
 
         Returns:
             AsyncRedisSaver: Configured Redis saver instance for graph checkpointing.
         """
-        async with AsyncRedisSaver.from_conn_string(
-            str(self.settings.short_term_memory.url)
-        ) as checkpointer:
+        async with (AsyncRedisStore.from_conn_string(str(self.settings.memory.url)) as store,
+                    AsyncRedisSaver.from_conn_string(str(self.settings.memory.url)) as checkpointer):
+            await store.setup()
             await checkpointer.asetup()
-            return checkpointer
+            return store, checkpointer
 
     @staticmethod
     async def _setup_tools(_mcp_client: MultiServerMCPClient) -> list[BaseTool]:
@@ -194,7 +197,7 @@ class Graph:
         Returns:
             AsyncGenerator[tuple[str, list[ChatMessage], Path]]: Yields a tuple containing an empty string, the updated history, and a Path to an audio file if generated.
         """
-        graph_config: RunnableConfig = RunnableConfig(configurable={"thread_id": "1"})
+        graph_config: RunnableConfig = RunnableConfig(configurable={"thread_id": "1","user_id": "1"})
         async for response in self._graph.astream(
             MessagesState(messages=[HumanMessage(content=message)]),
             graph_config,
@@ -238,6 +241,6 @@ class Graph:
                     file_path: Path = (
                         self.settings.directory.audio / f"{last_tool_message.id}.aac"
                     )
-                    download(last_tool_message.content, file_path)
+                    download_file(last_tool_message.content, file_path)
                     yield "", history, file_path
             yield "", history, None
