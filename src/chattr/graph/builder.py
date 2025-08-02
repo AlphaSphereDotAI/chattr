@@ -46,7 +46,9 @@ class Graph:
         self.system_message: SystemMessage = SystemMessage(
             content="You are a helpful assistant that can answer questions about the time and generate audio files from text."
         )
-        initialized_memory: tuple[AsyncRedisStore, AsyncRedisSaver] = run(self._setup_memory())
+        initialized_memory: tuple[AsyncRedisStore, AsyncRedisSaver] = run(
+            self._setup_memory()
+        )
         self._long_term_memory: AsyncRedisStore = initialized_memory[0]
         self._short_term_memory: AsyncRedisSaver = initialized_memory[1]
         self._mcp_servers_config: dict[
@@ -86,7 +88,11 @@ class Graph:
         graph_builder.add_edge(START, "agent")
         graph_builder.add_conditional_edges("agent", tools_condition)
         graph_builder.add_edge("tools", "agent")
-        return graph_builder.compile(debug=True, checkpointer=self._short_term_memory, store=self._long_term_memory)
+        return graph_builder.compile(
+            debug=True,
+            checkpointer=self._short_term_memory,
+            store=self._long_term_memory,
+        )
 
     def _create_mcp_config(
         self,
@@ -158,8 +164,12 @@ class Graph:
         Returns:
             AsyncRedisSaver: Configured Redis saver instance for graph checkpointing.
         """
-        async with (AsyncRedisStore.from_conn_string(str(self.settings.memory.url)) as store,
-                    AsyncRedisSaver.from_conn_string(str(self.settings.memory.url)) as checkpointer):
+        async with (
+            AsyncRedisStore.from_conn_string(str(self.settings.memory.url)) as store,
+            AsyncRedisSaver.from_conn_string(
+                str(self.settings.memory.url)
+            ) as checkpointer,
+        ):
             await store.setup()
             await checkpointer.asetup()
             return store, checkpointer
@@ -197,7 +207,9 @@ class Graph:
         Returns:
             AsyncGenerator[tuple[str, list[ChatMessage], Path]]: Yields a tuple containing an empty string, the updated history, and a Path to an audio file if generated.
         """
-        graph_config: RunnableConfig = RunnableConfig(configurable={"thread_id": "1","user_id": "1"})
+        graph_config: RunnableConfig = RunnableConfig(
+            configurable={"thread_id": "1", "user_id": "1"}
+        )
         async for response in self._graph.astream(
             MessagesState(messages=[HumanMessage(content=message)]),
             graph_config,

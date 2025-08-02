@@ -1,4 +1,5 @@
 """This module contains the settings for the Chattr app."""
+
 from logging import getLogger
 from pathlib import Path
 from typing import List, Literal, Self
@@ -19,6 +20,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 logger = getLogger(__name__)
 
 load_dotenv()
+
+
 class ModelSettings(BaseModel):
     url: HttpUrl = Field(default=None)
     name: StrictStr = Field(default=None)
@@ -55,6 +58,7 @@ class VectorDatabaseSettings(BaseModel):
     name: StrictStr = Field(default="chattr")
     url: HttpUrl = Field(default=HttpUrl(url="http://localhost:6333"))
 
+
 class MCPSettings(BaseModel):
     name: StrictStr = Field(default=None)
     url: HttpUrl = Field(default=None)
@@ -86,7 +90,14 @@ class DirectorySettings(BaseModel):
         Returns:
             Self: The validated DirectorySettings instance.
         """
-        for directory in [            self.base,            self.assets,            self.log,            self.image,            self.audio,            self.video        ]:
+        for directory in [
+            self.base,
+            self.assets,
+            self.log,
+            self.image,
+            self.audio,
+            self.video,
+        ]:
             directory.mkdir(exist_ok=True)
             logger.info(f"Created directory: {directory}")
         return self
