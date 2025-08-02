@@ -1,9 +1,9 @@
 """This module contains the settings for the Chattr app."""
-
 from logging import getLogger
 from pathlib import Path
 from typing import List, Literal, Self
 
+from dotenv import load_dotenv
 from pydantic import (
     BaseModel,
     DirectoryPath,
@@ -15,33 +15,15 @@ from pydantic import (
     model_validator,
 )
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from requests import head
 
 logger = getLogger(__name__)
 
-
+load_dotenv()
 class ModelSettings(BaseModel):
-    url: HttpUrl | None = Field(default=None)
-    name: StrictStr | None = Field(default=None)
-    api_key: SecretStr | None = Field(default=None)
+    url: HttpUrl = Field(default=None)
+    name: StrictStr = Field(default=None)
+    api_key: SecretStr = Field(default=None)
     temperature: float = Field(default=0.0, ge=0.0, le=1.0)
-
-    @model_validator(mode="after")
-    def check_endpoint(self) -> Self:
-        """
-        Validate that the model endpoint URL is reachable.
-        This method checks the HTTP status code of the provided URL and raises an error if it is not reachable.
-
-        Returns:
-            Self: The validated ModelSettings instance.
-
-        Raises:
-            ValueError: If the model's endpoint is unreachable.
-        """
-        if self.url and 200 > head(self.url, timeout=10).status_code >= 300:
-            logger.error("Model's endpoint is unreachable")
-            raise ValueError("Model's endpoint is unreachable")
-        return self
 
     @model_validator(mode="after")
     def check_api_key_exist(self) -> Self:
@@ -65,31 +47,13 @@ class ModelSettings(BaseModel):
         return self
 
 
-class ShortTermMemorySettings(BaseModel):
+class MemorySettings(BaseModel):
     url: RedisDsn = Field(default=RedisDsn(url="redis://localhost:6379"))
 
 
 class VectorDatabaseSettings(BaseModel):
     name: StrictStr = Field(default="chattr")
-    url: HttpUrl = Field(default="http://localhost:6333")
-
-    @model_validator(mode="after")
-    def check_endpoint(self) -> Self:
-        """
-        Validate that the Vector Database URL is reachable.
-        This method checks the HTTP status code of the provided URL and raises an error if it is not reachable.
-
-        Returns:
-            Self: The validated VectorDatabaseSettings instance.
-
-        Raises:
-            ValueError: If the Vector Database is unreachable.
-        """
-        if self.url and 200 > head(self.url, timeout=10).status_code >= 300:
-            logger.error("Vector Database is unreachable")
-            raise ValueError("Vector Database is unreachable")
-        return self
-
+    url: HttpUrl = Field(default=HttpUrl(url="http://localhost:6333"))
 
 class MCPSettings(BaseModel):
     name: StrictStr = Field(default=None)
@@ -122,16 +86,7 @@ class DirectorySettings(BaseModel):
         Returns:
             Self: The validated DirectorySettings instance.
         """
-        directories = [
-            self.base,
-            self.assets,
-            self.log,
-            self.image,
-            self.audio,
-            self.video,
-        ]
-        logger.info(f"Creating directories: {directories}")
-        for directory in directories:
+        for directory in [            self.base,            self.assets,            self.log,            self.image,            self.audio,            self.video        ]:
             directory.mkdir(exist_ok=True)
             logger.info(f"Created directory: {directory}")
         return self
@@ -148,7 +103,7 @@ class Settings(BaseSettings):
     )
 
     model: ModelSettings = ModelSettings()
-    short_term_memory: ShortTermMemorySettings = ShortTermMemorySettings()
+    memory: MemorySettings = MemorySettings()
     vector_database: VectorDatabaseSettings = VectorDatabaseSettings()
     voice_generator_mcp: MCPSettings = MCPSettings(
         url="http://localhost:8080/gradio_api/mcp/sse",
