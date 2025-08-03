@@ -126,10 +126,6 @@ class Graph:
                 args=["mcp-server-time"],
                 transport="stdio",
             ),
-            # self.settings.video_generator_mcp.name: {
-            #     "url": str(self.settings.video_generator_mcp.url),
-            #     "transport": self.settings.video_generator_mcp.transport,
-            # },
             self.settings.voice_generator_mcp.name: SSEConnection(
                 url=str(self.settings.voice_generator_mcp.url),
                 transport=self.settings.voice_generator_mcp.transport,
