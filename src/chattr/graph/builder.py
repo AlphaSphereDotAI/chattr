@@ -116,8 +116,8 @@ class Graph:
                 command="uvx",
                 args=["mcp-server-qdrant"],
                 env={
-                    "QDRANT_URL": "http://localhost:6333",
-                    "COLLECTION_NAME": "chattr",
+                    "QDRANT_URL": str(self.settings.vector_database.url),
+                    "COLLECTION_NAME": self.settings.vector_database.name,
                 },
                 transport="stdio",
             ),
@@ -126,10 +126,6 @@ class Graph:
                 args=["mcp-server-time"],
                 transport="stdio",
             ),
-            # self.settings.video_generator_mcp.name: {
-            #     "url": str(self.settings.video_generator_mcp.url),
-            #     "transport": self.settings.video_generator_mcp.transport,
-            # },
             self.settings.voice_generator_mcp.name: {
                 "url": str(self.settings.voice_generator_mcp.url),
                 "transport": self.settings.voice_generator_mcp.transport,
