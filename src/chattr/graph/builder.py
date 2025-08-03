@@ -159,20 +159,21 @@ class Graph:
             raise
 
     async def _setup_memory(self) -> tuple[AsyncRedisStore, AsyncRedisSaver]:
-        """Initialize and set up the Redis checkpointer for state persistence.
+        """
+        Initialize and set up the Redis store and checkpointer for state persistence.
 
         Returns:
-            AsyncRedisSaver: Configured Redis saver instance for graph checkpointing.
+            tuple[AsyncRedisStore, AsyncRedisSaver]: Configured Redis store and saver instances.
         """
-        async with (
-            AsyncRedisStore.from_conn_string(str(self.settings.memory.url)) as store,
-            AsyncRedisSaver.from_conn_string(
-                str(self.settings.memory.url)
-            ) as checkpointer,
-        ):
-            await store.setup()
-            await checkpointer.asetup()
-            return store, checkpointer
+        store_ctx = AsyncRedisStore.from_conn_string(str(self.settings.memory.url))
+        store = await store_ctx.__aenter__()
+        checkpointer_ctx = AsyncRedisSaver.from_conn_string(
+            str(self.settings.memory.url)
+        )
+        checkpointer = await checkpointer_ctx.__aenter__()
+        await store.setup()
+        await checkpointer.asetup()
+        return store, checkpointer
 
     @staticmethod
     async def _setup_tools(_mcp_client: MultiServerMCPClient) -> list[BaseTool]:
