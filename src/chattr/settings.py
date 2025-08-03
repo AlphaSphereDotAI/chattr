@@ -46,7 +46,7 @@ class ModelSettings(BaseModel):
                     "You need to provide API Key for the Model provider via `MODEL__API_KEY`"
                 )
             if not self.name:
-                raise ValueError("You need to provide Model name via `MODEL__API_KEY`")
+                raise ValueError("You need to provide Model name via `MODEL__NAME`")
         return self
 
 
