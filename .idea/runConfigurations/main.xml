@@ -9,8 +9,8 @@
         <entry key="DOCKER_MODEL_RUNNER_URL" value="&quot;&quot;" />
       </map>
     </option>
-    <option name="runType" value="SCRIPT" />
-    <option name="scriptOrModule" value="D:\Sync\Development\chattr\src\chattr\__main__.py" />
+    <option name="runType" value="MODULE" />
+    <option name="scriptOrModule" value="chattr" />
     <option name="uvArgs">
       <list />
     </option>
