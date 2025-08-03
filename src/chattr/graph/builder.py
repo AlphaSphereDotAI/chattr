@@ -116,8 +116,8 @@ class Graph:
                 command="uvx",
                 args=["mcp-server-qdrant"],
                 env={
-                    "QDRANT_URL": "http://localhost:6333",
-                    "COLLECTION_NAME": "chattr",
+                    "QDRANT_URL": str(self.settings.vector_database.url),
+                    "COLLECTION_NAME": self.settings.vector_database.name,
                 },
                 transport="stdio",
             ),
