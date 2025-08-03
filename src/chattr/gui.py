@@ -17,8 +17,8 @@ from chattr.graph.runner import graph
 
 
 def like(evt: LikeData):
-    print("User liked the response")
-    print(evt.index, evt.liked, evt.value)
+    # TODO: Implement feedback storage (e.g., save like/dislike to database or analytics)
+    raise NotImplementedError("The 'like' callback is not yet implemented.")
 
 
 def app_block() -> Blocks:
