@@ -27,7 +27,7 @@ from langgraph.prebuilt import ToolNode, tools_condition
 from langgraph.store.redis.aio import AsyncRedisStore
 
 from chattr.settings import Settings
-from chattr.utils import download_file, is_url
+from chattr.utils import convert_audio_to_wav, download_file, is_url
 
 logger = getLogger(__name__)
 
@@ -130,10 +130,10 @@ class Graph:
             #     "url": str(self.settings.video_generator_mcp.url),
             #     "transport": self.settings.video_generator_mcp.transport,
             # },
-            self.settings.voice_generator_mcp.name: {
-                "url": str(self.settings.voice_generator_mcp.url),
-                "transport": self.settings.voice_generator_mcp.transport,
-            },
+            self.settings.voice_generator_mcp.name: SSEConnection(
+                url=str(self.settings.voice_generator_mcp.url),
+                transport=self.settings.voice_generator_mcp.transport,
+            ),
         }
 
     def _initialize_llm(self) -> ChatOpenAI:
@@ -251,8 +251,14 @@ class Graph:
                 if is_url(last_tool_message.content):
                     logger.info(f"Downloading audio from {last_tool_message.content}")
                     file_path: Path = (
-                        self.settings.directory.audio / f"{last_tool_message.id}.aac"
+                        self.settings.directory.audio / last_tool_message.id
                     )
-                    download_file(last_tool_message.content, file_path)
-                    yield "", history, file_path
+                    download_file(
+                        last_tool_message.content, file_path.with_suffix(".aac")
+                    )
+                    logger.info(f"Audio downloaded to {file_path.with_suffix('.aac')}")
+                    convert_audio_to_wav(
+                        file_path.with_suffix(".aac"), file_path.with_suffix(".wav")
+                    )
+                    yield "", history, file_path.with_suffix(".wav")
             yield "", history, None
