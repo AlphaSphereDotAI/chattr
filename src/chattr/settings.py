@@ -64,7 +64,9 @@ class MCPSettings(BaseModel):
     url: HttpUrl = Field(default=None)
     command: StrictStr = Field(default=None)
     args: List[StrictStr] = Field(default=[])
-    transport: Literal["sse", "stdio"] = Field(default=None)
+class MCPSettings(BaseModel):
+    ...
+    transport: Literal["sse", "stdio", "streamable_http", "websocket"] = Field(default=None)
 
 
 class DirectorySettings(BaseModel):
