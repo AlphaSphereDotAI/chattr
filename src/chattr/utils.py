@@ -41,8 +41,14 @@ def download_file(url: HttpUrl, path: Path) -> None:
 
     Returns:
         None
+
+    Raises:
+        requests.RequestException: If the HTTP request fails.
+        IOError: If file writing fails.
     """
-    response = get(url, stream=True)
+    response = get(url, stream=True, timeout=30)
+    response.raise_for_status()  # Raise an exception for bad status codes
+
     with open(path, "wb") as f:
         for chunk in response.iter_content(chunk_size=8192):
             if chunk:
