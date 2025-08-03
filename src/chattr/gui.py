@@ -7,18 +7,12 @@ from gradio import (
     Chatbot,
     ClearButton,
     Column,
-    LikeData,
     PlayableVideo,
     Row,
     Textbox,
 )
 
 from chattr.graph.runner import graph
-
-
-def like(evt: LikeData):
-    # TODO: Implement feedback storage (e.g., save like/dislike to database or analytics)
-    raise NotImplementedError("The 'like' callback is not yet implemented.")
 
 
 def app_block() -> Blocks:
@@ -42,7 +36,6 @@ def app_block() -> Blocks:
                 with Row():
                     button = Button("Send", variant="primary")
                     ClearButton([msg, chatbot, video], variant="stop")
-        chatbot.like(like)
         button.click(graph.generate_response, [msg, chatbot], [msg, chatbot, audio])
         msg.submit(graph.generate_response, [msg, chatbot], [msg, chatbot, audio])
     return chat
