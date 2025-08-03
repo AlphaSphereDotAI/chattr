@@ -1,10 +1,9 @@
 """This module contains the Graph class, which represents the main orchestration graph for the Chattr application."""
 
-from asyncio import run
 from json import dumps
 from logging import getLogger
 from pathlib import Path
-from typing import AsyncGenerator
+from typing import AsyncGenerator, Self
 
 from gradio import ChatMessage
 from gradio.components.chatbot import MetadataDict
@@ -41,31 +40,35 @@ class Graph:
         settings: The application settings used to configure the graph and its components.
     """
 
-    def __init__(self, settings: Settings):
+    def __init__(
+        self,
+        settings: Settings,
+        store: AsyncRedisStore,
+        saver: AsyncRedisSaver,
+        mcp_client: MultiServerMCPClient,
+        tools: list[BaseTool],
+    ):
         self.settings: Settings = settings
         self.system_message: SystemMessage = SystemMessage(
             content="You are a helpful assistant that can answer questions about the time and generate audio files from text."
         )
-        initialized_memory: tuple[AsyncRedisStore, AsyncRedisSaver] = run(
-            self._setup_memory()
-        )
-        self._long_term_memory: AsyncRedisStore = initialized_memory[0]
-        self._short_term_memory: AsyncRedisSaver = initialized_memory[1]
-        self._mcp_servers_config: dict[
-            str,
-            StdioConnection
-            | SSEConnection
-            | StreamableHttpConnection
-            | WebsocketConnection,
-        ] = self._create_mcp_config()
-        self._tools: list[BaseTool] = run(
-            self._setup_tools(MultiServerMCPClient(self._mcp_servers_config))
-        )
+        self._long_term_memory: AsyncRedisStore = store
+        self._short_term_memory: AsyncRedisSaver = saver
+        self._mcp_client: MultiServerMCPClient = mcp_client
+        self._tools: list[BaseTool] = tools
         self._llm: ChatOpenAI = self._initialize_llm()
-        self._model: Runnable = self._llm.bind_tools(
-            self._tools, parallel_tool_calls=False
-        )
+        self._model: Runnable = self._llm.bind_tools(self._tools)
         self._graph: CompiledStateGraph = self._build_state_graph()
+
+    @classmethod
+    async def create(cls, settings: Settings) -> Self:
+        """Async factory method to create a Graph instance."""
+        store, saver = await cls._setup_memory(settings)
+        mcp_client: MultiServerMCPClient = MultiServerMCPClient(
+            cls._create_mcp_config(settings)
+        )
+        tools: list[BaseTool] = await cls._setup_tools(mcp_client)
+        return cls(settings, store, saver, mcp_client, tools)
 
     def _build_state_graph(self) -> CompiledStateGraph:
         """
