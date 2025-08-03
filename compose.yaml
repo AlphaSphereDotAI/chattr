@@ -11,7 +11,15 @@ services:
       - command: chown -R app:app /home/app
         user: root
     environment:
-      REDIS_URL: redis://localhost:6379
+      REDIS_URL: redis://redis:6379
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis-data:/data
+
+volumes:
+  redis-data:
     healthcheck:
       test:
         - "CMD"
