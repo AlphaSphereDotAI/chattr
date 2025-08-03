@@ -46,7 +46,7 @@ class ModelSettings(BaseModel):
                     "You need to provide API Key for the Model provider via `MODEL__API_KEY`"
                 )
             if not self.name:
-                raise ValueError("You need to provide Model name via `MODEL__API_KEY`")
+                raise ValueError("You need to provide Model name via `MODEL__NAME`")
         return self
 
 
@@ -64,7 +64,9 @@ class MCPSettings(BaseModel):
     url: HttpUrl = Field(default=None)
     command: StrictStr = Field(default=None)
     args: List[StrictStr] = Field(default=[])
-    transport: Literal["sse", "stdio"] = Field(default=None)
+    transport: Literal["sse", "stdio", "streamable_http", "websocket"] = Field(
+        default=None
+    )
 
 
 class DirectorySettings(BaseModel):
