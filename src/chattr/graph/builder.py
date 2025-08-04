@@ -7,7 +7,7 @@ from typing import AsyncGenerator, Self
 
 from gradio import ChatMessage
 from gradio.components.chatbot import MetadataDict
-from langchain_core.messages import HumanMessage, SystemMessage
+from langchain_core.messages import HumanMessage
 from langchain_core.runnables import Runnable, RunnableConfig
 from langchain_core.tools import BaseTool
 from langchain_mcp_adapters.client import MultiServerMCPClient
@@ -35,26 +35,18 @@ class Graph:
     """
     Represents the main orchestration graph for the Chattr application.
     This class manages the setup and execution of the conversational agent, tools, and state graph.
-
-    Args:
-        settings: The application settings used to configure the graph and its components.
     """
+
+    settings: Settings
 
     def __init__(
         self,
-        settings: Settings,
         store: AsyncRedisStore,
         saver: AsyncRedisSaver,
-        mcp_client: MultiServerMCPClient,
         tools: list[BaseTool],
     ):
-        self.settings: Settings = settings
-        self.system_message: SystemMessage = SystemMessage(
-            content="You are a helpful assistant that can answer questions about the time and generate audio files from text."
-        )
         self._long_term_memory: AsyncRedisStore = store
         self._short_term_memory: AsyncRedisSaver = saver
-        self._mcp_client: MultiServerMCPClient = mcp_client
         self._tools: list[BaseTool] = tools
         self._llm: ChatOpenAI = self._initialize_llm()
         self._model: Runnable = self._llm.bind_tools(self._tools)
@@ -63,12 +55,12 @@ class Graph:
     @classmethod
     async def create(cls, settings: Settings) -> Self:
         """Async factory method to create a Graph instance."""
-        store, saver = await cls._setup_memory(settings)
-        mcp_client: MultiServerMCPClient = MultiServerMCPClient(
-            cls._create_mcp_config(settings)
+        cls.settings: Settings = settings
+        store, saver = await cls._setup_memory()
+        tools: list[BaseTool] = await cls._setup_tools(
+            MultiServerMCPClient(cls._create_mcp_config())
         )
-        tools: list[BaseTool] = await cls._setup_tools(mcp_client)
-        return cls(settings, store, saver, mcp_client, tools)
+        return cls(store, saver, tools)
 
     def _build_state_graph(self) -> CompiledStateGraph:
         """
@@ -81,7 +73,7 @@ class Graph:
 
         async def _call_model(state: MessagesState) -> MessagesState:
             response = await self._model.ainvoke(
-                [self.system_message] + state["messages"]
+                [self.settings.model.system_message] + state["messages"]
             )
             return MessagesState(messages=[response])
 
@@ -97,8 +89,9 @@ class Graph:
             store=self._long_term_memory,
         )
 
+    @classmethod
     def _create_mcp_config(
-        self,
+        cls,
     ) -> dict[
         str,
         StdioConnection
@@ -119,8 +112,8 @@ class Graph:
                 command="uvx",
                 args=["mcp-server-qdrant"],
                 env={
-                    "QDRANT_URL": str(self.settings.vector_database.url),
-                    "COLLECTION_NAME": self.settings.vector_database.name,
+                    "QDRANT_URL": str(cls.settings.vector_database.url),
+                    "COLLECTION_NAME": cls.settings.vector_database.name,
                 },
                 transport="stdio",
             ),
@@ -129,9 +122,9 @@ class Graph:
                 args=["mcp-server-time"],
                 transport="stdio",
             ),
-            self.settings.voice_generator_mcp.name: SSEConnection(
-                url=str(self.settings.voice_generator_mcp.url),
-                transport=self.settings.voice_generator_mcp.transport,
+            cls.settings.voice_generator_mcp.name: SSEConnection(
+                url=str(cls.settings.voice_generator_mcp.url),
+                transport=cls.settings.voice_generator_mcp.transport,
             ),
         }
 
@@ -157,18 +150,19 @@ class Graph:
             logger.error(f"Failed to initialize ChatOpenAI model: {e}")
             raise
 
-    async def _setup_memory(self) -> tuple[AsyncRedisStore, AsyncRedisSaver]:
+    @classmethod
+    async def _setup_memory(cls) -> tuple[AsyncRedisStore, AsyncRedisSaver]:
         """
         Initialize and set up the Redis store and checkpointer for state persistence.
 
         Returns:
             tuple[AsyncRedisStore, AsyncRedisSaver]: Configured Redis store and saver instances.
         """
-        store_ctx = AsyncRedisStore.from_conn_string(str(self.settings.memory.url))
-        store = await store_ctx.__aenter__()
+        store_ctx = AsyncRedisStore.from_conn_string(str(cls.settings.memory.url))
         checkpointer_ctx = AsyncRedisSaver.from_conn_string(
-            str(self.settings.memory.url)
+            str(cls.settings.memory.url)
         )
+        store = await store_ctx.__aenter__()
         checkpointer = await checkpointer_ctx.__aenter__()
         await store.setup()
         await checkpointer.asetup()
@@ -207,12 +201,9 @@ class Graph:
         Returns:
             AsyncGenerator[tuple[str, list[ChatMessage], Path]]: Yields a tuple containing an empty string, the updated history, and a Path to an audio file if generated.
         """
-        graph_config: RunnableConfig = RunnableConfig(
-            configurable={"thread_id": "1", "user_id": "1"}
-        )
         async for response in self._graph.astream(
             MessagesState(messages=[HumanMessage(content=message)]),
-            graph_config,
+            RunnableConfig(configurable={"thread_id": "1", "user_id": "1"}),
             stream_mode="updates",
         ):
             if response.keys() == {"agent"}:
