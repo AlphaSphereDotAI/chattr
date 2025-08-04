@@ -133,7 +133,7 @@ jobs:
           VECTOR_DATABASE__URL: http://localhost:6333
           VECTOR_DATABASE__NAME: test
           REDIS_URL: redis://memory:6379
-          MEMORY_URL: redis://memory:6379
+          MEMORY__URL: redis://memory:6379
         options: >-
           --health-cmd "curl -o /dev/null -f -s -w 'Status: %{http_code}, Time: %{time_total}s' http://localhost:7860/"
           --health-interval 10s --health-timeout 5s --health-start-period 15s --health-retries 15
