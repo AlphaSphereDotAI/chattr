@@ -32,14 +32,10 @@ jobs:
         run: uv tool install huggingface-hub[cli,hf-transfer]
       - name: Remove Unnecessary Files
         run: |
-          echo "" >> .gitignore
-          echo ".github/" >> .gitignore
-          echo ".trunk/" >> .gitignore
-          echo ".idea/" >> .gitignore
-          echo "renovate.json" >> .gitignore
-          echo ".deepsource.toml" >> .gitignore
-          echo ".pre-commit-config.yaml" >> .gitignore
-          echo "compose.yaml" >> .gitignore
+          echo "*" > .gitignore
+          echo "!.gitignore" >> .gitignore
+          echo "!README.md" >> .gitignore
+          echo "!Dockerfile" >> .gitignore
       - name: Add to git credentials
         run: git config --global credential.helper store
       - name: Login to HuggingFace Hub
