@@ -11,7 +11,7 @@ services:
       - command: chown -R app:app /home/app
         user: root
     environment:
-      SERVER_PORT: 7860
+      REDIS_URL: redis://redis:6379
     healthcheck:
       test:
         - "CMD"
@@ -30,9 +30,14 @@ services:
       start_interval: 5s
     secrets:
       - groq_api_key
+  redis:
+    image: redis:alpine
+    volumes:
+      - redis-data:/data
 volumes:
   results:
   logs:
+  redis-data:
 secrets:
   groq_api_key:
     file: groq_api_key.txt
