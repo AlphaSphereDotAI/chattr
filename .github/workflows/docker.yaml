@@ -117,10 +117,7 @@ jobs:
         ports:
           - 6379:6379
         options: >-
-          --health-cmd="redis-cli ping | grep PONG"
-          --health-interval=5s
-          --health-timeout=3s
-          --health-retries=5
+          --health-cmd="redis-cli ping | grep PONG" --health-interval=5s --health-timeout=3s --health-retries=5
       chattr:
         image: ${{ needs.build_image.outputs.image_tag }}
         ports:
