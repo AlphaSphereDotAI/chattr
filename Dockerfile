@@ -9,7 +9,7 @@ RUN apk add --no-cache build-base git
 USER nonroot
 
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv tool install git+https://github.com/AlphaSphereDotAI/vocalizr
+    uv tool install git+https://github.com/AlphaSphereDotAI/chattr
 
 FROM cgr.dev/chainguard/wolfi-base:latest@sha256:3a4709d9dfc2cf8f1d78ee8788d7b9ab907778a8be89543e961a2c29aa046529 AS production
 
@@ -28,4 +28,4 @@ COPY --from=builder --chown=nonroot:nonroot --chmod=755 /home/nonroot/.local/ /h
 
 EXPOSE ${GRADIO_SERVER_PORT}
 
-CMD ["vocalizr"]
+CMD ["chattr"]
