@@ -55,12 +55,12 @@ class ModelSettings(BaseModel):
 
 
 class MemorySettings(BaseModel):
-    url: RedisDsn = Field(default=RedisDsn(url="redis://localhost:6379"))
+    url: RedisDsn = Field(default="redis://localhost:6379")
 
 
 class VectorDatabaseSettings(BaseModel):
     name: StrictStr = Field(default="chattr")
-    url: HttpUrl = Field(default=HttpUrl(url="http://localhost:6333"))
+    url: HttpUrl = Field(default="http://localhost:6333")
 
 
 class MCPSettings(BaseModel):
