@@ -27,7 +27,7 @@ def app_block() -> Blocks:
         with Row():
             with Column():
                 video = PlayableVideo()
-                audio = Audio(sources="upload", type="filepath")
+                audio = Audio(sources="upload", type="filepath", format="wav")
             with Column():
                 chatbot = Chatbot(
                     type="messages", show_copy_button=True, show_share_button=True
