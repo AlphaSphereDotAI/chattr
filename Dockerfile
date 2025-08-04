@@ -1,47 +1,31 @@
-FROM python:3.13@sha256:28f60ab75da2183870846130cead1f6af30162148d3238348f78f89cf6160b5d AS builder
+FROM cgr.dev/chainguard/wolfi-base:latest@sha256:3a4709d9dfc2cf8f1d78ee8788d7b9ab907778a8be89543e961a2c29aa046529 AS builder
 
-SHELL ["/bin/bash", "-c"]
+COPY --from=ghcr.io/astral-sh/uv:latest@sha256:40775a79214294fb51d097c9117592f193bcfdfc634f4daa0e169ee965b10ef0 \
+     /uv /uvx /usr/bin/
 
-ENV UV_LINK_MODE=copy \
-    UV_COMPILE_BYTECODE=1 \
-    UV_PYTHON_DOWNLOADS=0
+# skipcq: DOK-DL3018
+RUN apk add --no-cache build-base git
 
-COPY --from=ghcr.io/astral-sh/uv:latest@sha256:2fd1b38e3398a256d6af3f71f0e2ba6a517b249998726a64d8cfbe55ab34af5e \
-    /uv /uvx /bin/
-
-WORKDIR /app
+USER nonroot
 
 RUN --mount=type=cache,target=/root/.cache/uv \
-    --mount=type=bind,source=uv.lock,target=uv.lock \
-    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    --mount=type=bind,source=README.md,target=README.md \
-    uv sync --no-install-project --no-dev --locked --no-editable
+    uv tool install git+https://github.com/AlphaSphereDotAI/vocalizr
 
-COPY . /app
-
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --no-dev --locked --no-editable
-
-FROM python:3.13-slim@sha256:6544e0e002b40ae0f59bc3618b07c1e48064c4faed3a15ae2fbd2e8f663e8283 AS production
-
-SHELL ["/bin/bash", "-c"]
+FROM cgr.dev/chainguard/wolfi-base:latest@sha256:3a4709d9dfc2cf8f1d78ee8788d7b9ab907778a8be89543e961a2c29aa046529 AS production
 
 ENV GRADIO_SERVER_PORT=7860 \
-    GRADIO_SERVER_NAME=0.0.0.0
+    GRADIO_SERVER_NAME=0.0.0.0 \
+    PATH=/home/nonroot/.local/bin:$PATH
 
-RUN groupadd app && \
-    useradd -m -g app -s /bin/bash app && \
-    apt-get update > /dev/null && \
-    apt-get install -y --no-install-recommends curl > /dev/null && \
-    apt-get clean > /dev/null && \
-    rm -rf /var/lib/apt/lists/*
+# skipcq: DOK-DL3018
+RUN apk add --no-cache curl
 
-WORKDIR /home/app
+USER nonroot
 
-COPY --from=builder --chown=app:app --chmod=555 /app/.venv /app/.venv
+WORKDIR /home/nonroot
 
-USER app
+COPY --from=builder --chown=nonroot:nonroot --chmod=755 /home/nonroot/.local/ /home/nonroot/.local/
 
 EXPOSE ${GRADIO_SERVER_PORT}
 
-CMD ["/app/.venv/bin/chattr"]
+CMD ["vocalizr"]
