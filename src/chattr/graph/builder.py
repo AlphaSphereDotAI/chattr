@@ -179,7 +179,11 @@ class Graph:
         Returns:
             list[BaseTool]: A list of BaseTool objects retrieved from the MCP client.
         """
-        return await _mcp_client.get_tools()
+        try:
+            return await _mcp_client.get_tools()
+        except Exception as e:
+            logger.warning(f"MCP unavailable: {e}")
+            return []
 
     def draw_graph(self) -> None:
         """Render the compiled state graph as a Mermaid PNG image and save it."""
