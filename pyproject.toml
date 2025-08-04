@@ -8,13 +8,13 @@ authors = [
 ]
 requires-python = ">=3.12"
 dependencies = [
-  "gradio>=5.36.2",
-  "langchain>=0.3.26",
+  "gradio>=5.39.0",
+  "langchain>=0.3.27",
   "langchain-mcp-adapters>=0.1.9",
-  "langchain-openai>=0.3.27",
-  "langgraph>=0.5.2",
-  "loguru>=0.7.3",
-  "python-dotenv>=1.1.1",
+  "langchain-openai>=0.3.28",
+  "langgraph>=0.6.3",
+  "langgraph-checkpoint-redis>=0.0.8",
+  "m3u8>=6.0.0",
 ]
 
 [project.scripts]
@@ -25,4 +25,4 @@ requires = ["uv_build"]
 build-backend = "uv_build"
 
 [dependency-groups]
-dev = ["ruff>=0.12.2", "ty>=0.0.1a12"]
+dev = ["ruff>=0.12.7", "ty>=0.0.1a16"]
