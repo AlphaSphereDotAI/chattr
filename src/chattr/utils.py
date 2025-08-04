@@ -4,9 +4,10 @@ from logging import getLogger
 from pathlib import Path
 from typing import Optional
 
+from m3u8 import M3U8, load
 from pydantic import HttpUrl, ValidationError
 from pydub import AudioSegment
-from requests import get
+from requests import Session
 
 logger = getLogger(__name__)
 
@@ -46,9 +47,13 @@ def download_file(url: HttpUrl, path: Path) -> None:
         requests.RequestException: If the HTTP request fails.
         IOError: If file writing fails.
     """
-    response = get(url, stream=True, timeout=30)
-    response.raise_for_status()  # Raise an exception for bad status codes
-
+    if str(url).endswith(".m3u8"):
+        _playlist: M3U8 = load(url)
+        url: str = str(url).replace("playlist.m3u8", _playlist.segments[0].uri)
+    print(url)
+    session = Session()
+    response = session.get(url, stream=True, timeout=30)
+    response.raise_for_status()
     with open(path, "wb") as f:
         for chunk in response.iter_content(chunk_size=8192):
             if chunk:
