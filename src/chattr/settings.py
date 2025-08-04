@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import List, Literal, Self
 
 from dotenv import load_dotenv
+from langchain_core.messages import SystemMessage
 from pydantic import (
     BaseModel,
     DirectoryPath,
@@ -27,6 +28,9 @@ class ModelSettings(BaseModel):
     name: StrictStr = Field(default=None)
     api_key: SecretStr = Field(default=None)
     temperature: float = Field(default=0.0, ge=0.0, le=1.0)
+    system_message: SystemMessage = SystemMessage(
+        content="You are a helpful assistant that can answer questions about the time and generate audio files from text."
+    )
 
     @model_validator(mode="after")
     def check_api_key_exist(self) -> Self:
