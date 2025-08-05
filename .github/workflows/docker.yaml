@@ -126,6 +126,7 @@ jobs:
           MODEL__NAME: llama3-70b-8192
           VECTOR_DATABASE__URL: >
             http://localhost:${{ job.services.vector_database.ports['6333'] }}
+
           VECTOR_DATABASE__NAME: test
         options: >-
           --health-cmd "curl -o /dev/null -f -s -w 'Status: %{http_code}, Time: %{time_total}s' http://localhost:7860/"
