@@ -213,7 +213,7 @@ class Graph:
         try:
             return await _mcp_client.get_tools()
         except Exception as e:
-            logger.warning(f"MCP unavailable: {e}")
+            logger.warning(f"Failed to retrieve MCP tools: {e}")
             return []
 
     def draw_graph(self) -> None:
