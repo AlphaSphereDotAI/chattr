@@ -2,12 +2,13 @@
 
 from json import dumps
 from pathlib import Path
-from sys import exit
+from textwrap import dedent
 from typing import AsyncGenerator, Self
 
 from gradio import ChatMessage
 from gradio.components.chatbot import MetadataDict
-from langchain_core.messages import HumanMessage
+from langchain_community.embeddings import FastEmbedEmbeddings
+from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_core.runnables import Runnable, RunnableConfig
 from langchain_core.tools import BaseTool
 from langchain_mcp_adapters.client import MultiServerMCPClient
@@ -18,13 +19,12 @@ from langchain_mcp_adapters.sessions import (
     WebsocketConnection,
 )
 from langchain_openai import ChatOpenAI
-from langgraph.checkpoint.redis.aio import AsyncRedisSaver
 from langgraph.graph import START, StateGraph
-from langgraph.graph.message import MessagesState
 from langgraph.graph.state import CompiledStateGraph
 from langgraph.prebuilt import ToolNode, tools_condition
-from langgraph.store.redis.aio import AsyncRedisStore
+from mem0 import Memory
 
+from chattr.graph.state import State
 from chattr.settings import Settings, logger
 from chattr.utils import convert_audio_to_wav, download_file, is_url
 
@@ -37,14 +37,8 @@ class Graph:
 
     settings: Settings
 
-    def __init__(
-        self,
-        store: AsyncRedisStore,
-        saver: AsyncRedisSaver,
-        tools: list[BaseTool],
-    ):
-        self._long_term_memory: AsyncRedisStore = store
-        self._short_term_memory: AsyncRedisSaver = saver
+    def __init__(self, memory: Memory, tools: list[BaseTool]):
+        self._memory: Memory = memory
         self._tools: list[BaseTool] = tools
         self._llm: ChatOpenAI = self._initialize_llm()
         self._model: Runnable = self._llm.bind_tools(self._tools)
@@ -55,26 +49,14 @@ class Graph:
         """Async factory method to create a Graph instance."""
         cls.settings: Settings = settings
         tools = None
-        store, saver = await cls._setup_memory()
-        # try:
-        #     memory: tuple[AsyncRedisStore, AsyncRedisSaver] = await cls._setup_memory()
-        #     store, saver = memory
-        # except ConnectionError as e:
-        #     logger.error(f"Failed to connect to Redis store: {e}")
-        #     exit(1)
-        # except Exception as e:
-        #     logger.error(f"Failed to setup memory store and checkpointer: {e}")
-        #     exit(1)
+        memory = await cls._setup_memory()
         try:
             tools: list[BaseTool] = await cls._setup_tools(
                 MultiServerMCPClient(cls._create_mcp_config())
             )
         except Exception as e:
             logger.warning(f"Failed to setup tools: {e}")
-        if not store or not saver:
-            logger.error("Failed to setup memory store and checkpointer")
-            exit(1)
-        return cls(store, saver, tools)
+        return cls(memory, tools)
 
     def _build_state_graph(self) -> CompiledStateGraph:
         """
@@ -85,23 +67,41 @@ class Graph:
             CompiledStateGraph: The compiled state graph is ready for execution.
         """
 
-        async def _call_model(state: MessagesState) -> MessagesState:
-            response = await self._model.ainvoke(
-                [self.settings.model.system_message] + state["messages"]
+        async def _call_model(state: State) -> State:
+            messages = state.get("messages")
+            user_id = state.get("mem0_user_id")
+            memories = self._memory.search(messages[-1].content, user_id=user_id)
+            context = dedent(
+                f"""
+                Relevant information from previous conversations:
+                {"\n".join([f"- {memory['memory']}" for memory in memories])}
+                """
             )
-            return MessagesState(messages=[response])
+            print(context)
+            system_message: SystemMessage = SystemMessage(
+                content=dedent(
+                    f"""
+                    {self.settings.model.system_message}
+                    Use the provided context to personalize your responses and remember user preferences and past interactions.
+                    {context}
+                    """
+                )
+            )
 
-        graph_builder: StateGraph = StateGraph(MessagesState)
+            response = await self._model.ainvoke([system_message] + messages)
+            self._memory.add(
+                f"User: {messages[-1].content}\nAssistant: {response.content}",
+                user_id=user_id,
+            )
+            return State(messages=[response], mem0_user_id=user_id)
+
+        graph_builder: StateGraph = StateGraph(State)
         graph_builder.add_node("agent", _call_model)
         graph_builder.add_node("tools", ToolNode(self._tools))
         graph_builder.add_edge(START, "agent")
         graph_builder.add_conditional_edges("agent", tools_condition)
         graph_builder.add_edge("tools", "agent")
-        return graph_builder.compile(
-            debug=True,
-            checkpointer=self._short_term_memory,
-            store=self._long_term_memory,
-        )
+        return graph_builder.compile(debug=True)
 
     @classmethod
     def _create_mcp_config(
@@ -165,22 +165,39 @@ class Graph:
             raise
 
     @classmethod
-    async def _setup_memory(cls) -> tuple[AsyncRedisStore, AsyncRedisSaver]:
+    async def _setup_memory(cls) -> Memory:
         """
-        Initialize and set up the Redis store and checkpointer for state persistence.
+        Initialize and set up the store and checkpointer for state persistence.
 
         Returns:
-            tuple[AsyncRedisStore, AsyncRedisSaver]: Configured Redis store and saver instances.
+            Memory: Configured memory instances.
         """
-        store_ctx = AsyncRedisStore.from_conn_string(str(cls.settings.memory.url))
-        checkpointer_ctx = AsyncRedisSaver.from_conn_string(
-            str(cls.settings.memory.url)
+
+        return Memory.from_config(
+            {
+                "vector_store": {
+                    "provider": "qdrant",
+                    "config": {
+                        "host": cls.settings.vector_database.url.host,
+                        "port": cls.settings.vector_database.url.port,
+                        "collection_name": cls.settings.memory.collection_name,
+                        "embedding_model_dims": 384,
+                    },
+                },
+                "llm": {
+                    "provider": "openai",
+                    "config": {
+                        "model": cls.settings.model.name,
+                        "openai_base_url": cls.settings.model.url,
+                        "api_key": cls.settings.model.api_key,
+                    },
+                },
+                "embedder": {
+                    "provider": "langchain",
+                    "config": {"model": FastEmbedEmbeddings()},
+                },
+            }
         )
-        store = await store_ctx.__aenter__()
-        checkpointer = await checkpointer_ctx.__aenter__()
-        await store.setup()
-        await checkpointer.asetup()
-        return store, checkpointer
 
     @staticmethod
     async def _setup_tools(_mcp_client: MultiServerMCPClient) -> list[BaseTool]:
@@ -220,7 +237,7 @@ class Graph:
             AsyncGenerator[tuple[str, list[ChatMessage], Path]]: Yields a tuple containing an empty string, the updated history, and a Path to an audio file if generated.
         """
         async for response in self._graph.astream(
-            MessagesState(messages=[HumanMessage(content=message)]),
+            State(messages=[HumanMessage(content=message)]),
             RunnableConfig(configurable={"thread_id": "1", "user_id": "1"}),
             stream_mode="updates",
         ):
