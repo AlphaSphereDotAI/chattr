@@ -1,8 +1,8 @@
 """This module contains the Graph class, which represents the main orchestration graph for the Chattr application."""
 
 from json import dumps
-from logging import getLogger
 from pathlib import Path
+from sys import exit
 from typing import AsyncGenerator, Self
 
 from gradio import ChatMessage
@@ -25,10 +25,8 @@ from langgraph.graph.state import CompiledStateGraph
 from langgraph.prebuilt import ToolNode, tools_condition
 from langgraph.store.redis.aio import AsyncRedisStore
 
-from chattr.settings import Settings
+from chattr.settings import Settings, logger
 from chattr.utils import convert_audio_to_wav, download_file, is_url
-
-logger = getLogger(__name__)
 
 
 class Graph:
@@ -56,10 +54,26 @@ class Graph:
     async def create(cls, settings: Settings) -> Self:
         """Async factory method to create a Graph instance."""
         cls.settings: Settings = settings
+        tools = None
         store, saver = await cls._setup_memory()
-        tools: list[BaseTool] = await cls._setup_tools(
-            MultiServerMCPClient(cls._create_mcp_config())
-        )
+        # try:
+        #     memory: tuple[AsyncRedisStore, AsyncRedisSaver] = await cls._setup_memory()
+        #     store, saver = memory
+        # except ConnectionError as e:
+        #     logger.error(f"Failed to connect to Redis store: {e}")
+        #     exit(1)
+        # except Exception as e:
+        #     logger.error(f"Failed to setup memory store and checkpointer: {e}")
+        #     exit(1)
+        try:
+            tools: list[BaseTool] = await cls._setup_tools(
+                MultiServerMCPClient(cls._create_mcp_config())
+            )
+        except Exception as e:
+            logger.warning(f"Failed to setup tools: {e}")
+        if not store or not saver:
+            logger.error("Failed to setup memory store and checkpointer")
+            exit(1)
         return cls(store, saver, tools)
 
     def _build_state_graph(self) -> CompiledStateGraph:
