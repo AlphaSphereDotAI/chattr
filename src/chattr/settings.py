@@ -6,7 +6,6 @@ from typing import Self
 
 from dotenv import load_dotenv
 from jsonschema import validate
-from langchain_core.messages import SystemMessage
 from loguru import logger
 from pydantic import (
     BaseModel,
@@ -14,7 +13,6 @@ from pydantic import (
     Field,
     FilePath,
     HttpUrl,
-    RedisDsn,
     SecretStr,
     StrictStr,
     model_validator,
@@ -35,8 +33,8 @@ class ModelSettings(BaseModel):
     name: StrictStr = Field(default=None)
     api_key: SecretStr = Field(default=None)
     temperature: float = Field(default=0.0, ge=0.0, le=1.0)
-    system_message: SystemMessage = SystemMessage(
-        content="You are a helpful assistant that can answer questions about the time and generate audio files from text."
+    system_message: StrictStr = Field(
+        default="You are a helpful assistant that can answer questions about the time and generate audio files from text."
     )
 
     @model_validator(mode="after")
@@ -62,12 +60,12 @@ class ModelSettings(BaseModel):
 
 
 class MemorySettings(BaseModel):
-    url: RedisDsn = Field(default="redis://localhost:6379")
+    collection_name: StrictStr = Field(default="memories")
 
 
 class VectorDatabaseSettings(BaseModel):
     name: StrictStr = Field(default="chattr")
-    url: HttpUrl = Field(default="http://localhost:6333")
+    url: HttpUrl = HttpUrl("http://localhost:6333")
 
 
 class MCPSettings(BaseModel):
