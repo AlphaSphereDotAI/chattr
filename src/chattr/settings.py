@@ -1,18 +1,13 @@
 """This module contains the settings for the Chattr app."""
 
 from json import loads
-from logging import getLogger
 from pathlib import Path
 from typing import Self
 
 from dotenv import load_dotenv
+from jsonschema import validate
 from langchain_core.messages import SystemMessage
-from langchain_mcp_adapters.sessions import (
-    SSEConnection,
-    StdioConnection,
-    StreamableHttpConnection,
-    WebsocketConnection,
-)
+from loguru import logger
 from pydantic import (
     BaseModel,
     DirectoryPath,
@@ -26,9 +21,13 @@ from pydantic import (
 )
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-logger = getLogger(__name__)
-
 load_dotenv()
+
+logger.add(
+    sink=Path.cwd() / "logs" / "chattr.log",
+    format="{time:YYYY-MM-DD at HH:mm:ss} | {level} | {message}",
+    colorize=True,
+)
 
 
 class ModelSettings(BaseModel):
@@ -73,6 +72,9 @@ class VectorDatabaseSettings(BaseModel):
 
 class MCPSettings(BaseModel):
     path: FilePath = Field(default=None)
+    schema_path: FilePath = Field(
+        default_factory=lambda: Path.cwd() / "assets" / "mcp-config.json"
+    )
 
     @model_validator(mode="after")
     def is_json(self) -> Self:
@@ -83,15 +85,10 @@ class MCPSettings(BaseModel):
     @model_validator(mode="after")
     def check_mcp_config(self) -> Self:
         if self.path:
-            config: dict[
-                str,
-                StdioConnection
-                | SSEConnection
-                | StreamableHttpConnection
-                | WebsocketConnection,
-            ] = loads(self.path.read_text(encoding="utf-8"))
-            print(config)
-            print()
+            validate(
+                instance=loads(self.path.read_text(encoding="utf-8")),
+                schema=loads(self.schema_path.read_text(encoding="utf-8")),
+            )
         return self
 
 
