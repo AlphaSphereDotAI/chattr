@@ -48,7 +48,7 @@ class Graph:
     async def create(cls, settings: Settings) -> Self:
         """Async factory method to create a Graph instance."""
         cls.settings: Settings = settings
-        tools = None
+        tools = []
         memory = await cls._setup_memory()
         try:
             tools: list[BaseTool] = await cls._setup_tools(
@@ -188,7 +188,7 @@ class Graph:
                     "provider": "openai",
                     "config": {
                         "model": cls.settings.model.name,
-                        "openai_base_url": cls.settings.model.url,
+                        "openai_base_url": str(cls.settings.model.url),
                         "api_key": cls.settings.model.api_key,
                     },
                 },
@@ -213,7 +213,8 @@ class Graph:
         try:
             return await _mcp_client.get_tools()
         except Exception as e:
-            logger.warning(f"Failed to retrieve MCP tools: {e}")
+            logger.warning(f"Failed to setup tools: {e}")
+            logger.warning("Using empty tool list")
             return []
 
     def draw_graph(self) -> None:
