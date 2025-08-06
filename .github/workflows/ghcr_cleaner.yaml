@@ -16,4 +16,3 @@ jobs:
           image-names: ${{ github.event.repository.name }}
           image-tags: "*pr*"
           cut-off: 1s
-          dry-run: true
