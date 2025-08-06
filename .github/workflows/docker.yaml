@@ -38,7 +38,7 @@ jobs:
     needs: check_dockerfile
     runs-on: ubuntu-latest
     outputs:
-      image_tag: ${{ steps.meta.outputs.tags }}
+      image_tag: ${{ steps.tag.outputs.TAG }}
     steps:
       - name: Free Disk Space
         if: github.event_name != 'pull_request'
@@ -62,7 +62,6 @@ jobs:
           images: ghcr.io/${{ github.repository }}
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
-            type=raw,value=latest,enable=${{ startsWith(github.ref, 'refs/tags/') }}
             type=ref,event=pr,prefix={{sha}}-pr-
             type=ref,event=tag
       - name: Build
@@ -81,6 +80,9 @@ jobs:
           subject-name: ghcr.io/${{ github.repository }}
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
+      - name: Export tag for Testing and Scanning
+        id: tag
+        run: echo "TAG=$(echo "${{steps.meta.outputs.tags}}" | tail -n 1)" >> $GITHUB_OUTPUT
   docker_scout:
     name: Docker Scout (${{ matrix.commands }})
     needs: build_image
