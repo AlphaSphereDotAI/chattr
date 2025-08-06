@@ -13,7 +13,7 @@ jobs:
         with:
           account: AlphaSphereDotAI
           token: ${{ secrets.GH_TOKEN }}
-          image-names: "chattr"
+          image-names: ${{ github.event.repository.name }}
           image-tags: "*pr*"
           cut-off: 1s
           dry-run: true
