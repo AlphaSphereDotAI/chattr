@@ -1,7 +1,7 @@
 name: Chattr
 services:
   chattr:
-    image: ghcr.io/alphaspheredotai/chattr:latest@sha256:8606bf806df43e4541690a0cd91eb0f28ef123f4eb9e3591b49039d05dc7c55d
+    image: ghcr.io/alphaspheredotai/chattr:latest@sha256:1a360ca4cd48dbc06750e9c93e9841913644eed2c160b50e120b74cb974379dc
     ports:
       - "7860:7860"
     volumes:
@@ -12,7 +12,11 @@ services:
       - command: chown -R nonroot:nonroot /home/nonroot
         user: root
     environment:
-      REDIS_URL: redis://redis:6379
+      MODEL__URL: https://api.groq.com/openai/v1
+      MODEL__NAME: llama3-70b-8192
+      MODEL__API_KEY: ${MODEL__API_KEY}
+      VECTOR_DATABASE__URL: http://vector_database:6333
+      VECTOR_DATABASE__NAME: test
     healthcheck:
       test:
         - "CMD"
@@ -38,8 +42,9 @@ services:
     volumes:
       - qdrant_storage:/qdrant/storage
 volumes:
-  fastembed:
   logs:
+  assets:
+  fastembed:
   qdrant_storage:
 secrets:
   groq_api_key:
