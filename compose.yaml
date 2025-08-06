@@ -12,7 +12,11 @@ services:
       - command: chown -R nonroot:nonroot /home/nonroot
         user: root
     environment:
-      REDIS_URL: redis://redis:6379
+      MODEL__URL: https://api.groq.com/openai/v1
+      MODEL__NAME: llama3-70b-8192
+      MODEL__API_KEY: ${MODEL__API_KEY}
+      VECTOR_DATABASE__URL: http://vector_database:6333
+      VECTOR_DATABASE__NAME: test
     healthcheck:
       test:
         - "CMD"
@@ -38,8 +42,9 @@ services:
     volumes:
       - qdrant_storage:/qdrant/storage
 volumes:
-  fastembed:
   logs:
+  assets:
+  fastembed:
   qdrant_storage:
 secrets:
   groq_api_key:
