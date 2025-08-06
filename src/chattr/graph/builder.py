@@ -70,13 +70,22 @@ class Graph:
         async def _call_model(state: State) -> State:
             messages = state.get("messages")
             user_id = state.get("mem0_user_id")
+            if not user_id:
+                logger.warning("No user_id found in state")
+                user_id = "default"
             memories = self._memory.search(messages[-1].content, user_id=user_id)
-            context = dedent(
-                f"""
-                Relevant information from previous conversations:
-                {"\n".join([f"- {memory['memory']}" for memory in memories])}
-                """
-            )
+            if memories:
+                memory_list = "\n".join(
+                    [f"- {memory.get('memory')}" for memory in memories]
+                )
+                context = dedent(
+                    f"""
+                    Relevant information from previous conversations:
+                    {memory_list}
+                    """
+                )
+            else:
+                context = "No previous conversation history available."
             logger.debug(f"Memory context: {context}")
             system_message: SystemMessage = SystemMessage(
                 content=dedent(
@@ -87,7 +96,6 @@ class Graph:
                     """
                 )
             )
-
             response = await self._model.ainvoke([system_message] + messages)
             self._memory.add(
                 f"User: {messages[-1].content}\nAssistant: {response.content}",
@@ -181,7 +189,7 @@ class Graph:
                         "host": cls.settings.vector_database.url.host,
                         "port": cls.settings.vector_database.url.port,
                         "collection_name": cls.settings.memory.collection_name,
-                        "embedding_model_dims": 384,
+                        "embedding_model_dims": cls.settings.memory.embedding_dims,
                     },
                 },
                 "llm": {
@@ -238,8 +246,8 @@ class Graph:
             AsyncGenerator[tuple[str, list[ChatMessage], Path]]: Yields a tuple containing an empty string, the updated history, and a Path to an audio file if generated.
         """
         async for response in self._graph.astream(
-            State(messages=[HumanMessage(content=message)]),
-            RunnableConfig(configurable={"thread_id": "1", "user_id": "1"}),
+            State(messages=[HumanMessage(content=message)], mem0_user_id="1"),
+            RunnableConfig(configurable={"thread_id": "1"}),
             stream_mode="updates",
         ):
             if response.keys() == {"agent"}:
