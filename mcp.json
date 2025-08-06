@@ -1,0 +1,23 @@
+{
+  "mcpServers": {
+    "qdrant": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "mcp/qdrant"
+      ],
+      "env": {
+        "QDRANT_URL": "http://localhost:6333"
+      }
+    },
+    "jetbrains": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@jetbrains/mcp-proxy"
+      ]
+    }
+  }
+}
