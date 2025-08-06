@@ -12,12 +12,6 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_core.runnables import Runnable, RunnableConfig
 from langchain_core.tools import BaseTool
 from langchain_mcp_adapters.client import MultiServerMCPClient
-from langchain_mcp_adapters.sessions import (
-    SSEConnection,
-    StdioConnection,
-    StreamableHttpConnection,
-    WebsocketConnection,
-)
 from langchain_openai import ChatOpenAI
 from langgraph.graph import START, StateGraph
 from langgraph.graph.state import CompiledStateGraph
@@ -112,45 +106,6 @@ class Graph:
         graph_builder.add_conditional_edges("agent", tools_condition)
         graph_builder.add_edge("tools", "agent")
         return graph_builder.compile(debug=True)
-
-    @classmethod
-    def _create_mcp_config(
-        cls,
-    ) -> dict[
-        str,
-        StdioConnection
-        | SSEConnection
-        | StreamableHttpConnection
-        | WebsocketConnection,
-    ]:
-        """
-        Create the configuration dictionary for MCP (Multi-Component Protocol) servers.
-        This method sets up the connection details for each MCP server used by the application.
-
-        Returns:
-            dict: A dictionary mapping server names to their connection configurations.
-        """
-
-        return {
-            "vector_database": StdioConnection(
-                command="uvx",
-                args=["mcp-server-qdrant"],
-                env={
-                    "QDRANT_URL": str(cls.settings.vector_database.url),
-                    "COLLECTION_NAME": cls.settings.vector_database.name,
-                },
-                transport="stdio",
-            ),
-            "time": StdioConnection(
-                command="uvx",
-                args=["mcp-server-time"],
-                transport="stdio",
-            ),
-            cls.settings.voice_generator_mcp.name: SSEConnection(
-                url=str(cls.settings.voice_generator_mcp.url),
-                transport=cls.settings.voice_generator_mcp.transport,
-            ),
-        }
 
     def _initialize_llm(self) -> ChatOpenAI:
         """
