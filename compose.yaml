@@ -1,7 +1,7 @@
 name: Chattr
 services:
   chattr:
-    image: ghcr.io/alphaspheredotai/chattr:latest@sha256:c2239e3a8504384eeb6646371c78c60eb48e1246a11e9d22ad8e0be065159ab9
+    image: ghcr.io/alphaspheredotai/chattr:latest@sha256:0a3d0854eafcc6c937f5a59c7b33edd177892c68cf3d5a8e7403c3fbe8a3519a
     ports:
       - "7860:7860"
     volumes:
@@ -11,7 +11,7 @@ services:
       - command: chown -R app:app /home/app
         user: root
     environment:
-      SERVER_PORT: 7860
+      REDIS_URL: redis://redis:6379
     healthcheck:
       test:
         - "CMD"
@@ -30,9 +30,14 @@ services:
       start_interval: 5s
     secrets:
       - groq_api_key
+  redis:
+    image: redis:alpine@sha256:25c0ae32c6c2301798579f5944af53729766a18eff5660bbef196fc2e6214a9c
+    volumes:
+      - redis-data:/data
 volumes:
   results:
   logs:
+  redis-data:
 secrets:
   groq_api_key:
     file: groq_api_key.txt
