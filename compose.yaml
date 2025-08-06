@@ -36,7 +36,7 @@ services:
       - "6333:6333"
       - "6334:6334"
     volumes:
-      - redis-data:/data
+      - qdrant_storage:/qdrant/storage
 volumes:
   fastembed:
   logs:
