@@ -5,8 +5,9 @@ services:
     ports:
       - "7860:7860"
     volumes:
-      - results:/home/app/results
-      - logs:/home/app/logs
+      - logs:/home/nonroot/logs
+      - assets:/home/nonroot/assets
+      - fastembed:/home/nonroot/fastembed
     post_start:
       - command: chown -R app:app /home/app
         user: root
