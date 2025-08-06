@@ -9,7 +9,7 @@ services:
       - assets:/home/nonroot/assets
       - fastembed:/home/nonroot/fastembed
     post_start:
-      - command: chown -R app:app /home/app
+      - command: chown -R nonroot:nonroot /home/nonroot
         user: root
     environment:
       REDIS_URL: redis://redis:6379
