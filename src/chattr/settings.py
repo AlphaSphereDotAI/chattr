@@ -1,26 +1,31 @@
 """This module contains the settings for the Chattr app."""
 
-from logging import getLogger
+from json import loads
 from pathlib import Path
-from typing import List, Literal, Self
+from typing import Self
 
 from dotenv import load_dotenv
-from langchain_core.messages import SystemMessage
+from jsonschema import validate
+from loguru import logger
 from pydantic import (
     BaseModel,
     DirectoryPath,
     Field,
+    FilePath,
     HttpUrl,
-    RedisDsn,
     SecretStr,
     StrictStr,
     model_validator,
 )
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-logger = getLogger(__name__)
-
 load_dotenv()
+
+logger.add(
+    sink=Path.cwd() / "logs" / "chattr.log",
+    format="{time:YYYY-MM-DD at HH:mm:ss} | {level} | {message}",
+    colorize=True,
+)
 
 
 class ModelSettings(BaseModel):
@@ -28,8 +33,8 @@ class ModelSettings(BaseModel):
     name: StrictStr = Field(default=None)
     api_key: SecretStr = Field(default=None)
     temperature: float = Field(default=0.0, ge=0.0, le=1.0)
-    system_message: SystemMessage = SystemMessage(
-        content="You are a helpful assistant that can answer questions about the time and generate audio files from text."
+    system_message: StrictStr = Field(
+        default="You are a helpful assistant that can answer questions about the time and generate audio files from text."
     )
 
     @model_validator(mode="after")
@@ -55,22 +60,55 @@ class ModelSettings(BaseModel):
 
 
 class MemorySettings(BaseModel):
-    url: RedisDsn = Field(default="redis://localhost:6379")
+    collection_name: StrictStr = Field(default="memories")
+    embedding_dims: int = Field(default=384)
 
 
 class VectorDatabaseSettings(BaseModel):
     name: StrictStr = Field(default="chattr")
-    url: HttpUrl = Field(default="http://localhost:6333")
+    url: HttpUrl = HttpUrl("http://localhost:6333")
 
 
 class MCPSettings(BaseModel):
-    name: StrictStr = Field(default=None)
-    url: HttpUrl = Field(default=None)
-    command: StrictStr = Field(default=None)
-    args: List[StrictStr] = Field(default=[])
-    transport: Literal["sse", "stdio", "streamable_http", "websocket"] = Field(
-        default=None
+    path: FilePath = Field(default=None)
+    schema_path: FilePath = Field(
+        default_factory=lambda: Path.cwd() / "assets" / "mcp-config.json"
     )
+
+    @model_validator(mode="after")
+    def is_json(self) -> Self:
+        """
+        Validate that the MCP config file is a JSON file.
+        This method checks the file extension of the provided MCP config path.
+
+        Returns:
+            Self: The validated MCPSettings instance.
+
+        Raises:
+            ValueError: If the MCP config file does not have a .json extension.
+        """
+        if self.path and self.path.suffix != ".json":
+            raise ValueError("MCP config file must be a JSON file")
+        return self
+
+    @model_validator(mode="after")
+    def check_mcp_config(self) -> Self:
+        """
+        Validate the MCP config file against its JSON schema.
+        This method ensures the MCP config file matches the expected schema definition.
+
+        Returns:
+            Self: The validated MCPSettings instance.
+
+        Raises:
+            ValidationError: If the config file does not match the schema.
+        """
+        if self.path:
+            validate(
+                instance=loads(self.path.read_text(encoding="utf-8")),
+                schema=loads(self.schema_path.read_text(encoding="utf-8")),
+            )
+        return self
 
 
 class DirectorySettings(BaseModel):
@@ -122,16 +160,7 @@ class Settings(BaseSettings):
     model: ModelSettings = ModelSettings()
     memory: MemorySettings = MemorySettings()
     vector_database: VectorDatabaseSettings = VectorDatabaseSettings()
-    voice_generator_mcp: MCPSettings = MCPSettings(
-        url="http://localhost:8080/gradio_api/mcp/sse",
-        transport="sse",
-        name="voice_generator",
-    )
-    video_generator_mcp: MCPSettings = MCPSettings(
-        url="http://localhost:8002/gradio_api/mcp/sse",
-        transport="sse",
-        name="video_generator",
-    )
+    mcp: MCPSettings = MCPSettings()
     directory: DirectorySettings = DirectorySettings()
 
 
