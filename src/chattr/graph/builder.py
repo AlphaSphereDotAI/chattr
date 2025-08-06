@@ -41,7 +41,7 @@ class Graph:
     @classmethod
     async def create(cls, settings: Settings) -> Self:
         """Async factory method to create a Graph instance."""
-        cls.settings: Settings = settings
+        cls.settings = settings
         tools = []
         memory = await cls._setup_memory()
         try:
