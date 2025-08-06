@@ -15,6 +15,7 @@ FROM cgr.dev/chainguard/wolfi-base:latest@sha256:3a4709d9dfc2cf8f1d78ee8788d7b9a
 
 ENV GRADIO_SERVER_PORT=7860 \
     GRADIO_SERVER_NAME=0.0.0.0 \
+    FASTEMBED_CACHE_PATH=/home/nonroot/fastembed \
     PATH=/home/nonroot/.local/bin:$PATH
 
 # skipcq: DOK-DL3018
