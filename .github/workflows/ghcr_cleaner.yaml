@@ -18,5 +18,5 @@ jobs:
           account: ${{ github.repository_owner }}
           token: ${{ secrets.GH_TOKEN }}
           image-names: ${{ github.event.repository.name }}
-          image-tags: "*pr*"
+          image-tags: "!latest !*.*.*"
           cut-off: 1s
