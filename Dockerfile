@@ -24,7 +24,7 @@ USER nonroot
 
 WORKDIR /home/nonroot
 
-COPY --from=builder --chown=nonroot:nonroot --chmod=755 /home/nonroot/.local/ /home/nonroot/.local/
+COPY --from=builder --chown=nonroot:nonroot --chmod=555 /home/nonroot/.local/ /home/nonroot/.local/
 
 EXPOSE ${GRADIO_SERVER_PORT}
 
