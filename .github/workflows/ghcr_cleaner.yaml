@@ -11,6 +11,7 @@ jobs:
     steps:
       - run: |
           echo "Repo name: ${{ github.event.repository.name }}"
+          echo "The repository owner is: ${{ github.repository_owner }}"
       - uses: snok/container-retention-policy@v3.0.0
         with:
           account: AlphaSphereDotAI
