@@ -28,7 +28,6 @@ services:
       timeout: 10s
       retries: 5
       start_period: 40s
-      start_interval: 5s
     secrets:
       - groq_api_key
   redis:
@@ -36,7 +35,7 @@ services:
     volumes:
       - redis-data:/data
 volumes:
-  results:
+  fastembed:
   logs:
   redis-data:
 secrets:
