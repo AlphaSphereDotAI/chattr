@@ -37,7 +37,7 @@ services:
 volumes:
   fastembed:
   logs:
-  redis-data:
+  qdrant_storage:
 secrets:
   groq_api_key:
     file: groq_api_key.txt
