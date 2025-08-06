@@ -1,12 +1,13 @@
 name: Chattr
 services:
   chattr:
-    image: ghcr.io/alphaspheredotai/chattr:latest@sha256:26465484bd7dace325d3a9f8b7e68df2aaa0481fd08347309db951881bbbc2b8
+    image: ghcr.io/alphaspheredotai/chattr:latest@sha256:8606bf806df43e4541690a0cd91eb0f28ef123f4eb9e3591b49039d05dc7c55d
     ports:
       - "7860:7860"
     volumes:
-      - results:/home/app/results
-      - logs:/home/app/logs
+      - logs:/home/nonroot/logs
+      - assets:/home/nonroot/assets
+      - fastembed:/home/nonroot/fastembed
     post_start:
       - command: chown -R app:app /home/app
         user: root
