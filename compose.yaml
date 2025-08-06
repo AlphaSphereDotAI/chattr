@@ -1,7 +1,7 @@
 name: Chattr
 services:
   chattr:
-    image: ghcr.io/alphaspheredotai/chattr:latest@sha256:c2239e3a8504384eeb6646371c78c60eb48e1246a11e9d22ad8e0be065159ab9
+    image: ghcr.io/alphaspheredotai/chattr:latest
     ports:
       - "7860:7860"
     volumes:
@@ -31,7 +31,7 @@ services:
     secrets:
       - groq_api_key
   redis:
-    image: redis:alpine
+    image: redis:alpine@sha256:a0fc425a443bb583175bc380874f1cbfa55ccfeb0b1d690adf50b1e6d4e79513
     volumes:
       - redis-data:/data
 volumes:
