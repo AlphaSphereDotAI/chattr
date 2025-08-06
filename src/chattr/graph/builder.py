@@ -1,6 +1,6 @@
 """This module contains the Graph class, which represents the main orchestration graph for the Chattr application."""
 
-from json import dumps
+from json import dumps, loads
 from pathlib import Path
 from textwrap import dedent
 from typing import AsyncGenerator, Self
@@ -52,7 +52,9 @@ class Graph:
         memory = await cls._setup_memory()
         try:
             tools: list[BaseTool] = await cls._setup_tools(
-                MultiServerMCPClient(cls._create_mcp_config())
+                MultiServerMCPClient(
+                    loads(cls.settings.mcp.path.read_text(encoding="utf-8"))
+                )
             )
         except Exception as e:
             logger.warning(f"Failed to setup tools: {e}")
