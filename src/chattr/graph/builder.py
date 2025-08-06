@@ -1,4 +1,7 @@
-"""This module contains the Graph class, which represents the main orchestration graph for the Chattr application."""
+"""
+This module contains the Graph class,
+which represents the main orchestration graph for the Chattr application.
+"""
 
 from json import dumps, loads
 from pathlib import Path
@@ -26,7 +29,8 @@ from chattr.utils import convert_audio_to_wav, download_file, is_url
 class Graph:
     """
     Represents the main orchestration graph for the Chattr application.
-    This class manages the setup and execution of the conversational agent, tools, and state graph.
+    This class manages the setup and execution of the conversational agent,
+    tools, and state graph.
     """
 
     settings: Settings
@@ -57,13 +61,25 @@ class Graph:
     def _build_state_graph(self) -> CompiledStateGraph:
         """
         Construct and compile the state graph for the Chattr application.
-        This method defines the nodes and edges for the conversational agent and tool interactions.
+        This method defines the nodes and edges for the conversational agent
+        and tool interactions.
 
         Returns:
             CompiledStateGraph: The compiled state graph is ready for execution.
         """
 
         async def _call_model(state: State) -> State:
+            """
+            Generate a model response based on the current state and user memory.
+            This asynchronous function retrieves relevant memories,
+            constructs a system message, and invokes the language model.
+
+            Args:
+                state: The current State object containing messages and user ID.
+
+            Returns:
+                State: The updated State object with the model's response message.
+            """
             messages = state.get("messages")
             user_id = state.get("mem0_user_id")
             if not user_id:
@@ -87,7 +103,8 @@ class Graph:
                 content=dedent(
                     f"""
                     {self.settings.model.system_message}
-                    Use the provided context to personalize your responses and remember user preferences and past interactions.
+                    Use the provided context to personalize your responses and
+                    remember user preferences and past interactions.
                     {context}
                     """
                 )
@@ -110,7 +127,8 @@ class Graph:
     def _initialize_llm(self) -> ChatOpenAI:
         """
         Initialize the ChatOpenAI language model using the provided settings.
-        This method creates and returns a ChatOpenAI instance configured with the model's URL, name, API key, and temperature.
+        This method creates and returns a ChatOpenAI instance configured with
+        the model's URL, name, API key, and temperature.
 
         Returns:
             ChatOpenAI: The initialized ChatOpenAI language model instance.
@@ -137,7 +155,6 @@ class Graph:
         Returns:
             Memory: Configured memory instances.
         """
-
         return Memory.from_config(
             {
                 "vector_store": {
