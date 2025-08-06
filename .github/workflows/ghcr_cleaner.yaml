@@ -13,7 +13,7 @@ jobs:
         with:
           account: AlphaSphereDotAI
           token: ${{ secrets.GH_TOKEN }}
-          image-names: "container-retention-policy"
+          image-names: "chattr"
           image-tags: "*pr*"
           cut-off: 2w 3d
           dry-run: true
