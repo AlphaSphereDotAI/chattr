@@ -15,9 +15,7 @@ jobs:
     environment:
       name: pypi
       url: >
-        https://pypi.org/project/${{ github.event.repository.name }}/${{ github.event.release.tag_name
-        }}
-
+        https://pypi.org/project/${{github.event.repository.name}}/${{github.event.release.tag_name}}
     steps:
       - name: Retrieve release distributions
         uses: robinraju/release-downloader@daf26c55d821e836577a15f77d86ddc078948b05 # v1
