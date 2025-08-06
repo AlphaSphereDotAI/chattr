@@ -77,7 +77,7 @@ class Graph:
                 {"\n".join([f"- {memory['memory']}" for memory in memories])}
                 """
             )
-            print(context)
+            logger.debug(f"Memory context: {context}")
             system_message: SystemMessage = SystemMessage(
                 content=dedent(
                     f"""
