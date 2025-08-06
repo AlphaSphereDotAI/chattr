@@ -1,6 +1,5 @@
 """This module contains utility functions for the Chattr app."""
 
-from logging import getLogger
 from pathlib import Path
 from typing import Optional
 
@@ -9,7 +8,7 @@ from pydantic import HttpUrl, ValidationError
 from pydub import AudioSegment
 from requests import Session
 
-logger = getLogger(__name__)
+from chattr.settings import logger
 
 
 def is_url(value: Optional[str]) -> bool:
