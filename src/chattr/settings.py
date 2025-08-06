@@ -101,7 +101,7 @@ class MCPSettings(BaseModel):
             Self: The validated MCPSettings instance.
 
         Raises:
-            jsonschema.exceptions.ValidationError: If the config file does not match the schema.
+            ValidationError: If the config file does not match the schema.
         """
         if self.path:
             validate(
