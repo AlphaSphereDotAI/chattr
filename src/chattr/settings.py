@@ -61,6 +61,7 @@ class ModelSettings(BaseModel):
 
 class MemorySettings(BaseModel):
     collection_name: StrictStr = Field(default="memories")
+    embedding_dims: int = Field(default=384)
 
 
 class VectorDatabaseSettings(BaseModel):
