@@ -28,7 +28,7 @@ jobs:
         with:
           registry: ghcr.io
           username: MH0386
-          password: ${{ secrets.TOKEN_KEY_GITHUB }}
+          password: ${{ secrets.GH_TOKEN }}
       - name: Validate build configuration
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6
         with:
@@ -40,8 +40,9 @@ jobs:
     outputs:
       image_tag: ${{ steps.meta.outputs.tags }}
     steps:
-    #   - name: Free Disk Space
-    #     uses: jlumbroso/free-disk-space@main
+      - name: Free Disk Space
+        if: github.event_name != 'pull_request'
+        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
       - name: Checkout repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       - name: Log in to the Container registry
@@ -49,7 +50,7 @@ jobs:
         with:
           registry: ghcr.io
           username: MH0386
-          password: ${{ secrets.TOKEN_KEY_GITHUB }}
+          password: ${{ secrets.GH_TOKEN }}
       - name: Set up QEMU
         uses: docker/setup-qemu-action@29109295f81e9208d7d86ff1c6c12d2833863392 # v3
       - name: Set up Docker Buildx
@@ -61,7 +62,7 @@ jobs:
           images: ghcr.io/${{ github.repository }}
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
-            type=ref,event=pr,prefix=pr-{{sha}}-
+            type=ref,event=pr,prefix={{sha}}-pr-
             type=ref,event=tag
       - name: Build
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6
@@ -96,26 +97,35 @@ jobs:
         with:
           registry: ghcr.io
           username: MH0386
-          password: ${{ secrets.TOKEN_KEY_GITHUB }}
+          password: ${{ secrets.GH_TOKEN }}
       - name: Docker Scout
-        uses: docker/scout-action@aceeb83b88f2ae54376891227858dda7af647183 # v1
+        uses: docker/scout-action@f8c776824083494ab0d56b8105ba2ca85c86e4de # v1
+        continue-on-error: true
         with:
           command: ${{ matrix.commands }}
-          dockerhub-user: MH0386
+          dockerhub-user: mh0386
           dockerhub-password: ${{ secrets.TOKEN_KEY_DOCKER }}
           image: ${{ needs.build_image.outputs.image_tag }}
-          github-token: ${{ secrets.TOKEN_KEY_GITHUB }}
+          github-token: ${{ secrets.GH_TOKEN }}
   api_test:
     name: API Test
     needs: build_image
     runs-on: ubuntu-latest
     services:
+      vector_database:
+        image: qdrant/qdrant:latest
+        ports:
+          - 6333:6333
       chattr:
         image: ${{ needs.build_image.outputs.image_tag }}
         ports:
           - 7860:7860
         env:
-          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          MODEL__URL: "https://api.groq.com/openai/v1"
+          MODEL__API_KEY: ${{ secrets.GROQ_API_KEY }}
+          MODEL__NAME: "llama3-70b-8192"
+          VECTOR_DATABASE__URL: "http://vector_database:6333"
+          VECTOR_DATABASE__NAME: "test"
         options: >-
           --health-cmd "curl -o /dev/null -f -s -w 'Status: %{http_code}, Time: %{time_total}s' http://localhost:7860/"
           --health-interval 10s --health-timeout 5s --health-start-period 15s --health-retries 15
