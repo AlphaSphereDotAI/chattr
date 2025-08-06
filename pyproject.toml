@@ -8,13 +8,15 @@ authors = [
 ]
 requires-python = ">=3.12"
 dependencies = [
-  "gradio>=5.36.2",
-  "langchain>=0.3.26",
+  "fastembed>=0.7.1",
+  "gradio>=5.41.0",
+  "langchain-community>=0.3.27",
   "langchain-mcp-adapters>=0.1.9",
-  "langchain-openai>=0.3.27",
-  "langgraph>=0.5.2",
+  "langchain-openai>=0.3.28",
+  "langgraph>=0.6.3",
   "loguru>=0.7.3",
-  "python-dotenv>=1.1.1",
+  "m3u8>=6.0.0",
+  "mem0ai>=0.1.115",
 ]
 
 [project.scripts]
@@ -25,4 +27,4 @@ requires = ["uv_build"]
 build-backend = "uv_build"
 
 [dependency-groups]
-dev = ["ruff>=0.12.2", "ty>=0.0.1a12"]
+dev = ["ruff>=0.12.7", "ty>=0.0.1a16"]
