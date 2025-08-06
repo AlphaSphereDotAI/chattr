@@ -77,12 +77,32 @@ class MCPSettings(BaseModel):
 
     @model_validator(mode="after")
     def is_json(self) -> Self:
+        """
+        Validate that the MCP config file is a JSON file.
+        This method checks the file extension of the provided MCP config path.
+
+        Returns:
+            Self: The validated MCPSettings instance.
+
+        Raises:
+            ValueError: If the MCP config file does not have a .json extension.
+        """
         if self.path and self.path.suffix != ".json":
             raise ValueError("MCP config file must be a JSON file")
         return self
 
     @model_validator(mode="after")
     def check_mcp_config(self) -> Self:
+        """
+        Validate the MCP config file against its JSON schema.
+        This method ensures the MCP config file matches the expected schema definition.
+
+        Returns:
+            Self: The validated MCPSettings instance.
+
+        Raises:
+            jsonschema.exceptions.ValidationError: If the config file does not match the schema.
+        """
         if self.path:
             validate(
                 instance=loads(self.path.read_text(encoding="utf-8")),
