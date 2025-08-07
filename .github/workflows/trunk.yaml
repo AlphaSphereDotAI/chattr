@@ -1,0 +1,39 @@
+name: Trunk Upgrade and Cache
+on:
+  schedule:
+    - cron: 0 6 * * 0
+  push:
+    branches:
+      - main
+    paths:
+      - .trunk/trunk.yaml
+  workflow_dispatch:
+permissions: read-all
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: true
+jobs:
+  trunk_upgrade:
+    name: Upgrade Trunk
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - name: Trunk Upgrade
+        uses: trunk-io/trunk-action/upgrade@75699af9e26881e564e9d832ef7dc3af25ec031b # v1
+  cache_trunk:
+    name: Cache Trunk
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - name: Trunk Check
+        uses: trunk-io/trunk-action@75699af9e26881e564e9d832ef7dc3af25ec031b # v1
+        with:
+          check-mode: populate_cache_only
