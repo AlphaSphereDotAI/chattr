@@ -34,11 +34,19 @@ jobs:
         with:
           call: check
   build_image:
-    name: Build and push Docker image
+    name: Build and push Docker image to ${{ matrix.registry }}
     needs: check_dockerfile
     runs-on: ubuntu-latest
     outputs:
       image_tag: ${{ steps.tag.outputs.TAG }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - registry: ghcr.io
+            password: ${{ secrets.GH_TOKEN }}
+          - registry: docker.io
+            password: ${{ secrets.TOKEN_KEY_DOCKER }}
     steps:
       - name: Free Disk Space
         if: github.event_name != 'pull_request'
@@ -48,9 +56,9 @@ jobs:
       - name: Log in to the Container registry
         uses: docker/login-action@184bdaa0721073962dff0199f1fb9940f07167d1 # v3
         with:
-          registry: ghcr.io
-          username: MH0386
-          password: ${{ secrets.GH_TOKEN }}
+          registry: ${{ matrix.registry }}
+          username: mh0386
+          password: ${{ matrix.password }}
       - name: Set up QEMU
         uses: docker/setup-qemu-action@29109295f81e9208d7d86ff1c6c12d2833863392 # v3
       - name: Set up Docker Buildx
@@ -59,7 +67,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@c1e51972afc2121e065aed6d45c65596fe445f3f # v5
         with:
-          images: ghcr.io/${{ github.repository }}
+          images: ${{ matrix.registry }}/${{ github.repository }}
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
             type=ref,event=pr,prefix={{sha}}-pr-
@@ -77,7 +85,7 @@ jobs:
       - name: Generate artifact attestation for App
         uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be # v2
         with:
-          subject-name: ghcr.io/${{ github.repository }}
+          subject-name: ${{ matrix.registry }}/${{ github.repository }}
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
       - name: Export tag for Testing and Scanning
