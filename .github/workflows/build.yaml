@@ -1,18 +1,20 @@
-name: GitHub Release
+name: Build
 on:
   push:
     tags:
       - "[0-9]+.[0-9]+.[0-9]+"
       - "[0-9]+.[0-9]+.[0-9]+a[0-9]+"
       - "[0-9]+.[0-9]+.[0-9]+b[0-9]+"
-permissions:
-  contents: write
+permissions: read-all
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}
   cancel-in-progress: true
 jobs:
   setup_and_build:
     name: Setup and Build
+    environment:
+      name: uv
+      url: https://github.com/${{github.repository}}/commits/${{github.event.release.tag_name}}
     env:
       UV_COMPILE_BYTECODE: "1"
       UV_LINK_MODE: "copy"
@@ -41,6 +43,9 @@ jobs:
     name: Create GitHub Release
     needs: setup_and_build
     runs-on: ubuntu-latest
+    environment:
+      name: github
+      url: https://github.com/${{github.repository}}/releases/tag/${{github.event.release.tag_name}}
     steps:
       - name: Checkout Code
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
