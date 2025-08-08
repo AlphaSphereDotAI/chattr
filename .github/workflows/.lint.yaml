@@ -34,8 +34,8 @@ jobs:
         if: success() || failure()
         with:
           commit_message: "[Trunk] Apply linters fixes"
-  lint:
-    name: Lint
+  check:
+    name: Check
     runs-on: ubuntu-latest
     environment:
       name: code_quality
