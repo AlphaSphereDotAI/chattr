@@ -73,3 +73,4 @@ jobs:
     uses: ./.github/workflows/reusable_docker.yaml
     with:
       is_test: false
+    secrets: inherit
