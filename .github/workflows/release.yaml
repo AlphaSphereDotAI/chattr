@@ -65,6 +65,10 @@ jobs:
         run: huggingface-cli upload ${{ github.repository }} . . --repo-type space
   image:
     name: Release Image
+    permissions:
+      attestations: write
+      packages: write
+      id-token: write
     uses: ./.github/workflows/reusable_docker.yaml
     with:
       is_test: false
