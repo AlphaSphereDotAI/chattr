@@ -70,7 +70,13 @@ jobs:
       packages: write
       attestations: write
       id-token: write
+    strategy:
+      matrix:
+        registry:
+          - ghcr.io
+          - docker.io
     uses: ./.github/workflows/.docker.yaml
     with:
       is_test: false
+      registry: ${{ matrix.registry }}
     secrets: inherit
