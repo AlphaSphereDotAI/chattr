@@ -89,6 +89,6 @@ jobs:
       url: ghcr.io/${{github.repository}}
     steps:
       - name: Test Image
-        uses: ${{github.repository}}/.github/workflows/reusable/docker.yaml
+        uses: AlphaSphereDotAI/chattr/.github/workflows/reusable/docker.yaml
         with:
           is_test: true
