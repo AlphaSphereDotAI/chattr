@@ -83,6 +83,10 @@ jobs:
         run: uv sync --frozen --no-install-project
   image:
     name: Test Image
+    permissions:
+      attestations: write
+      packages: write
+      id-token: write
     uses: ./.github/workflows/reusable_docker.yaml
     with:
       is_test: true
