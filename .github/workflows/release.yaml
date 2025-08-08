@@ -65,12 +65,6 @@ jobs:
         run: huggingface-cli upload ${{ github.repository }} . . --repo-type space
   image:
     name: Release Image
-    runs-on: ubuntu-latest
-    environment:
-      name: docker_image
-      url: docker.io/${{github.repository}}
-    steps:
-      - name: Release Image
-        uses: AlphaSphereDotAI/chattr/.github/workflows/reusable/docker.yaml@ci
-        with:
-          is_test: false
+    uses: ./.github/workflows/reusable/docker.yaml
+    with:
+      is_test: false

@@ -19,6 +19,8 @@ jobs:
     name: Validate Dockerfile
     runs-on: ubuntu-latest
     if: ${{ inputs.is_test }}
+    environment:
+      name: code_quality
     steps:
       - name: Checkout repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
@@ -44,6 +46,9 @@ jobs:
         registry:
           - ghcr.io
           - docker.io
+    environment:
+      name: docker_image
+      url: ${{matrix.registry}}/${{github.repository}}
     steps:
       - name: Free Disk Space
         if: github.event_name != 'pull_request'
@@ -92,6 +97,8 @@ jobs:
     name: Docker Scout (${{ matrix.commands }})
     needs: build_image
     runs-on: ubuntu-latest
+    environment:
+      name: docker_image
     strategy:
       fail-fast: false
       matrix:
@@ -120,6 +127,8 @@ jobs:
     needs: build_image
     runs-on: ubuntu-latest
     if: ${{ inputs.is_test }}
+    environment:
+      name: api_test
     services:
       vector_database:
         image: qdrant/qdrant:latest@sha256:d122138f76868edba68d36cb0833139c1d1761f00f09e48e61f8314196e6a4c6
