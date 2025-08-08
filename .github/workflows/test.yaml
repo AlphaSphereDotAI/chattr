@@ -83,12 +83,6 @@ jobs:
         run: uv sync --frozen --no-install-project
   image:
     name: Test Image
-    runs-on: ubuntu-latest
-    environment:
-      name: docker_image
-      url: ghcr.io/${{github.repository}}
-    steps:
-      - name: Test Image
-        uses: AlphaSphereDotAI/chattr/.github/workflows/reusable/docker.yaml@ci
-        with:
-          is_test: true
+    uses: ./.github/workflows/reusable/docker.yaml
+    with:
+      is_test: true
