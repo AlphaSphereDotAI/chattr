@@ -71,6 +71,6 @@ jobs:
       url: docker.io/${{github.repository}}
     steps:
       - name: Release Image
-        uses: AlphaSphereDotAI/chattr/.github/workflows/reusable/docker.yaml
+        uses: AlphaSphereDotAI/chattr/.github/workflows/reusable/docker.yaml@ci
         with:
           is_test: false
