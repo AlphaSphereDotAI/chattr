@@ -93,6 +93,6 @@ jobs:
         with:
           fetch-depth: 0
       - name: Test Image
-        uses: ./.github/workflows_reusable/docker.yaml
+        uses: ./.github/workflows/docker.yaml
         with:
           is_test: true
