@@ -70,7 +70,7 @@ jobs:
       packages: write
       attestations: write
       id-token: write
-    uses: ./.github/workflows/reusable_docker.yaml
+    uses: ./.github/workflows/.docker.yaml
     with:
       is_test: false
     secrets: inherit
