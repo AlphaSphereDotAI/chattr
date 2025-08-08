@@ -1,4 +1,4 @@
-name: Trunk Upgrade and Cache
+name: CI Tools
 on:
   schedule:
     - cron: 0 6 * * 0
