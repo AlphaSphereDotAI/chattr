@@ -70,6 +70,9 @@ jobs:
       name: docker_image
       url: docker.io/${{github.repository}}
     steps:
-      - uses: ./.github/workflows/reusable/docker.yaml
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - name: Release Image
+        uses: ./.github/workflows/reusable/docker.yaml
         with:
           is_test: false
