@@ -1,56 +1,62 @@
-name: Docker Images
+name: Docker Image
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-  workflow_dispatch:
-  release:
-    types:
-      - published
+  workflow_call:
+    inputs:
+      is_test:
+        type: boolean
+        required: true
+        description: Test Mode
+      registry:
+        type: string
+        required: true
+        description: Registry
 permissions:
   contents: read
   packages: write
   attestations: write
   id-token: write
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref_name }}
-  cancel-in-progress: true
 jobs:
   check_dockerfile:
     name: Validate Dockerfile
     runs-on: ubuntu-latest
+    if: ${{ inputs.is_test }}
+    environment:
+      name: code_quality
     steps:
       - name: Checkout repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-      - name: Log in to the Container registry
+      - name: Log in to the ghcr.io Registry
         uses: docker/login-action@184bdaa0721073962dff0199f1fb9940f07167d1 # v3
         with:
           registry: ghcr.io
-          username: MH0386
+          username: mh0386
           password: ${{ secrets.GH_TOKEN }}
       - name: Validate build configuration
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6
         with:
           call: check
   build_image:
-    name: Build and push Docker image
+    name: Build and push Docker image to ${{ inputs.registry }}
     needs: check_dockerfile
     runs-on: ubuntu-latest
     outputs:
       image_tag: ${{ steps.tag.outputs.TAG }}
+    environment:
+      name: docker_image
+      url: ${{inputs.registry}}/${{github.repository}}
     steps:
       - name: Free Disk Space
         if: github.event_name != 'pull_request'
         uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
       - name: Checkout repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-      - name: Log in to the Container registry
+      - name: Log in to ${{ inputs.registry }} Registry
         uses: docker/login-action@184bdaa0721073962dff0199f1fb9940f07167d1 # v3
         with:
-          registry: ghcr.io
-          username: MH0386
-          password: ${{ secrets.GH_TOKEN }}
+          registry: ${{ inputs.registry }}
+          username: mh0386
+          password: ${{ inputs.registry == 'ghcr.io' && secrets.GH_TOKEN || inputs.registry == 'docker.io'
+            && secrets.TOKEN_KEY_DOCKER }}
       - name: Set up QEMU
         uses: docker/setup-qemu-action@29109295f81e9208d7d86ff1c6c12d2833863392 # v3
       - name: Set up Docker Buildx
@@ -59,12 +65,12 @@ jobs:
         id: meta
         uses: docker/metadata-action@c1e51972afc2121e065aed6d45c65596fe445f3f # v5
         with:
-          images: ghcr.io/${{ github.repository }}
+          images: ${{ inputs.registry }}/${{ github.repository }}
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
             type=ref,event=pr,prefix={{sha}}-pr-
             type=ref,event=tag
-      - name: Build
+      - name: Build and Push to ${{ inputs.registry }}
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6
         id: push
         with:
@@ -74,10 +80,10 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           annotations: ${{ steps.meta.outputs.annotations }}
-      - name: Generate artifact attestation for App
+      - name: Generate artifact attestation
         uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be # v2
         with:
-          subject-name: ghcr.io/${{ github.repository }}
+          subject-name: ${{ inputs.registry }}/${{ github.repository }}
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
       - name: Export tag for Testing and Scanning
@@ -87,13 +93,15 @@ jobs:
     name: Docker Scout (${{ matrix.commands }})
     needs: build_image
     runs-on: ubuntu-latest
+    environment:
+      name: docker_image
     strategy:
       fail-fast: false
       matrix:
         commands:
-          - "quickview"
-          - "cves"
-          - "recommendations"
+          - quickview
+          - cves
+          - recommendations
     steps:
       - name: Login to the Container registry
         uses: docker/login-action@184bdaa0721073962dff0199f1fb9940f07167d1 # v3
@@ -114,6 +122,9 @@ jobs:
     name: API Test
     needs: build_image
     runs-on: ubuntu-latest
+    if: ${{ inputs.is_test }}
+    environment:
+      name: api_test
     services:
       vector_database:
         image: qdrant/qdrant:latest@sha256:d122138f76868edba68d36cb0833139c1d1761f00f09e48e61f8314196e6a4c6
@@ -129,9 +140,10 @@ jobs:
           MODEL__NAME: "llama3-70b-8192"
           VECTOR_DATABASE__URL: "http://vector_database:6333"
           VECTOR_DATABASE__NAME: "test"
+          FASTEMBED_CACHE_PATH: "/home/nonroot/fastembed"
         options: >-
           --health-cmd "curl -o /dev/null -f -s -w 'Status: %{http_code}, Time: %{time_total}s' http://localhost:7860/"
-          --health-interval 10s --health-timeout 5s --health-start-period 15s --health-retries 15
+          --health-interval 10s --health-timeout 10s --health-start-period 20s --health-retries 15
     steps:
       - name: Echo URL
         run: echo "Chattr available on localhost:${{ job.services.chattr.ports['7860'] }}"
@@ -141,3 +153,18 @@ jobs:
         run: |-
           echo "# curl Output" >> $GITHUB_STEP_SUMMARY
           cat ./output.txt >> $GITHUB_STEP_SUMMARY
+  clean:
+    name: Cleaning GHCR
+    needs: api_test
+    runs-on: ubuntu-latest
+    environment:
+      name: docker_image
+    steps:
+      - name: GHCR Cleaning
+        uses: snok/container-retention-policy@4f22ef80902ad409ed55a99dc5133cc1250a0d03 # v3.0.0
+        with:
+          account: ${{ github.repository_owner }}
+          token: ${{ secrets.GH_TOKEN }}
+          image-names: ${{ github.event.repository.name }}
+          image-tags: "!latest !*.*.*"
+          cut-off: 1s
