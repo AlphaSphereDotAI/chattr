@@ -88,6 +88,6 @@ jobs:
       name: docker_image
       url: ghcr.io/${{github.repository}}
     steps:
-      - uses: .github/workflows/reusable/docker.yaml
+      - uses: ./.github/workflows/reusable/docker.yaml
         with:
           is_test: true
