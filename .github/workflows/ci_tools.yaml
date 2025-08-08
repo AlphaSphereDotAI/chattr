@@ -16,6 +16,7 @@ jobs:
   trunk_upgrade:
     name: Upgrade Trunk
     runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
     permissions:
       contents: write
       pull-requests: write
@@ -28,6 +29,7 @@ jobs:
   cache_trunk:
     name: Cache Trunk
     runs-on: ubuntu-latest
+    if: github.event_name == 'push'
     permissions:
       actions: write
     steps:
