@@ -49,4 +49,5 @@ jobs:
     uses: ./.github/workflows/.docker.yaml
     with:
       is_test: true
+      registry: ghcr.io
     secrets: inherit
