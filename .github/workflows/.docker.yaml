@@ -160,7 +160,8 @@ jobs:
     environment:
       name: docker_image
     steps:
-      - uses: snok/container-retention-policy@4f22ef80902ad409ed55a99dc5133cc1250a0d03 # v3.0.0
+      - name: GHCR Cleaning
+        uses: snok/container-retention-policy@4f22ef80902ad409ed55a99dc5133cc1250a0d03 # v3.0.0
         with:
           account: ${{ github.repository_owner }}
           token: ${{ secrets.GH_TOKEN }}
