@@ -1,7 +1,7 @@
 name: Chattr
 services:
   chattr:
-    image: ghcr.io/alphaspheredotai/chattr:latest@sha256:2f9ad65060f01a1be2308da1525f56efbeafc3c4897c126ba658e103b129ed40
+    image: ghcr.io/alphaspheredotai/chattr:latest@sha256:c1fd07e48ecf4844d2a6b5faf375322f341438b16abd207befc8af886eef80b8
     ports:
       - "7860:7860"
     volumes:
