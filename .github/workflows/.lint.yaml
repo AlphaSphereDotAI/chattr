@@ -1,7 +1,10 @@
 name: Lint
 on:
   workflow_call:
-permissions: read-all
+permissions:
+  contents: write
+  pull-requests: write
+  checks: write
 jobs:
   format:
     name: Format
