@@ -56,8 +56,7 @@ jobs:
         with:
           registry: ${{ inputs.registry }}
           username: mh0386
-          password: ${{ inputs.registry == 'ghcr.io' && secrets.GH_TOKEN || inputs.registry == 'docker.io'
-            && secrets.TOKEN_KEY_DOCKER }}
+          password: ${{ inputs.registry == 'ghcr.io' && secrets.GH_TOKEN || inputs.registry == 'docker.io' && secrets.TOKEN_KEY_DOCKER }}
       - name: Set up QEMU
         uses: docker/setup-qemu-action@29109295f81e9208d7d86ff1c6c12d2833863392 # v3
       - name: Set up Docker Buildx
@@ -144,8 +143,8 @@ jobs:
           VECTOR_DATABASE__NAME: "test"
           FASTEMBED_CACHE_PATH: "/home/nonroot/fastembed"
         options: >-
-          --health-cmd "curl -o /dev/null -f -s -w 'Status: %{http_code}, Time: %{time_total}s' http://localhost:7860/"
-          --health-interval 10s --health-timeout 10s --health-start-period 20s --health-retries 15
+          --health-cmd "curl -o /dev/null -f -s -w 'Status: %{http_code}, Time: %{time_total}s' http://localhost:7860/" --health-interval 10s
+          --health-timeout 10s --health-start-period 20s --health-retries 15
     steps:
       - name: Echo URL
         run: echo "Chattr available on localhost:${{ job.services.chattr.ports['7860'] }}"
@@ -167,8 +166,7 @@ jobs:
   clean:
     name: Cleaning GHCR
     needs: api_test
-    if: ${{ always() && ( inputs.is_test == true || inputs.is_test == false ) && inputs.registry == 'ghcr.io'
-      }}
+    if: ${{ always() && ( inputs.is_test == true || inputs.is_test == false ) && inputs.registry == 'ghcr.io' }}
     runs-on: ubuntu-latest
     environment:
       name: docker_image
