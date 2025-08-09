@@ -1,6 +1,4 @@
-"""
-This module contains tests for the application's HTTP endpoints.
-"""
+"""This module contains tests for the application's HTTP endpoints."""
 
 from requests import Response, head
 
