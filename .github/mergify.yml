@@ -71,5 +71,5 @@ queue_rules:
           - check-success = SonarCloud
           - check-success = Trunk Check
           - check-success = CodeRabbit
-          - check-success = API Test
+          - check-success = Test Image / API Test
           - check-success = CodeQL
