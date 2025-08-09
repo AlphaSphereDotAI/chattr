@@ -7,7 +7,7 @@ from requests import Response, head
 
 def test_app() -> None:
     """
-    Test that the application is reachable via a HEAD request at http://localhost:7860/ and returns status code 200.
+    Test the reachability of Chattr.
 
     Returns:
         None
