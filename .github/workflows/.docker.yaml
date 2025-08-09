@@ -167,7 +167,8 @@ jobs:
   clean:
     name: Cleaning GHCR
     needs: api_test
-    if: ${{ always() && ( inputs.is_test == true || inputs.is_test == false ) }}
+    if: ${{ always() && ( inputs.is_test == true || inputs.is_test == false ) && inputs.registry == 'ghcr.io'
+      }}
     runs-on: ubuntu-latest
     environment:
       name: docker_image
