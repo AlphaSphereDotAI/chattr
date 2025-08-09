@@ -164,7 +164,7 @@ jobs:
   clean:
     name: Cleaning GHCR
     needs: api_test
-    if: inputs.is_test || needs.api_test.result == 'skipped'
+    if: ${{ inputs.is_test == true || inputs.is_test == false }}
     runs-on: ubuntu-latest
     environment:
       name: docker_image
