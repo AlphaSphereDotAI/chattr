@@ -86,9 +86,18 @@ jobs:
           subject-name: ${{ inputs.registry }}/${{ github.repository }}
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
+      - name: Update Docker Hub Description
+        if: ${{ inputs.registry == 'docker.io' }}
+        uses: peter-evans/dockerhub-description@e98e4d1628a5f3be2be7c231e50981aee98723ae # v4.0.0
+        with:
+          username: mh0386
+          password: ${{ secrets.TOKEN_KEY_DOCKER }}
+          repository: ${{ github.repository }}
+          short-description: ${{ github.event.repository.description }}
+          enable-url-completion: true
       - name: Export tag for Testing and Scanning
         id: tag
-        run: echo "TAG=$(echo "${{steps.meta.outputs.tags}}" | tail -n 1)" >> $GITHUB_OUTPUT
+        run: echo "TAG=$(echo "${{ steps.meta.outputs.tags }}" | tail -n 1)" >> $GITHUB_OUTPUT
   docker_scout:
     name: Docker Scout (${{ matrix.commands }})
     needs: build_image
