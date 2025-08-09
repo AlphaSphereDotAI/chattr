@@ -159,8 +159,9 @@ jobs:
         run: uv sync --frozen
       - name: Test
         env:
+          CHATTR_URL: http://localhost:${{ job.services.chattr.ports['7860'] }}/
           MERGIFY_TOKEN: ${{ secrets.MERGIFY_TOKEN }}
-        uses: pavelzw/pytest-action@v2
+        uses: pavelzw/pytest-action@510c5e90c360a185039bea56ce8b3e7e51a16507 # v2
   clean:
     name: Cleaning GHCR
     needs: api_test
