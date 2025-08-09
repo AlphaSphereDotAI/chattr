@@ -67,7 +67,7 @@ jobs:
         with:
           images: ${{ inputs.registry }}/${{ github.repository }}
           tags: |
-            type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=latest,enable=${{ github.event_name == 'push' && contains(github.ref, 'refs/tags/') }}
             type=ref,event=pr,prefix={{sha}}-pr-
             type=ref,event=tag
       - name: Build and Push to ${{ inputs.registry }}
