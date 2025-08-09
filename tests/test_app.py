@@ -10,5 +10,6 @@ def test_app() -> None:
     Returns:
         None
     """
-    response: Response = head("http://localhost:7860/", timeout=30)
+    url = os.environ.get("CHATTR_URL", "http://localhost:7860/")
+    response: Response = head(url, timeout=30)
     assert response.status_code == 200
