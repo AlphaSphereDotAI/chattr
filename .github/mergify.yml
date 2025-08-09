@@ -51,8 +51,7 @@ pull_request_rules:
         message: >
           Hey @{{author}}, your pull request has been dequeued due to the following reason: {{queue_dequeue_reason}}.
 
-          Sorry about that, but you can requeue the PR by using `@mergifyio requeue` if you think this
-          was a mistake.
+          Sorry about that, but you can requeue the PR by using `@mergifyio requeue` if you think this was a mistake.
 
 queue_rules:
   - name: default
