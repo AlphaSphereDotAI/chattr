@@ -27,4 +27,10 @@ requires = ["uv_build"]
 build-backend = "uv_build"
 
 [dependency-groups]
-dev = ["pytest-mergify>=2025.8.5.1", "ruff>=0.12.8", "ty>=0.0.1a16"]
+dev = [
+    "pytest-emoji>=0.2.0",
+    "pytest-md>=0.2.0",
+    "pytest-mergify>=2025.8.5.1",
+    "ruff>=0.12.8",
+    "ty>=0.0.1a16",
+]
