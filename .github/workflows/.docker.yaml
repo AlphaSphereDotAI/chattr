@@ -38,6 +38,7 @@ jobs:
   build_image:
     name: Build and push Docker image to ${{ inputs.registry }}
     needs: check_dockerfile
+    if: ${{ inputs.is_test == true || inputs.is_test == false }}
     runs-on: ubuntu-latest
     outputs:
       image_tag: ${{ steps.tag.outputs.TAG }}
@@ -92,6 +93,7 @@ jobs:
   docker_scout:
     name: Docker Scout (${{ matrix.commands }})
     needs: build_image
+    if: ${{ inputs.is_test == true || inputs.is_test == false }}
     runs-on: ubuntu-latest
     environment:
       name: docker_image
