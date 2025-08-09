@@ -9,6 +9,6 @@
       "Lockfile"
     ]
   },
-  "osvVulnerabilityAlerts": false,
+  "osvVulnerabilityAlerts": true,
   "dependencyDashboardOSVVulnerabilitySummary": "all"
 }
