@@ -4,6 +4,11 @@
     "config:best-practices"
   ],
   "lockFileMaintenance": {
-    "enabled": true
-  }
+    "enabled": true,
+    "labels": [
+      "Lockfile"
+    ]
+  },
+  "osvVulnerabilityAlerts": false,
+  "dependencyDashboardOSVVulnerabilitySummary": "all"
 }

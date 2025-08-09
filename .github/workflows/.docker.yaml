@@ -147,12 +147,20 @@ jobs:
     steps:
       - name: Echo URL
         run: echo "Chattr available on localhost:${{ job.services.chattr.ports['7860'] }}"
-      - name: Run curl
-        run: curl -o ./output.txt -f -I -s http://localhost:${{ job.services.chattr.ports['7860'] }}/
-      - name: Summary
-        run: |-
-          echo "# curl Output" >> $GITHUB_STEP_SUMMARY
-          cat ./output.txt >> $GITHUB_STEP_SUMMARY
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@e92bafb6253dcd438e0484186d7669ea7a8ca1cc # v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+          activate-environment: true
+      - name: Install the project
+        run: uv sync --frozen
+      - name: Test
+        env:
+          MERGIFY_TOKEN: ${{ secrets.MERGIFY_TOKEN }}
+        uses: pavelzw/pytest-action@v2
   clean:
     name: Cleaning GHCR
     needs: api_test
