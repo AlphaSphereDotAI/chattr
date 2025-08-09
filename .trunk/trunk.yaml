@@ -53,8 +53,8 @@ actions:
     - uv-lock
     - uv-sync
     - trunk-announce
-    - trunk-check-pre-push
+    #    - trunk-check-pre-push
     - trunk-fmt-pre-commit
     - trunk-upgrade-available
-    - trunk-check-pre-push-always
+    #    - trunk-check-pre-push-always
     - trunk-check-pre-commit
