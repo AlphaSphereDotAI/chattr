@@ -1,7 +1,7 @@
 name: CI Tools
 on:
   schedule:
-    - cron: 0 6 * * 0
+    - cron: 0 6 * * *
   push:
     branches:
       - main
