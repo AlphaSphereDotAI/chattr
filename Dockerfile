@@ -3,13 +3,10 @@ FROM cgr.dev/chainguard/wolfi-base:latest@sha256:1fd981aa0bcefd8da87ce55a9ae9078
 COPY --from=ghcr.io/astral-sh/uv:latest@sha256:67b2bcccdc103d608727d1b577e58008ef810f751ed324715eb60b3f0c040d30 \
      /uv /uvx /usr/bin/
 
-# skipcq: DOK-DL3018
-RUN apk add --no-cache build-base git
-
 USER nonroot
 
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv tool install git+https://github.com/AlphaSphereDotAI/chattr
+    uv tool install chattr
 
 FROM cgr.dev/chainguard/wolfi-base:latest@sha256:1fd981aa0bcefd8da87ce55a9ae907862fcb6835c658fdb284867117fb0268ce AS production
 
