@@ -14,7 +14,6 @@ from pydantic import (
     FilePath,
     HttpUrl,
     SecretStr,
-    StrictStr,
     model_validator,
 )
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -30,10 +29,10 @@ logger.add(
 
 class ModelSettings(BaseModel):
     url: HttpUrl = Field(default=None)
-    name: StrictStr = Field(default=None)
+    name: str = Field(default=None)
     api_key: SecretStr = Field(default=None)
     temperature: float = Field(default=0.0, ge=0.0, le=1.0)
-    system_message: StrictStr = Field(
+    system_message: str = Field(
         default="You are a helpful assistant that can answer questions about the time and generate audio files from text."
     )
 
@@ -60,12 +59,12 @@ class ModelSettings(BaseModel):
 
 
 class MemorySettings(BaseModel):
-    collection_name: StrictStr = Field(default="memories")
+    collection_name: str = Field(default="memories")
     embedding_dims: int = Field(default=384)
 
 
 class VectorDatabaseSettings(BaseModel):
-    name: StrictStr = Field(default="chattr")
+    name: str = Field(default="chattr")
     url: HttpUrl = HttpUrl("http://localhost:6333")
 
 
