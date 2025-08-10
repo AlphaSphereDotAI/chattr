@@ -1,22 +1,21 @@
 {
   "mcpServers": {
-    "qdrant": {
+    "time": {
       "command": "docker",
       "args": [
         "run",
         "-i",
         "--rm",
-        "mcp/qdrant"
-      ],
-      "env": {
-        "QDRANT_URL": "http://localhost:6333"
-      }
+        "mcp/time"
+      ]
     },
-    "jetbrains": {
-      "command": "npx",
+    "sequential_thinking": {
+      "command": "docker",
       "args": [
-        "-y",
-        "@jetbrains/mcp-proxy"
+        "run",
+        "-i",
+        "--rm",
+        "mcp/sequentialthinking"
       ]
     }
   }
