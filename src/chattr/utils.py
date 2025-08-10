@@ -1,7 +1,6 @@
 """This module contains utility functions for the Chattr app."""
 
 from pathlib import Path
-from typing import Optional
 
 from m3u8 import M3U8, load
 from pydantic import HttpUrl, ValidationError
@@ -11,7 +10,7 @@ from requests import Session
 from chattr.settings import logger
 
 
-def is_url(value: Optional[str]) -> bool:
+def is_url(value: str) -> bool:
     """
     Check if a string is a valid URL.
 
