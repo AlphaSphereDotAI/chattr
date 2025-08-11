@@ -35,7 +35,7 @@ services:
     secrets:
       - groq_api_key
   vector_database:
-    image: qdrant/qdrant:latest@sha256:d122138f76868edba68d36cb0833139c1d1761f00f09e48e61f8314196e6a4c6
+    image: qdrant/qdrant:latest@sha256:82872f85515f475ebbb3d0d15ec3507c3bef8c5fd520b3e3759a9f3af29ff9bf
     ports:
       - "6333:6333"
       - "6334:6334"
