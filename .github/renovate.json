@@ -19,7 +19,10 @@
       "matchPackageNames": [
         "*"
       ],
-      "rangeStrategy": "bump"
+      "rangeStrategy": "bump",
+      "labels": [
+        "PyProject"
+      ]
     }
   ]
 }
