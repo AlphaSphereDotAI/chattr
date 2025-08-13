@@ -351,7 +351,7 @@ dev = [
     { name = "pytest-md", specifier = ">=0.2.0" },
     { name = "pytest-mergify", specifier = ">=2025.8.5.1" },
     { name = "ruff", specifier = ">=0.12.8" },
-    { name = "ty", specifier = ">=0.0.1a16" },
+    { name = "ty", specifier = ">=0.0.1a17" },
 ]
 
 [[package]]
