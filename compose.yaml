@@ -32,8 +32,6 @@ services:
       timeout: 10s
       retries: 5
       start_period: 40s
-    secrets:
-      - groq_api_key
   vector_database:
     image: qdrant/qdrant:latest@sha256:82872f85515f475ebbb3d0d15ec3507c3bef8c5fd520b3e3759a9f3af29ff9bf
     ports:
@@ -46,6 +44,3 @@ volumes:
   assets:
   fastembed:
   qdrant_storage:
-secrets:
-  groq_api_key:
-    file: groq_api_key.txt
