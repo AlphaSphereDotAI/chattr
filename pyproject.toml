@@ -9,7 +9,7 @@ authors = [
 requires-python = ">=3.13.6"
 dependencies = [
     "fastembed>=0.7.1",
-    "gradio>=5.41.0",
+    "gradio>=5.42.0",
     "langchain-community>=0.3.27",
     "langchain-mcp-adapters>=0.1.9",
     "langchain-openai>=0.3.29",
