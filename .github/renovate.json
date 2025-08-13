@@ -10,5 +10,16 @@
     ]
   },
   "osvVulnerabilityAlerts": true,
-  "dependencyDashboardOSVVulnerabilitySummary": "all"
+  "dependencyDashboardOSVVulnerabilitySummary": "all",
+  "packageRules": [
+    {
+      "matchManagers": [
+        "pep621"
+      ],
+      "matchPackageNames": [
+        "*"
+      ],
+      "rangeStrategy": "bump"
+    }
+  ]
 }
