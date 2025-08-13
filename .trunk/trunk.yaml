@@ -1,6 +1,6 @@
 version: 0.1
 cli:
-  version: 1.24.0
+  version: 1.25.0
 plugins:
   sources:
     - id: trunk
@@ -23,12 +23,12 @@ lint:
     - gitleaks@8.28.0
     - actionlint@1.7.7
     - bandit@1.8.6
-    - checkov@3.2.460
+    - checkov@3.2.461
     - git-diff-check
     - hadolint@2.12.1-beta
     - markdownlint@0.45.0
     - oxipng@9.1.5
-    - renovate@41.62.0
+    - renovate@41.63.0
     - ruff@0.12.7:
         commands:
           - lint
