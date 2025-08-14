@@ -6,7 +6,8 @@
   "lockFileMaintenance": {
     "enabled": true,
     "labels": [
-      "Lockfile"
+      "Lockfile",
+      "dependencies"
     ]
   },
   "osvVulnerabilityAlerts": true,
@@ -21,7 +22,8 @@
       ],
       "rangeStrategy": "bump",
       "labels": [
-        "PyProject"
+        "PyProject",
+        "dependencies"
       ]
     }
   ]
