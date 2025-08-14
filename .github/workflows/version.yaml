@@ -14,7 +14,7 @@ jobs:
   version:
     name: Versioning
     runs-on: ubuntu-latest
-    if: github.actor != 'github-actions[bot]'
+    if: github.actor != 'MH0386'
     permissions:
       contents: write
     environment:
