@@ -1,12 +1,12 @@
 [project]
 name = "chattr"
-version = "0.1.0"
+version = "0.0.8"
 description = "App part of the Chatacter Backend"
 readme = "README.md"
 authors = [
     { name = "Mohamed Hisham Abdelzaher", email = "mohamed.hisham.abdelzaher@gmail.com" },
 ]
-requires-python = ">=3.13, <3.14"
+requires-python = ">=3.13.6, <3.14"
 dependencies = [
     "fastembed>=0.7.1",
     "gradio>=5.42.0",
@@ -16,7 +16,7 @@ dependencies = [
     "langgraph>=0.6.4",
     "loguru>=0.7.3",
     "m3u8>=6.0.0",
-    "mem0ai>=0.1.115",
+    "mem0ai>=0.1.116",
 ]
 
 [project.scripts]
