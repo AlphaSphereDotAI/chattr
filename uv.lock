@@ -222,7 +222,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "fastembed", specifier = ">=0.7.1" },
+    { name = "fastembed", specifier = ">=0.7.2" },
     { name = "gradio", specifier = ">=5.43.1" },
     { name = "langchain-community", specifier = ">=0.3.27" },
     { name = "langchain-mcp-adapters", specifier = ">=0.1.9" },
@@ -313,7 +313,7 @@ wheels = [
 
 [[package]]
 name = "fastembed"
-version = "0.7.1"
+version = "0.7.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "huggingface-hub" },
@@ -327,9 +327,9 @@ dependencies = [
     { name = "tokenizers" },
     { name = "tqdm" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/b0/e0/75b294baf2497f085d225b83f7124c627807806c29cb052136d09d4a8599/fastembed-0.7.1.tar.gz", hash = "sha256:cb45be91779ba1dcbe4dbdbdcfb3e2cffb8ec546f8f4317e33fe3014113ee64c", size = 62197, upload-time = "2025-06-16T09:01:42.766Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e8/78/c03f937a2d5cd18b774c36df9aa6f1c3e831e0e3e127c83c82b12b45d451/fastembed-0.7.2.tar.gz", hash = "sha256:77c3bae9ec01779824597d7c12e3dd02f7e4c81363f4e03206a0654c732ce2a2", size = 66651, upload-time = "2025-08-25T15:02:02.621Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/33/ad/5a7a19f7ca6a0b440056e0499bf15e3244217eedec06896ae95a80a73340/fastembed-0.7.1-py3-none-any.whl", hash = "sha256:b4f6a8f620c32f2e3de8231034ca2ca76dadc7d5463f2e9ab4930b51adc03b12", size = 100860, upload-time = "2025-06-16T09:01:41.373Z" },
+    { url = "https://files.pythonhosted.org/packages/84/c5/46c34211414c43ca1cd8210e9da3bf9289d82b204f4ad5ff7d07558e0614/fastembed-0.7.2-py3-none-any.whl", hash = "sha256:4a984e5f4d64fb7536b3a3f45123f228108b950cca02088435073b73b0dc5af4", size = 105397, upload-time = "2025-08-25T15:02:01.442Z" },
 ]
 
 [[package]]
