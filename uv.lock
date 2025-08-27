@@ -197,7 +197,7 @@ wheels = [
 
 [[package]]
 name = "chattr"
-version = "0.0.15"
+version = "0.0.17"
 source = { editable = "." }
 dependencies = [
     { name = "fastembed" },
@@ -223,10 +223,10 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "fastembed", specifier = ">=0.7.2" },
-    { name = "gradio", specifier = ">=5.43.1" },
+    { name = "gradio", specifier = ">=5.44.0" },
     { name = "langchain-community", specifier = ">=0.3.28" },
     { name = "langchain-mcp-adapters", specifier = ">=0.1.9" },
-    { name = "langchain-openai", specifier = ">=0.3.31" },
+    { name = "langchain-openai", specifier = ">=0.3.32" },
     { name = "langgraph", specifier = ">=0.6.6" },
     { name = "loguru", specifier = ">=0.7.3" },
     { name = "m3u8", specifier = ">=6.0.0" },
@@ -425,7 +425,7 @@ wheels = [
 
 [[package]]
 name = "gradio"
-version = "5.43.1"
+version = "5.44.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiofiles" },
@@ -459,9 +459,9 @@ dependencies = [
     { name = "urllib3", marker = "sys_platform == 'emscripten'" },
     { name = "uvicorn", marker = "sys_platform != 'emscripten'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c4/75/608023e2adce004953f3428119e7028f5c59682e5c03dcf6a99b33ab4b40/gradio-5.43.1.tar.gz", hash = "sha256:30ef248f5121b9d80093014eac70d0e26ded70e55a9c1cec089cc4f87f251c08", size = 71452332, upload-time = "2025-08-19T20:25:35.876Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/61/fc/fa10fb9927d24371cfe4424cfa59614c87a93d5b140d08fb3b6523dfd85f/gradio-5.44.0.tar.gz", hash = "sha256:ee2b7668b916ec0fd44bc12551756fd72e67fe24341f4bca9648ed1118d3e1b6", size = 72108328, upload-time = "2025-08-26T17:46:34.181Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/93/32/2b35e003c795770445c20b05ea3023c4932032d65a7e55193bdd084df083/gradio-5.43.1-py3-none-any.whl", hash = "sha256:206a8a0dc7127660f1ec9195db366d527b82ed2e079a42bec2994b9bf555f1d1", size = 59590925, upload-time = "2025-08-19T20:25:31.226Z" },
+    { url = "https://files.pythonhosted.org/packages/30/da/04bea68615fafeff183a6e8850da8ae2b43b87c740f9515004890c40b866/gradio-5.44.0-py3-none-any.whl", hash = "sha256:2ae01c251026abf168181f5ded6c1a801725bedddce8e08ca6f627bdee6a1116", size = 60146952, upload-time = "2025-08-26T17:46:28.187Z" },
 ]
 
 [[package]]
@@ -841,16 +841,16 @@ wheels = [
 
 [[package]]
 name = "langchain-openai"
-version = "0.3.31"
+version = "0.3.32"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "langchain-core" },
     { name = "openai" },
     { name = "tiktoken" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/44/dc/9cacfdfe0bf326bc60fe88ac77b138640387d8d0af3c6bcad46dee3eafc4/langchain_openai-0.3.31.tar.gz", hash = "sha256:3a039f81f2aa64e85fd18be14f72b8f79bbb1d58efd57327918289aed6eedd3d", size = 766709, upload-time = "2025-08-21T21:56:59.001Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/7e/19/167d9ad1b6bb75406c4acceda01ef0dc1101c7f629f74441fe8a787fb190/langchain_openai-0.3.32.tar.gz", hash = "sha256:782ad669bd1bdb964456d8882c5178717adcfceecb482cc20005f770e43d346d", size = 782982, upload-time = "2025-08-26T14:25:27.917Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/11/09/e3d2ac7d6609977e32bfe2a2579917fc268d4deae84ed511e79e16c3087a/langchain_openai-0.3.31-py3-none-any.whl", hash = "sha256:b5b2ae7d3f996f189d400d864e1884e6c368ab6b1a0c1305042761ab946c3a26", size = 74456, upload-time = "2025-08-21T21:56:57.635Z" },
+    { url = "https://files.pythonhosted.org/packages/e6/3d/e22ee65fff79afe7bdfbd67844243eb279b440c882dad9e4262dcc87131f/langchain_openai-0.3.32-py3-none-any.whl", hash = "sha256:3354f76822f7cc76d8069831fe2a77f9bc7ff3b4f13af788bd94e4c6e853b400", size = 74531, upload-time = "2025-08-26T14:25:26.542Z" },
 ]
 
 [[package]]
