@@ -223,7 +223,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "fastembed", specifier = ">=0.7.3" },
-    { name = "gradio", specifier = ">=5.44.0" },
+    { name = "gradio", specifier = ">=5.44.1" },
     { name = "langchain-community", specifier = ">=0.3.29" },
     { name = "langchain-mcp-adapters", specifier = ">=0.1.9" },
     { name = "langchain-openai", specifier = ">=0.3.32" },
