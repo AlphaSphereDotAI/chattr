@@ -1,6 +1,6 @@
 [project]
 name = "chattr"
-version = "0.0.18"
+version = "0.0.23"
 description = "App part of the Chatacter Backend"
 readme = "README.md"
 authors = [
@@ -8,15 +8,15 @@ authors = [
 ]
 requires-python = ">=3.13.7, <3.14"
 dependencies = [
-    "fastembed>=0.7.2",
-    "gradio>=5.44.0",
+    "fastembed>=0.7.3",
+    "gradio>=5.44.1",
     "langchain-community>=0.3.29",
     "langchain-mcp-adapters>=0.1.9",
     "langchain-openai>=0.3.32",
-    "langgraph>=0.6.6",
+    "langgraph>=0.6.7",
     "loguru>=0.7.3",
     "m3u8>=6.0.0",
-    "mem0ai>=0.1.116",
+    "mem0ai>=0.1.117",
 ]
 
 [project.scripts]
@@ -31,6 +31,6 @@ dev = [
     "pytest-emoji>=0.2.0",
     "pytest-md>=0.2.0",
     "pytest-mergify>=2025.8.20.1",
-    "ruff>=0.12.10",
+    "ruff>=0.12.12",
     "ty>=0.0.1a19",
 ]
