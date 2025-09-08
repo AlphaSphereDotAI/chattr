@@ -1,6 +1,6 @@
 [project]
 name = "chattr"
-version = "0.0.22"
+version = "0.0.23"
 description = "App part of the Chatacter Backend"
 readme = "README.md"
 authors = [
