@@ -31,6 +31,6 @@ dev = [
     "pytest-emoji>=0.2.0",
     "pytest-md>=0.2.0",
     "pytest-mergify>=2025.8.20.1",
-    "ruff>=0.12.11",
+    "ruff>=0.12.12",
     "ty>=0.0.1a19",
 ]
