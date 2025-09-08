@@ -1,6 +1,6 @@
 FROM cgr.dev/chainguard/wolfi-base:latest@sha256:c85f493847f2a370df7f351676bbbbc89096c139394a1dca6a4b05f5f1108d3a AS builder
 
-COPY --from=ghcr.io/astral-sh/uv:latest@sha256:f3660c56d5b08d6c516360981bedc439f499b9bf37f46a216018da3777a74011 \
+COPY --from=ghcr.io/astral-sh/uv:latest@sha256:a5727064a0de127bdb7c9d3c1383f3a9ac307d9f2d8a391edc7896c54289ced0 \
      /uv /uvx /usr/bin/
 
 USER nonroot
