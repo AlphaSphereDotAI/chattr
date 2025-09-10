@@ -237,7 +237,7 @@ requires-dist = [
 dev = [
     { name = "pytest-emoji", specifier = ">=0.2.0" },
     { name = "pytest-md", specifier = ">=0.2.0" },
-    { name = "pytest-mergify", specifier = ">=2025.9.4.1" },
+    { name = "pytest-mergify", specifier = ">=2025.9.10.1" },
     { name = "ruff", specifier = ">=0.12.12" },
     { name = "ty", specifier = ">=0.0.1a20" },
 ]
@@ -1661,7 +1661,7 @@ wheels = [
 
 [[package]]
 name = "pytest-mergify"
-version = "2025.9.4.1"
+version = "2025.9.10.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "opentelemetry-exporter-otlp-proto-http" },
@@ -1669,9 +1669,9 @@ dependencies = [
     { name = "pytest" },
     { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/a6/e9/f58dc54cb27775a3a187c294c183249febf917b757d90b760f9f0bb7b3a9/pytest_mergify-2025.9.4.1.tar.gz", hash = "sha256:03573b6e7f73e4da9be5ee15d68ad0289c708bbf26ad3929b20b654c0170bdce", size = 20613, upload-time = "2025-09-04T08:12:23.332Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/7c/1b/e8532e85a3f0264e15090c618dcd00e86e2ae0b5cfad7eb38c9559bb1254/pytest_mergify-2025.9.10.1.tar.gz", hash = "sha256:165361f1e6f4a334d899dda7149901a6193fe4e58cdb1e3114a018f3a74328bd", size = 20702, upload-time = "2025-09-10T14:01:32.639Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/d2/33/2c051277c3e554892990667b10517b00158577611dccafbeb2b1c1aef078/pytest_mergify-2025.9.4.1-py3-none-any.whl", hash = "sha256:24de61e4a966d09e62d03cf9f5f94b7d04f9d1c907b2dc0b2250ac87b2272fd1", size = 25323, upload-time = "2025-09-04T08:12:21.834Z" },
+    { url = "https://files.pythonhosted.org/packages/55/51/4dfb55d017c7e54e2ad74df5e4eaef1d0354c62acc27602cfb8020c49426/pytest_mergify-2025.9.10.1-py3-none-any.whl", hash = "sha256:c88601957fafd06d0e73420aacdf6642e6b0cd38c99c89d80160b526f5790cc0", size = 25457, upload-time = "2025-09-10T14:01:31.127Z" },
 ]
 
 [[package]]
