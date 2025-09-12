@@ -1,6 +1,6 @@
-FROM cgr.dev/chainguard/wolfi-base:latest@sha256:4f40641f8e1aaeba87755e96982d9fa9893cfaec6544b11599922f82cf7b0ba8 AS builder
+FROM cgr.dev/chainguard/wolfi-base:latest@sha256:0e09bcd548cf2dfb9a3fd40af1a7389aa8c16b428de4e8f72b085f015694ce3d AS builder
 
-COPY --from=ghcr.io/astral-sh/uv:latest@sha256:a5727064a0de127bdb7c9d3c1383f3a9ac307d9f2d8a391edc7896c54289ced0 \
+COPY --from=ghcr.io/astral-sh/uv:latest@sha256:e4644cb5bd56fdc2c5ea3ee0525d9d21eed1603bccd6a21f887a938be7e85be1 \
      /uv /uvx /usr/bin/
 
 USER nonroot
@@ -8,7 +8,7 @@ USER nonroot
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv tool install chattr
 
-FROM cgr.dev/chainguard/wolfi-base:latest@sha256:4f40641f8e1aaeba87755e96982d9fa9893cfaec6544b11599922f82cf7b0ba8 AS production
+FROM cgr.dev/chainguard/wolfi-base:latest@sha256:0e09bcd548cf2dfb9a3fd40af1a7389aa8c16b428de4e8f72b085f015694ce3d AS production
 
 ENV GRADIO_SERVER_PORT=7860 \
     GRADIO_SERVER_NAME=0.0.0.0 \
