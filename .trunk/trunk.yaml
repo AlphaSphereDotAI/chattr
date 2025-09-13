@@ -28,8 +28,8 @@ lint:
     - hadolint@2.13.1
     - markdownlint@0.45.0
     - oxipng@9.1.5
-    - renovate@41.99.6
-    - ruff@0.12.12:
+    - renovate@41.107.0
+    - ruff@0.13.0:
         commands:
           - lint
           - format
