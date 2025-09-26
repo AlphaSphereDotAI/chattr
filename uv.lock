@@ -230,7 +230,7 @@ requires-dist = [
     { name = "langgraph", specifier = ">=0.6.7" },
     { name = "loguru", specifier = ">=0.7.3" },
     { name = "m3u8", specifier = ">=6.0.0" },
-    { name = "mem0ai", specifier = ">=0.1.117" },
+    { name = "mem0ai", specifier = ">=0.1.118" },
 ]
 
 [package.metadata.requires-dev]
