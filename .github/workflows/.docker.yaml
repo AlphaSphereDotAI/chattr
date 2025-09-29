@@ -138,7 +138,7 @@ jobs:
       name: api_test
     services:
       vector_database:
-        image: qdrant/qdrant:latest@sha256:6ac4807063bbecddca0250bfbcff52acf18c22263b904d12919349e6d0a408f1
+        image: qdrant/qdrant:latest@sha256:b64357e7061d0678c0c7e3f844b75354888bcef9b0319e9615db8c01eca78fc7
         ports:
           - 6333:6333
       chattr:
