@@ -4,7 +4,17 @@ from json import dumps, loads
 from pathlib import Path
 from textwrap import dedent
 from typing import AsyncGenerator, Self
-
+from gradio import (
+    Audio,
+    Blocks,
+    Button,
+    Chatbot,
+    ClearButton,
+    Column,
+    PlayableVideo,
+    Row,
+    Textbox,
+)
 from gradio import ChatMessage
 from gradio.components.chatbot import MetadataDict
 from langchain_community.embeddings import FastEmbedEmbeddings
@@ -197,6 +207,31 @@ class App:
         self._graph.get_graph().draw_mermaid_png(
             output_file_path=self.settings.directory.assets / "graph.png"
         )
+
+    def gui(self) -> Blocks:
+        """Creates and returns the main Gradio Blocks interface for the Chattr app.
+
+        This function sets up the user interface, including video, audio, chatbot, and input controls.
+
+        Returns:
+            Blocks: The constructed Gradio Blocks interface for the chat application.
+        """
+        with Blocks() as chat:
+            with Row():
+                with Column():
+                    video = PlayableVideo()
+                    audio = Audio(sources="upload", type="filepath", format="wav")
+                with Column():
+                    chatbot = Chatbot(
+                        type="messages", show_copy_button=True, show_share_button=True
+                    )
+                    msg = Textbox()
+                    with Row():
+                        button = Button("Send", variant="primary")
+                        ClearButton([msg, chatbot, video], variant="stop")
+            button.click(self.generate_response, [msg, chatbot], [msg, chatbot, audio])
+            msg.submit(self.generate_response, [msg, chatbot], [msg, chatbot, audio])
+        return chat
 
     async def generate_response(
         self, message: str, history: list[ChatMessage]
