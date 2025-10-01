@@ -1,12 +1,13 @@
-from gradio import Blocks
-
-from chattr.gui import app_block
+from typing import TYPE_CHECKING
+from chattr.app.runner import app
+if TYPE_CHECKING:
+    from gradio import Blocks
 
 
 def main() -> None:
-    """Initializes and launches the Gradio-based Chattr application server with API access, monitoring, and PWA support enabled."""
-    app: Blocks = app_block()
-    app.queue(api_open=True).launch(
+    """Launch the Gradio Multi-agent system app."""
+    application: Blocks = app.gui()
+    application.queue(api_open=True).launch(
         server_port=7860,
         debug=True,
         show_api=True,
