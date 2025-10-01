@@ -27,7 +27,6 @@ logger.add(
 )
 
 
-
 class MemorySettings(BaseModel):
     collection_name: str = Field(default="memories")
     embedding_dims: int = Field(default=384)
@@ -112,8 +111,10 @@ class DirectorySettings(BaseModel):
                     logger.error("Error creating directory %s: %s", directory, e)
         return self
 
+
 class ModelSettings(BaseModel):
     """Settings related to model execution."""
+
     url: HttpUrl = Field(default=None)
     name: str = Field(default=None)
     api_key: SecretStr = Field(default=None)
