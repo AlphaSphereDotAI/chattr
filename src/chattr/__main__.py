@@ -1,5 +1,7 @@
 from typing import TYPE_CHECKING
+
 from chattr.app.runner import app
+
 if TYPE_CHECKING:
     from gradio import Blocks
 
