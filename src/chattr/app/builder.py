@@ -4,18 +4,19 @@ from json import dumps, loads
 from pathlib import Path
 from textwrap import dedent
 from typing import AsyncGenerator, Self
+
 from gradio import (
     Audio,
     Blocks,
     Button,
     Chatbot,
+    ChatMessage,
     ClearButton,
     Column,
     PlayableVideo,
     Row,
     Textbox,
 )
-from gradio import ChatMessage
 from gradio.components.chatbot import MetadataDict
 from langchain_community.embeddings import FastEmbedEmbeddings
 from langchain_core.messages import HumanMessage, SystemMessage
