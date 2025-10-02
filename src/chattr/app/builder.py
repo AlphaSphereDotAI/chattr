@@ -60,15 +60,15 @@ class App:
         cls.settings = settings
         cls._tools = []
         try:
-            cls._tools: list[BaseTool] = await cls._setup_tools(
+            cls._tools = await cls._setup_tools(
                 MultiServerMCPClient(
                     loads(cls.settings.mcp.path.read_text(encoding="utf-8"))
                 )
             )
         except Exception as e:
             logger.warning(f"Failed to setup tools: {e}")
-        cls._llm: ChatOpenAI = cls._setup_llm()
-        cls._model: Runnable = cls._llm.bind_tools(cls._tools)
+        cls._llm = cls._setup_llm()
+        cls._model = cls._llm.bind_tools(cls._tools)
         cls._memory = await cls._setup_memory()
         cls._graph = cls._setup_graph()
         return cls
