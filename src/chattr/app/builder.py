@@ -352,6 +352,7 @@ class App:
                     )
                     yield "", history, file_path.with_suffix(".wav")
             yield "", history, None
+
     @classmethod
     def _is_url(cls, value: str) -> bool:
         """
@@ -371,6 +372,7 @@ class App:
             return True
         except ValidationError:
             return False
+
     @classmethod
     def _download_file(cls, url: HttpUrl, path: Path) -> None:
         """
@@ -398,6 +400,7 @@ class App:
             for chunk in response.iter_content(chunk_size=8192):
                 if chunk:
                     f.write(chunk)
+
     @classmethod
     def _convert_audio_to_wav(cls, input_path: Path, output_path: Path) -> None:
         """
