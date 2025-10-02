@@ -30,6 +30,10 @@ from langgraph.graph.state import CompiledStateGraph
 from langgraph.prebuilt import ToolNode, tools_condition
 from m3u8 import M3U8, load
 from mem0 import Memory
+from mem0.configs.base import MemoryConfig
+from mem0.embeddings.configs import EmbedderConfig
+from mem0.llms.configs import LlmConfig
+from mem0.vector_stores.configs import VectorStoreConfig
 from openai import OpenAIError
 from pydantic import HttpUrl, ValidationError
 from pydub import AudioSegment
@@ -44,31 +48,33 @@ class App:
     """Main application class for the Chattr Multi-agent system app."""
 
     settings: Settings
-
-    def __init__(self, memory: Memory, tools: list[BaseTool]):
-        self._memory: Memory = memory
-        self._tools: list[BaseTool] = tools
-        self._llm: ChatOpenAI = self._initialize_llm()
-        self._model: Runnable = self._llm.bind_tools(self._tools)
-        self._graph: CompiledStateGraph = self._build_state_graph()
+    _llm: ChatOpenAI
+    _model: Runnable
+    _tools: list[BaseTool]
+    _memory: Memory
+    _graph: CompiledStateGraph
 
     @classmethod
     async def create(cls, settings: Settings) -> Self:
         """Async factory method to create a Graph instance."""
         cls.settings = settings
-        tools = []
-        memory = await cls._setup_memory()
+        cls._tools = []
         try:
-            tools: list[BaseTool] = await cls._setup_tools(
+            cls._tools: list[BaseTool] = await cls._setup_tools(
                 MultiServerMCPClient(
                     loads(cls.settings.mcp.path.read_text(encoding="utf-8"))
                 )
             )
         except Exception as e:
             logger.warning(f"Failed to setup tools: {e}")
-        return cls(memory, tools)
+        cls._llm: ChatOpenAI = cls._setup_llm()
+        cls._model: Runnable = cls._llm.bind_tools(cls._tools)
+        cls._memory = await cls._setup_memory()
+        cls._graph = cls._setup_graph()
+        return cls
 
-    def _build_state_graph(self) -> CompiledStateGraph:
+    @classmethod
+    def _setup_graph(cls) -> CompiledStateGraph:
         """
         Construct and compile the state graph for the Chattr application.
         This method defines the nodes and edges for the conversational agent
@@ -97,7 +103,7 @@ class App:
                 if not user_id:
                     logger.warning("No user_id found in state")
                     user_id = "default"
-                memories = self._memory.search(messages[-1].content, user_id=user_id)
+                memories = cls._memory.search(messages[-1].content, user_id=user_id)
                 memory_list = memories["results"]
                 logger.info(f"Retrieved {len(memory_list)} relevant memories")
                 logger.debug(f"Memories: {memories}")
@@ -118,40 +124,41 @@ class App:
                 system_message: SystemMessage = SystemMessage(
                     content=dedent(
                         f"""
-                        {self.settings.model.system_message}
+                        {cls.settings.model.system_message}
                         Use the provided context to personalize your responses and
                         remember user preferences and past interactions.
                         {context}
                         """
                     )
                 )
-                response = await self._model.ainvoke([system_message] + messages)
+                response = await cls._model.ainvoke([system_message] + messages)
                 try:
                     interaction = [
                         {"role": "user", "content": messages[-1].content},
                         {"role": "assistant", "content": response.content},
                     ]
-                    mem0_result = self._memory.add(interaction, user_id=user_id)
-                    logger.info(
-                        f"Memory saved: {len(mem0_result.get('results', []))} memories added"
-                    )
+                    mem0_result = cls._memory.add(interaction, user_id=user_id)
+                    logger.info(f"Memory saved: {len(mem0_result.get('results', []))}")
                 except Exception as e:
                     logger.exception(f"Error saving memory: {e}")
             except Exception as e:
                 logger.error(f"Error in chatbot: {e}")
                 # Fallback response without memory context
-                response = await self._model.ainvoke([self.settings.model.system_message] + messages)
+                response = await cls._model.ainvoke(
+                    [cls.settings.model.system_message] + messages
+                )
             return State(messages=[response], mem0_user_id=user_id)
 
         graph_builder: StateGraph = StateGraph(State)
         graph_builder.add_node("agent", _call_model)
-        graph_builder.add_node("tools", ToolNode(self._tools))
+        graph_builder.add_node("tools", ToolNode(cls._tools))
         graph_builder.add_edge(START, "agent")
         graph_builder.add_conditional_edges("agent", tools_condition)
         graph_builder.add_edge("tools", "agent")
         return graph_builder.compile(debug=True)
 
-    def _initialize_llm(self) -> ChatOpenAI:
+    @classmethod
+    def _setup_llm(cls) -> ChatOpenAI:
         """
         Initialize the ChatOpenAI language model using the provided settings.
         This method creates and returns a ChatOpenAI instance configured with
@@ -165,13 +172,13 @@ class App:
         """
         try:
             return ChatOpenAI(
-                base_url=str(self.settings.model.url),
-                model=self.settings.model.name,
-                api_key=self.settings.model.api_key,
-                temperature=self.settings.model.temperature,
+                base_url=str(cls.settings.model.url),
+                model=cls.settings.model.name,
+                api_key=cls.settings.model.api_key,
+                temperature=cls.settings.model.temperature,
             )
         except Exception as e:
-            _msg=f"Failed to initialize ChatOpenAI model: {e}"
+            _msg = f"Failed to initialize ChatOpenAI model: {e}"
             logger.error(_msg)
             raise Error(_msg) from e
 
@@ -184,30 +191,26 @@ class App:
             Memory: Configured memory instances.
         """
         try:
-            return Memory.from_config(
-                {
-                    "vector_store": {
-                        "provider": "qdrant",
-                        "config": {
+            return Memory(
+                MemoryConfig(
+                    vector_store=VectorStoreConfig(
+                        provider="qdrant",
+                        config={
                             "host": cls.settings.vector_database.url.host,
                             "port": cls.settings.vector_database.url.port,
                             "collection_name": cls.settings.memory.collection_name,
                             "embedding_model_dims": cls.settings.memory.embedding_dims,
                         },
-                    },
-                    "llm": {
-                        "provider": "openai",
-                        "config": {
-                            "model": cls.settings.model.name,
-                            "openai_base_url": str(cls.settings.model.url),
-                            "api_key": cls.settings.model.api_key,
-                        },
-                    },
-                    "embedder": {
-                        "provider": "langchain",
-                        "config": {"model": FastEmbedEmbeddings()},
-                    },
-                }
+                    ),
+                    llm=LlmConfig(
+                        provider="langchain",
+                        config={"model": cls._llm},
+                    ),
+                    embedder=EmbedderConfig(
+                        provider="langchain",
+                        config={"model": FastEmbedEmbeddings()},
+                    ),
+                )
             )
         except ResponseHandlingException as e:
             _msg = f"Failed to connect to Qdrant server: {e}"
@@ -219,6 +222,10 @@ class App:
                 "setting the `MODEL__API_KEY` environment variable"
             )
             logger.error(_msg)
+            raise Error(_msg) from e
+        except ValueError as e:
+            _msg = f"Failed to initialize memory: {e}"
+            logger.exception(_msg)
             raise Error(_msg) from e
 
     @staticmethod
@@ -239,13 +246,15 @@ class App:
             logger.warning("Using empty tool list")
             return []
 
-    def draw_graph(self) -> None:
+    @classmethod
+    def draw_graph(cls) -> None:
         """Render the compiled state graph as a Mermaid PNG image and save it."""
-        self._graph.get_graph().draw_mermaid_png(
-            output_file_path=self.settings.directory.assets / "graph.png"
+        cls._graph.get_graph().draw_mermaid_png(
+            output_file_path=cls.settings.directory.assets / "graph.png"
         )
 
-    def gui(self) -> Blocks:
+    @classmethod
+    def gui(cls) -> Blocks:
         """Creates and returns the main Gradio Blocks interface for the Chattr app.
 
         This function sets up the user interface, including video, audio, chatbot, and input controls.
@@ -257,21 +266,28 @@ class App:
             with Row():
                 with Column():
                     video = PlayableVideo()
-                    audio = Audio(sources="upload", type="filepath", format="wav")
+                    audio = Audio(
+                        sources="upload",
+                        type="filepath",
+                        format="wav",
+                    )
                 with Column():
                     chatbot = Chatbot(
-                        type="messages", show_copy_button=True, show_share_button=True
+                        type="messages",
+                        show_copy_button=True,
+                        show_share_button=True,
                     )
                     msg = Textbox()
                     with Row():
                         button = Button("Send", variant="primary")
                         ClearButton([msg, chatbot, video], variant="stop")
-            button.click(self.generate_response, [msg, chatbot], [msg, chatbot, audio])
-            msg.submit(self.generate_response, [msg, chatbot], [msg, chatbot, audio])
+            button.click(cls.generate_response, [msg, chatbot], [msg, chatbot, audio])
+            msg.submit(cls.generate_response, [msg, chatbot], [msg, chatbot, audio])
         return chat
 
+    @classmethod
     async def generate_response(
-        self, message: str, history: list[ChatMessage]
+        cls, message: str, history: list[ChatMessage]
     ) -> AsyncGenerator[tuple[str, list[ChatMessage], Path | None]]:
         """
         Generate a response to a user message and update the conversation history.
@@ -284,7 +300,7 @@ class App:
         Returns:
             AsyncGenerator[tuple[str, list[ChatMessage], Path]]: Yields a tuple containing an empty string, the updated history, and a Path to an audio file if generated.
         """
-        async for response in self._graph.astream(
+        async for response in cls._graph.astream(
             State(messages=[HumanMessage(content=message)], mem0_user_id="1"),
             RunnableConfig(configurable={"thread_id": "1"}),
             stream_mode="updates",
@@ -322,16 +338,16 @@ class App:
                         ),
                     )
                 )
-                if self._is_url(last_tool_message.content):
+                if cls._is_url(last_tool_message.content):
                     logger.info(f"Downloading audio from {last_tool_message.content}")
                     file_path: Path = (
-                        self.settings.directory.audio / last_tool_message.id
+                        cls.settings.directory.audio / last_tool_message.id
                     )
-                    self._download_file(
+                    cls._download_file(
                         last_tool_message.content, file_path.with_suffix(".aac")
                     )
                     logger.info(f"Audio downloaded to {file_path.with_suffix('.aac')}")
-                    self._convert_audio_to_wav(
+                    cls._convert_audio_to_wav(
                         file_path.with_suffix(".aac"), file_path.with_suffix(".wav")
                     )
                     yield "", history, file_path.with_suffix(".wav")
