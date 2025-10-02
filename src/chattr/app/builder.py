@@ -140,7 +140,9 @@ class App:
             except Exception as e:
                 logger.error(f"Error in chatbot: {e}")
                 # Fallback response without memory context
-                response = await self._model.ainvoke([self.settings.model.system_message] + messages)
+                response = await self._model.ainvoke(
+                    [self.settings.model.system_message] + messages
+                )
             return State(messages=[response], mem0_user_id=user_id)
 
         graph_builder: StateGraph = StateGraph(State)
@@ -171,7 +173,7 @@ class App:
                 temperature=self.settings.model.temperature,
             )
         except Exception as e:
-            _msg=f"Failed to initialize ChatOpenAI model: {e}"
+            _msg = f"Failed to initialize ChatOpenAI model: {e}"
             logger.error(_msg)
             raise Error(_msg) from e
 
