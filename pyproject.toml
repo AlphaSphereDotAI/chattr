@@ -1,6 +1,6 @@
 [project]
 name = "chattr"
-version = "0.0.37"
+version = "0.0.38"
 description = "App part of the Chatacter Backend"
 readme = "README.md"
 authors = [
@@ -9,7 +9,7 @@ authors = [
 requires-python = ">=3.13.7, <3.14"
 dependencies = [
     "fastembed>=0.7.3",
-    "gradio>=5.47.2",
+    "gradio>=5.48.0",
     "langchain-community>=0.3.30",
     "langchain-mcp-adapters>=0.1.10",
     "langchain-openai>=0.3.34",
