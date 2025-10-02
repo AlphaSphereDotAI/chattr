@@ -10,6 +10,10 @@ on:
         type: string
         required: true
         description: Registry
+      install_source:
+        type: string
+        required: true
+        description: Source to install from (e.g., PyPI Package or Git source)
 permissions:
   contents: read
   packages: write
@@ -25,20 +29,32 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
-      - name: Log in to the ghcr.io Registry
+      - name: Log in to ${{ inputs.registry }} Registry
         uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3
         with:
-          registry: ghcr.io
+          registry: ${{ inputs.registry }}
           username: mh0386
-          password: ${{ secrets.GH_TOKEN }}
+          password: ${{ inputs.registry == 'ghcr.io' && secrets.GH_TOKEN || inputs.registry == 'docker.io' && secrets.TOKEN_KEY_DOCKER }}
       - name: Validate build configuration
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6
         with:
           call: check
+      - name: Job Summary (Success)
+        if: ${{ success() }}
+        run: |
+          echo "# Dockerfile Check" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "No issues found :heavy_check_mark:" >> $GITHUB_STEP_SUMMARY
+      - name: Job Summary (Failure)
+        if: ${{ failure() }}
+        run: |
+          echo "# Dockerfile Check" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Check failed :x:" >> $GITHUB_STEP_SUMMARY
   build_image:
     name: Build and push Docker image to ${{ inputs.registry }}
     needs: check_dockerfile
-    if: ${{ always() && ( inputs.is_test == true || inputs.is_test == false ) }}
+    if: ${{ always() && !cancelled() }}
     runs-on: ubuntu-latest
     outputs:
       image_tag: ${{ steps.tag.outputs.TAG }}
@@ -75,16 +91,19 @@ jobs:
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6
         id: push
         with:
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: ${{ inputs.is_test && 'type=gha' || '' }}
+          cache-to: ${{ inputs.is_test && 'type=gha,mode=max' || '' }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           annotations: ${{ steps.meta.outputs.annotations }}
+          build-args: |
+            INSTALL_SOURCE=${{ inputs.install_source }}
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a # v3
+        if: ${{ inputs.is_test == false }}
         with:
-          subject-name: ${{ inputs.registry }}/${{ github.repository }}
+          subject-name: ${{ inputs.registry == 'docker.io' && 'index.docker.io' || inputs.registry }}/${{ github.repository }}
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
       - name: Update Docker Hub Description
@@ -102,7 +121,7 @@ jobs:
   docker_scout:
     name: Docker Scout (${{ matrix.commands }})
     needs: build_image
-    if: ${{ always() && ( inputs.is_test == true || inputs.is_test == false ) }}
+    if: ${{ always() && !cancelled() }}
     runs-on: ubuntu-latest
     environment:
       name: docker_image
@@ -114,12 +133,12 @@ jobs:
           - cves
           - recommendations
     steps:
-      - name: Login to the Container registry
+      - name: Log in to ${{ inputs.registry }} Registry
         uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3
         with:
-          registry: ghcr.io
-          username: MH0386
-          password: ${{ secrets.GH_TOKEN }}
+          registry: ${{ inputs.registry }}
+          username: mh0386
+          password: ${{ inputs.registry == 'ghcr.io' && secrets.GH_TOKEN || inputs.registry == 'docker.io' && secrets.TOKEN_KEY_DOCKER }}
       - name: Docker Scout
         uses: docker/scout-action@f8c776824083494ab0d56b8105ba2ca85c86e4de # v1
         continue-on-error: true
@@ -133,7 +152,7 @@ jobs:
     name: API Test
     needs: build_image
     runs-on: ubuntu-latest
-    if: ${{ always() && inputs.is_test }}
+    if: ${{ always() && !cancelled() && inputs.is_test }}
     environment:
       name: api_test
     services:
@@ -151,7 +170,6 @@ jobs:
           MODEL__NAME: "llama3-70b-8192"
           VECTOR_DATABASE__URL: "http://vector_database:6333"
           VECTOR_DATABASE__NAME: "test"
-          FASTEMBED_CACHE_PATH: "/home/nonroot/fastembed"
         options: >-
           --health-cmd "curl -o /dev/null -f -s -w 'Status: %{http_code}, Time: %{time_total}s' http://localhost:7860/" --health-interval 10s
           --health-timeout 10s --health-start-period 20s --health-retries 15
@@ -166,17 +184,22 @@ jobs:
           enable-cache: true
           cache-dependency-glob: "uv.lock"
           activate-environment: true
-      - name: Install the project
-        run: uv sync --frozen
+      - name: Install deps
+        run: uv sync --only-dev
       - name: Test
         env:
           CHATTR_URL: http://localhost:${{ job.services.chattr.ports['7860'] }}/
           MERGIFY_TOKEN: ${{ secrets.MERGIFY_TOKEN }}
         uses: pavelzw/pytest-action@510c5e90c360a185039bea56ce8b3e7e51a16507 # v2
+        with:
+          click-to-expand: false
+          custom-arguments: "tests/test_app.py::test_app -p no:warnings"
   clean:
     name: Cleaning GHCR
-    needs: api_test
-    if: ${{ always() && ( inputs.is_test == true || inputs.is_test == false ) && inputs.registry == 'ghcr.io' }}
+    needs:
+      - api_test
+      - docker_scout
+    if: ${{ always() && !cancelled() && inputs.registry == 'ghcr.io' }}
     runs-on: ubuntu-latest
     environment:
       name: docker_image
