@@ -1,0 +1,9 @@
+[
+  {
+    "label": "Run Chattr",
+    "command": "uv",
+    "args": ["run", "chattr"],
+    "reveal_target": "center",
+    "shell": "system"
+  }
+]
