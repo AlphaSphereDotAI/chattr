@@ -352,8 +352,8 @@ class App:
                     )
                     yield "", history, file_path.with_suffix(".wav")
             yield "", history, None
-
-    def _is_url(self, value: str) -> bool:
+    @classmethod
+    def _is_url(cls, value: str) -> bool:
         """
         Check if a string is a valid URL.
 
@@ -371,8 +371,8 @@ class App:
             return True
         except ValidationError:
             return False
-
-    def _download_file(self, url: HttpUrl, path: Path) -> None:
+    @classmethod
+    def _download_file(cls, url: HttpUrl, path: Path) -> None:
         """
         Download a file from a URL and save it to a local path.
 
@@ -398,8 +398,8 @@ class App:
             for chunk in response.iter_content(chunk_size=8192):
                 if chunk:
                     f.write(chunk)
-
-    def _convert_audio_to_wav(self, input_path: Path, output_path: Path) -> None:
+    @classmethod
+    def _convert_audio_to_wav(cls, input_path: Path, output_path: Path) -> None:
         """
         Convert an audio file from aac to WAV format.
 
