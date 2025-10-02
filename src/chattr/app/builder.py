@@ -90,40 +90,57 @@ class App:
             Returns:
                 State: The updated State object with the model's response message.
             """
-            messages = state.get("messages")
-            user_id = state.get("mem0_user_id")
-            if not user_id:
-                logger.warning("No user_id found in state")
-                user_id = "default"
-            memories = self._memory.search(messages[-1].content, user_id=user_id)
-            if memories:
-                memory_list = "\n".join(
-                    [f"- {memory.get('memory')}" for memory in memories]
+            messages = state["messages"]
+            user_id = state["mem0_user_id"]
+
+            try:
+                if not user_id:
+                    logger.warning("No user_id found in state")
+                    user_id = "default"
+                memories = self._memory.search(messages[-1].content, user_id=user_id)
+                memory_list = memories["results"]
+                logger.info(f"Retrieved {len(memory_list)} relevant memories")
+                logger.debug(f"Memories: {memories}")
+
+                if memory_list:
+                    memory_list = "\n".join(
+                        [f"- {memory.get('memory')}" for memory in memory_list]
+                    )
+                    context = dedent(
+                        f"""
+                        Relevant information from previous conversations:
+                        {memory_list}
+                        """
+                    )
+                else:
+                    context = "No previous conversation history available."
+                logger.debug(f"Memory context:\n{context}")
+                system_message: SystemMessage = SystemMessage(
+                    content=dedent(
+                        f"""
+                        {self.settings.model.system_message}
+                        Use the provided context to personalize your responses and
+                        remember user preferences and past interactions.
+                        {context}
+                        """
+                    )
                 )
-                context = dedent(
-                    f"""
-                    Relevant information from previous conversations:
-                    {memory_list}
-                    """
-                )
-            else:
-                context = "No previous conversation history available."
-            logger.debug(f"Memory context: {context}")
-            system_message: SystemMessage = SystemMessage(
-                content=dedent(
-                    f"""
-                    {self.settings.model.system_message}
-                    Use the provided context to personalize your responses and
-                    remember user preferences and past interactions.
-                    {context}
-                    """
-                )
-            )
-            response = await self._model.ainvoke([system_message] + messages)
-            self._memory.add(
-                f"User: {messages[-1].content}\nAssistant: {response.content}",
-                user_id=user_id,
-            )
+                response = await self._model.ainvoke([system_message] + messages)
+                try:
+                    interaction = [
+                        {"role": "user", "content": messages[-1].content},
+                        {"role": "assistant", "content": response.content},
+                    ]
+                    mem0_result = self._memory.add(interaction, user_id=user_id)
+                    logger.info(
+                        f"Memory saved: {len(mem0_result.get('results', []))} memories added"
+                    )
+                except Exception as e:
+                    logger.exception(f"Error saving memory: {e}")
+            except Exception as e:
+                logger.error(f"Error in chatbot: {e}")
+                # Fallback response without memory context
+                response = await self._model.ainvoke([self.settings.model.system_message] + messages)
             return State(messages=[response], mem0_user_id=user_id)
 
         graph_builder: StateGraph = StateGraph(State)
@@ -154,8 +171,9 @@ class App:
                 temperature=self.settings.model.temperature,
             )
         except Exception as e:
-            logger.error(f"Failed to initialize ChatOpenAI model: {e}")
-            raise
+            _msg=f"Failed to initialize ChatOpenAI model: {e}"
+            logger.error(_msg)
+            raise Error(_msg) from e
 
     @classmethod
     async def _setup_memory(cls) -> Memory:
