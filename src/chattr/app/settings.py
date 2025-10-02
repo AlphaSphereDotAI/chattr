@@ -1,6 +1,6 @@
 """Settings for the Chattr app."""
 
-from json import loads
+from json import dumps, loads
 from pathlib import Path
 from typing import Self
 
@@ -27,7 +27,6 @@ logger.add(
 )
 
 
-
 class MemorySettings(BaseModel):
     collection_name: str = Field(default="memories")
     embedding_dims: int = Field(default=384)
@@ -39,13 +38,35 @@ class VectorDatabaseSettings(BaseModel):
 
 
 class MCPSettings(BaseModel):
-    path: FilePath = Field(default=None)
-    schema_path: FilePath = Field(
-        default_factory=lambda: Path.cwd() / "assets" / "mcp-config.json"
-    )
+    path: FilePath = Path.cwd() / "mcp.json"
+    schema_path: FilePath = Path.cwd() / "assets" / "mcp-config.json"
 
     @model_validator(mode="after")
-    def is_json(self) -> Self:
+    def create_init_mcp(self) -> Self:
+        if not self.path.exists():
+            self.path.write_text(
+                dumps(
+                    {
+                        "mcpServers": {
+                            "time": {
+                                "command": "docker",
+                                "args": ["run", "-i", "--rm", "mcp/time"],
+                            },
+                            "sequential_thinking": {
+                                "command": "docker",
+                                "args": ["run", "-i", "--rm", "mcp/sequentialthinking"],
+                            },
+                        }
+                    },
+                    indent=2,
+                ),
+                encoding="utf-8",
+            )
+            logger.info("`mcp.json` not found. Created initial MCP config file.")
+        return self
+
+    @model_validator(mode="after")
+    def is_valid(self) -> Self:
         """
         Validate that the MCP config file is a JSON file.
         This method checks the file extension of the provided MCP config path.
@@ -112,8 +133,10 @@ class DirectorySettings(BaseModel):
                     logger.error("Error creating directory %s: %s", directory, e)
         return self
 
+
 class ModelSettings(BaseModel):
     """Settings related to model execution."""
+
     url: HttpUrl = Field(default=None)
     name: str = Field(default=None)
     api_key: SecretStr = Field(default=None)
