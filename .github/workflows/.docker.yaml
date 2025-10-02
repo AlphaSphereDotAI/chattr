@@ -170,7 +170,6 @@ jobs:
           MODEL__NAME: "llama3-70b-8192"
           VECTOR_DATABASE__URL: "http://vector_database:6333"
           VECTOR_DATABASE__NAME: "test"
-          FASTEMBED_CACHE_PATH: "/home/nonroot/fastembed"
         options: >-
           --health-cmd "curl -o /dev/null -f -s -w 'Status: %{http_code}, Time: %{time_total}s' http://localhost:7860/" --health-interval 10s
           --health-timeout 10s --health-start-period 20s --health-retries 15
