@@ -13,6 +13,7 @@ from gradio import (
     ChatMessage,
     ClearButton,
     Column,
+    Error,
     PlayableVideo,
     Row,
     Textbox,
@@ -27,11 +28,16 @@ from langchain_openai import ChatOpenAI
 from langgraph.graph import START, StateGraph
 from langgraph.graph.state import CompiledStateGraph
 from langgraph.prebuilt import ToolNode, tools_condition
+from m3u8 import M3U8, load
 from mem0 import Memory
+from openai import OpenAIError
+from pydantic import HttpUrl, ValidationError
+from pydub import AudioSegment
+from qdrant_client.http.exceptions import ResponseHandlingException
+from requests import Session
 
 from chattr.app.settings import Settings, logger
 from chattr.app.state import State
-from chattr.app.utils import convert_audio_to_wav, download_file, is_url
 
 
 class App:
@@ -159,31 +165,43 @@ class App:
         Returns:
             Memory: Configured memory instances.
         """
-        return Memory.from_config(
-            {
-                "vector_store": {
-                    "provider": "qdrant",
-                    "config": {
-                        "host": cls.settings.vector_database.url.host,
-                        "port": cls.settings.vector_database.url.port,
-                        "collection_name": cls.settings.memory.collection_name,
-                        "embedding_model_dims": cls.settings.memory.embedding_dims,
+        try:
+            return Memory.from_config(
+                {
+                    "vector_store": {
+                        "provider": "qdrant",
+                        "config": {
+                            "host": cls.settings.vector_database.url.host,
+                            "port": cls.settings.vector_database.url.port,
+                            "collection_name": cls.settings.memory.collection_name,
+                            "embedding_model_dims": cls.settings.memory.embedding_dims,
+                        },
                     },
-                },
-                "llm": {
-                    "provider": "openai",
-                    "config": {
-                        "model": cls.settings.model.name,
-                        "openai_base_url": str(cls.settings.model.url),
-                        "api_key": cls.settings.model.api_key,
+                    "llm": {
+                        "provider": "openai",
+                        "config": {
+                            "model": cls.settings.model.name,
+                            "openai_base_url": str(cls.settings.model.url),
+                            "api_key": cls.settings.model.api_key,
+                        },
                     },
-                },
-                "embedder": {
-                    "provider": "langchain",
-                    "config": {"model": FastEmbedEmbeddings()},
-                },
-            }
-        )
+                    "embedder": {
+                        "provider": "langchain",
+                        "config": {"model": FastEmbedEmbeddings()},
+                    },
+                }
+            )
+        except ResponseHandlingException as e:
+            _msg = f"Failed to connect to Qdrant server: {e}"
+            logger.error(_msg)
+            raise Error(_msg) from e
+        except OpenAIError as e:
+            _msg = (
+                "Failed to connect to Chat Model server: "
+                "setting the `MODEL__API_KEY` environment variable"
+            )
+            logger.error(_msg)
+            raise Error(_msg) from e
 
     @staticmethod
     async def _setup_tools(_mcp_client: MultiServerMCPClient) -> list[BaseTool]:
@@ -286,17 +304,79 @@ class App:
                         ),
                     )
                 )
-                if is_url(last_tool_message.content):
+                if self._is_url(last_tool_message.content):
                     logger.info(f"Downloading audio from {last_tool_message.content}")
                     file_path: Path = (
                         self.settings.directory.audio / last_tool_message.id
                     )
-                    download_file(
+                    self._download_file(
                         last_tool_message.content, file_path.with_suffix(".aac")
                     )
                     logger.info(f"Audio downloaded to {file_path.with_suffix('.aac')}")
-                    convert_audio_to_wav(
+                    self._convert_audio_to_wav(
                         file_path.with_suffix(".aac"), file_path.with_suffix(".wav")
                     )
                     yield "", history, file_path.with_suffix(".wav")
             yield "", history, None
+
+    def _is_url(self, value: str) -> bool:
+        """
+        Check if a string is a valid URL.
+
+        Args:
+            value: The string to check. Can be None.
+
+        Returns:
+            bool: True if the string is a valid URL, False otherwise.
+        """
+        if value is None:
+            return False
+
+        try:
+            HttpUrl(value)
+            return True
+        except ValidationError:
+            return False
+
+    def _download_file(self, url: HttpUrl, path: Path) -> None:
+        """
+        Download a file from a URL and save it to a local path.
+
+        Args:
+            url: The URL to download the file from.
+            path: The local file path where the downloaded file will be saved.
+
+        Returns:
+            None
+
+        Raises:
+            requests.RequestException: If the HTTP request fails.
+            IOError: If file writing fails.
+        """
+        if str(url).endswith(".m3u8"):
+            _playlist: M3U8 = load(url)
+            url: str = str(url).replace("playlist.m3u8", _playlist.segments[0].uri)
+        print(url)
+        session = Session()
+        response = session.get(url, stream=True, timeout=30)
+        response.raise_for_status()
+        with open(path, "wb") as f:
+            for chunk in response.iter_content(chunk_size=8192):
+                if chunk:
+                    f.write(chunk)
+
+    def _convert_audio_to_wav(self, input_path: Path, output_path: Path) -> None:
+        """
+        Convert an audio file from aac to WAV format.
+
+        Args:
+            input_path: The path to the input aac file.
+            output_path: The path to the output WAV file.
+
+        Returns:
+            None
+        """
+        logger.info(f"Converting {input_path} to WAV format")
+        audio = AudioSegment.from_file(input_path, "aac")
+        audio.export(output_path, "wav")
+        logger.info(f"Converted {input_path} to {output_path}")
