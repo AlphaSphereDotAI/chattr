@@ -24,6 +24,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_core.runnables import Runnable, RunnableConfig
 from langchain_core.tools import BaseTool
 from langchain_mcp_adapters.client import MultiServerMCPClient
+from langchain_mcp_adapters.sessions import Connection
 from langchain_openai import ChatOpenAI
 from langgraph.graph import START, StateGraph
 from langgraph.graph.state import CompiledStateGraph
@@ -60,13 +61,16 @@ class App:
         cls.settings = settings
         cls._tools = []
         try:
-            cls._tools = await cls._setup_tools(
-                MultiServerMCPClient(
-                    loads(cls.settings.mcp.path.read_text(encoding="utf-8"))
-                )
+            mcp_config: dict[str, Connection] = loads(
+                cls.settings.mcp.path.read_text(encoding="utf-8")
             )
+            cls._tools = await cls._setup_tools(MultiServerMCPClient(mcp_config))
+        except OSError as e:
+            logger.warning(f"Failed to read MCP config file: {e}")
+        except (ValueError, TypeError) as e:
+            logger.warning(f"Failed to parse MCP config JSON: {e}")
         except Exception as e:
-            logger.warning(f"Failed to setup tools: {e}")
+            logger.warning(f"Failed to setup MCP tools: {e}")
         cls._llm = cls._setup_llm()
         cls._model = cls._llm.bind_tools(cls._tools)
         cls._memory = await cls._setup_memory()
