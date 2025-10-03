@@ -1,11 +1,10 @@
 """Settings for the Chattr app."""
 
-from json import dumps, loads
+from json import dumps
 from pathlib import Path
 from typing import Self
 
 from dotenv import load_dotenv
-from jsonschema import validate
 from loguru import logger
 from pydantic import (
     BaseModel,
@@ -39,7 +38,6 @@ class VectorDatabaseSettings(BaseModel):
 
 class MCPSettings(BaseModel):
     path: FilePath = Path.cwd() / "mcp.json"
-    schema_path: FilePath = Path.cwd() / "assets" / "mcp-schema.json"
 
     @model_validator(mode="after")
     def create_init_mcp(self) -> Self:
@@ -63,46 +61,6 @@ class MCPSettings(BaseModel):
                 encoding="utf-8",
             )
             logger.info("`mcp.json` not found. Created initial MCP config file.")
-        if not self.schema_path.exists():
-            self.schema_path.write_text(
-                dumps(
-                    {
-                        "type": "object",
-                        "properties": {
-                            "mcpServers": {
-                                "type": "object",
-                                "patternProperties": {
-                                    "^[a-zA-Z0-9_-]+$": {
-                                        "type": "object",
-                                        "properties": {
-                                            "command": {"type": "string"},
-                                            "args": {
-                                                "type": "array",
-                                                "items": {"type": "string"},
-                                            },
-                                            "env": {
-                                                "type": "object",
-                                                "additionalProperties": {
-                                                    "type": "string"
-                                                },
-                                            },
-                                        },
-                                        "required": ["command", "args"],
-                                    }
-                                },
-                                "additionalProperties": False,
-                            }
-                        },
-                        "required": ["mcpServers"],
-                        "additionalProperties": False,
-                    },
-                    indent=2,
-                ),
-                encoding="utf-8",
-            )
-            logger.info(
-                "`mcp-schema.json` not found. Created initial MCP config schema file."
-            )
         return self
 
     @model_validator(mode="after")
@@ -121,25 +79,6 @@ class MCPSettings(BaseModel):
             raise ValueError("MCP config file must be a JSON file")
         return self
 
-    @model_validator(mode="after")
-    def check_mcp_config(self) -> Self:
-        """
-        Validate the MCP config file against its JSON schema.
-        This method ensures the MCP config file matches the expected schema definition.
-
-        Returns:
-            Self: The validated MCPSettings instance.
-
-        Raises:
-            ValidationError: If the config file does not match the schema.
-        """
-        if self.path:
-            validate(
-                instance=loads(self.path.read_text(encoding="utf-8")),
-                schema=loads(self.schema_path.read_text(encoding="utf-8")),
-            )
-        return self
-
 
 class DirectorySettings(BaseModel):
     """Hold directory path configurations and ensures their existence."""
@@ -147,6 +86,7 @@ class DirectorySettings(BaseModel):
     base: DirectoryPath = Path.cwd()
     assets: DirectoryPath = Path.cwd() / "assets"
     log: DirectoryPath = Path.cwd() / "logs"
+    audio: DirectoryPath = assets / "audio"
 
     @model_validator(mode="after")
     def create_missing_dirs(self) -> Self:
@@ -158,7 +98,7 @@ class DirectorySettings(BaseModel):
         Returns:
             Self: The validated DirectorySettings instance.
         """
-        for directory in [self.base, self.assets, self.log]:
+        for directory in [self.base, self.assets, self.log, self.audio]:
             if not directory.exists():
                 try:
                     directory.mkdir(exist_ok=True)
