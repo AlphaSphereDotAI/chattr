@@ -39,7 +39,7 @@ class VectorDatabaseSettings(BaseModel):
 
 class MCPSettings(BaseModel):
     path: FilePath = Path.cwd() / "mcp.json"
-    schema_path: FilePath = Path.cwd() / "assets" / "mcp-config.json"
+    schema_path: FilePath = Path.cwd() / "assets" / "mcp-schema.json"
 
     @model_validator(mode="after")
     def create_init_mcp(self) -> Self:
@@ -63,6 +63,46 @@ class MCPSettings(BaseModel):
                 encoding="utf-8",
             )
             logger.info("`mcp.json` not found. Created initial MCP config file.")
+        if not self.schema_path.exists():
+            self.schema_path.write_text(
+                dumps(
+                    {
+                        "type": "object",
+                        "properties": {
+                            "mcpServers": {
+                                "type": "object",
+                                "patternProperties": {
+                                    "^[a-zA-Z0-9_-]+$": {
+                                        "type": "object",
+                                        "properties": {
+                                            "command": {"type": "string"},
+                                            "args": {
+                                                "type": "array",
+                                                "items": {"type": "string"},
+                                            },
+                                            "env": {
+                                                "type": "object",
+                                                "additionalProperties": {
+                                                    "type": "string"
+                                                },
+                                            },
+                                        },
+                                        "required": ["command", "args"],
+                                    }
+                                },
+                                "additionalProperties": False,
+                            }
+                        },
+                        "required": ["mcpServers"],
+                        "additionalProperties": False,
+                    },
+                    indent=2,
+                ),
+                encoding="utf-8",
+            )
+            logger.info(
+                "`mcp-schema.json` not found. Created initial MCP config schema file."
+            )
         return self
 
     @model_validator(mode="after")
