@@ -75,7 +75,7 @@ class App:
         cls._model = cls._llm.bind_tools(cls._tools)
         cls._memory = await cls._setup_memory()
         cls._graph = cls._setup_graph()
-        return cls
+        return cls()
 
     @classmethod
     def _setup_graph(cls) -> CompiledStateGraph:
@@ -189,7 +189,7 @@ class App:
     @classmethod
     async def _setup_memory(cls) -> Memory:
         """
-        Initialize and set up the store and checkpointer for state persistence.
+        Initialize and set up the Memory for state persistence.
 
         Returns:
             Memory: Configured memory instances.
