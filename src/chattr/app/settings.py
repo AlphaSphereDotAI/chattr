@@ -1,11 +1,10 @@
 """Settings for the Chattr app."""
 
-from json import loads
+from json import dumps
 from pathlib import Path
 from typing import Self
 
 from dotenv import load_dotenv
-from jsonschema import validate
 from loguru import logger
 from pydantic import (
     BaseModel,
@@ -38,13 +37,34 @@ class VectorDatabaseSettings(BaseModel):
 
 
 class MCPSettings(BaseModel):
-    path: FilePath = Field(default=None)
-    schema_path: FilePath = Field(
-        default_factory=lambda: Path.cwd() / "assets" / "mcp-config.json"
-    )
+    path: FilePath = Path.cwd() / "mcp.json"
 
     @model_validator(mode="after")
-    def is_json(self) -> Self:
+    def create_init_mcp(self) -> Self:
+        if not self.path.exists():
+            self.path.write_text(
+                dumps(
+                    {
+                        "mcpServers": {
+                            "time": {
+                                "command": "docker",
+                                "args": ["run", "-i", "--rm", "mcp/time"],
+                            },
+                            "sequential_thinking": {
+                                "command": "docker",
+                                "args": ["run", "-i", "--rm", "mcp/sequentialthinking"],
+                            },
+                        },
+                    },
+                    indent=2,
+                ),
+                encoding="utf-8",
+            )
+            logger.info("`mcp.json` not found. Created initial MCP config file.")
+        return self
+
+    @model_validator(mode="after")
+    def is_valid(self) -> Self:
         """
         Validate that the MCP config file is a JSON file.
         This method checks the file extension of the provided MCP config path.
@@ -59,25 +79,6 @@ class MCPSettings(BaseModel):
             raise ValueError("MCP config file must be a JSON file")
         return self
 
-    @model_validator(mode="after")
-    def check_mcp_config(self) -> Self:
-        """
-        Validate the MCP config file against its JSON schema.
-        This method ensures the MCP config file matches the expected schema definition.
-
-        Returns:
-            Self: The validated MCPSettings instance.
-
-        Raises:
-            ValidationError: If the config file does not match the schema.
-        """
-        if self.path:
-            validate(
-                instance=loads(self.path.read_text(encoding="utf-8")),
-                schema=loads(self.schema_path.read_text(encoding="utf-8")),
-            )
-        return self
-
 
 class DirectorySettings(BaseModel):
     """Hold directory path configurations and ensures their existence."""
@@ -85,6 +86,7 @@ class DirectorySettings(BaseModel):
     base: DirectoryPath = Path.cwd()
     assets: DirectoryPath = Path.cwd() / "assets"
     log: DirectoryPath = Path.cwd() / "logs"
+    audio: DirectoryPath = assets / "audio"
 
     @model_validator(mode="after")
     def create_missing_dirs(self) -> Self:
@@ -96,7 +98,7 @@ class DirectorySettings(BaseModel):
         Returns:
             Self: The validated DirectorySettings instance.
         """
-        for directory in [self.base, self.assets, self.log]:
+        for directory in [self.base, self.assets, self.log, self.audio]:
             if not directory.exists():
                 try:
                     directory.mkdir(exist_ok=True)
