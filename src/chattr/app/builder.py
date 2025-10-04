@@ -20,8 +20,14 @@ from gradio import (
 )
 from gradio.components.chatbot import MetadataDict
 from langchain_community.embeddings import FastEmbedEmbeddings
-from langchain_core.messages import HumanMessage, SystemMessage
-from langchain_core.runnables import Runnable, RunnableConfig
+from langchain_core.messages import (
+    AIMessage,
+    AnyMessage,
+    HumanMessage,
+    SystemMessage,
+    ToolMessage,
+)
+from langchain_core.runnables import Runnable
 from langchain_core.tools import BaseTool
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from langchain_mcp_adapters.sessions import Connection
@@ -310,13 +316,13 @@ class App:
         """
         is_audio_generated: bool = False
         audio_file: FilePath | None = None
+        last_agent_message: AnyMessage | None = None
         async for response in cls._graph.astream(
             State(messages=[HumanMessage(content=message)], mem0_user_id="1"),
-            RunnableConfig(configurable={"thread_id": "1"}),
             stream_mode="updates",
         ):
             if response.keys() == {"agent"}:
-                last_agent_message = response["agent"]["messages"][-1]
+                last_agent_message: AIMessage = response["agent"]["messages"][-1]
                 if last_agent_message.tool_calls:
                     history.append(
                         ChatMessage(
@@ -337,7 +343,7 @@ class App:
                         )
                     )
             elif response.keys() == {"tools"}:
-                last_tool_message = response["tools"]["messages"][-1]
+                last_tool_message: ToolMessage = response["tools"]["messages"][-1]
                 history.append(
                     ChatMessage(
                         role="assistant",
