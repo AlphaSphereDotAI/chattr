@@ -14,9 +14,9 @@ from gradio import (
     ClearButton,
     Column,
     Error,
-    PlayableVideo,
     Row,
     Textbox,
+    Video,
 )
 from gradio.components.chatbot import MetadataDict
 from langchain_community.embeddings import FastEmbedEmbeddings
@@ -36,7 +36,7 @@ from mem0.embeddings.configs import EmbedderConfig
 from mem0.llms.configs import LlmConfig
 from mem0.vector_stores.configs import VectorStoreConfig
 from openai import OpenAIError
-from pydantic import HttpUrl, ValidationError
+from pydantic import FilePath, HttpUrl, ValidationError
 from pydub import AudioSegment
 from qdrant_client.http.exceptions import ResponseHandlingException
 from requests import Session
@@ -269,8 +269,13 @@ class App:
         with Blocks() as chat:
             with Row():
                 with Column():
-                    video = PlayableVideo()
+                    video = Video(
+                        format="mp4",
+                    )
                     audio = Audio(
+                        label="Output Audio",
+                        interactive=False,
+                        autoplay=True,
                         sources="upload",
                         type="filepath",
                         format="wav",
@@ -302,8 +307,10 @@ class App:
             history: The conversation history as a list of ChatMessage objects.
 
         Returns:
-            AsyncGenerator[tuple[str, list[ChatMessage], Path]]: Yields a tuple containing an empty string, the updated history, and a Path to an audio file if generated.
+            AsyncGenerator[tuple[str, list[ChatMessage], Path | None]]: Yields a tuple containing an empty string, the updated history, and a Path to an audio file if generated.
         """
+        is_audio_generated: bool = False
+        audio_file: FilePath | None = None
         async for response in cls._graph.astream(
             State(messages=[HumanMessage(content=message)], mem0_user_id="1"),
             RunnableConfig(configurable={"thread_id": "1"}),
@@ -347,15 +354,12 @@ class App:
                     file_path: Path = (
                         cls.settings.directory.audio / last_tool_message.id
                     )
-                    cls._download_file(
-                        last_tool_message.content, file_path.with_suffix(".aac")
-                    )
-                    logger.info(f"Audio downloaded to {file_path.with_suffix('.aac')}")
-                    cls._convert_audio_to_wav(
-                        file_path.with_suffix(".aac"), file_path.with_suffix(".wav")
-                    )
-                    yield "", history, file_path.with_suffix(".wav")
-            yield "", history, None
+                    audio_file = file_path.with_suffix(".wav")
+                    cls._download_file(last_tool_message.content, audio_file)
+                    logger.info(f"Audio downloaded to {audio_file}")
+                    is_audio_generated = True
+                    yield "", history, audio_file
+            yield "", history, audio_file if is_audio_generated else None
 
     @classmethod
     def _is_url(cls, value: str) -> bool:
