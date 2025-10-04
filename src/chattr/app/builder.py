@@ -3,7 +3,7 @@
 from json import dumps, loads
 from pathlib import Path
 from textwrap import dedent
-from typing import AsyncGenerator, Self
+from typing import TYPE_CHECKING, AsyncGenerator, Self
 
 from gradio import (
     Audio,
@@ -30,7 +30,6 @@ from langchain_core.messages import (
 from langchain_core.runnables import Runnable
 from langchain_core.tools import BaseTool
 from langchain_mcp_adapters.client import MultiServerMCPClient
-from langchain_mcp_adapters.sessions import Connection
 from langchain_openai import ChatOpenAI
 from langgraph.graph import START, StateGraph
 from langgraph.graph.state import CompiledStateGraph
@@ -48,6 +47,9 @@ from requests import Session
 
 from chattr.app.settings import Settings, logger
 from chattr.app.state import State
+
+if TYPE_CHECKING:
+    from langchain_mcp_adapters.sessions import Connection
 
 
 class App:
