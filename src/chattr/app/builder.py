@@ -362,7 +362,7 @@ class App:
             yield "", history, audio_file if is_audio_generated else None
 
     @classmethod
-    def _is_url(cls, value: str) -> bool:
+    def _is_url(cls, value: str | None) -> bool:
         """
         Check if a string is a valid URL.
 
@@ -376,7 +376,7 @@ class App:
             return False
 
         try:
-            HttpUrl(value)
+            _ = HttpUrl(value)
             return True
         except ValidationError:
             return False
