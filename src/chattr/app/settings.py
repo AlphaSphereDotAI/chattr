@@ -54,7 +54,7 @@ class MCPSettings(BaseModel):
                                 "command": "docker",
                                 "args": ["run", "-i", "--rm", "mcp/sequentialthinking"],
                             },
-                        }
+                        },
                     },
                     indent=2,
                 ),
