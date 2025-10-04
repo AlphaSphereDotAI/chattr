@@ -69,7 +69,7 @@ class App:
         cls._tools = []
         try:
             mcp_config: dict[str, Connection] = loads(
-                cls.settings.mcp.path.read_text(encoding="utf-8")
+                cls.settings.mcp.path.read_text(encoding="utf-8"),
             )
             cls._tools = await cls._setup_tools(MultiServerMCPClient(mcp_config))
         except OSError as e:
@@ -88,6 +88,7 @@ class App:
     def _setup_graph(cls) -> CompiledStateGraph:
         """
         Construct and compile the state graph for the Chattr application.
+
         This method defines the nodes and edges for the conversational agent
         and tool interactions.
 
@@ -98,6 +99,7 @@ class App:
         async def _call_model(state: State) -> State:
             """
             Generate a model response based on the current state and user memory.
+
             This asynchronous function retrieves relevant memories,
             constructs a system message, and invokes the language model.
 
@@ -140,7 +142,7 @@ class App:
                         remember user preferences and past interactions.
                         {context}
                         """,
-                    )
+                    ),
                 )
                 response = await cls._model.ainvoke([system_message] + messages)
                 try:
@@ -156,7 +158,7 @@ class App:
                 logger.error(f"Error in chatbot: {e}")
                 # Fallback response without memory context
                 response = await cls._model.ainvoke(
-                    [cls.settings.model.system_message] + messages
+                    [cls.settings.model.system_message] + messages,
                 )
             return State(messages=[response], mem0_user_id=user_id)
 
@@ -221,7 +223,7 @@ class App:
                         provider="langchain",
                         config={"model": FastEmbedEmbeddings()},
                     ),
-                )
+                ),
             )
         except ResponseHandlingException as e:
             _msg = f"Failed to connect to Qdrant server: {e}"
@@ -261,7 +263,7 @@ class App:
     def draw_graph(cls) -> None:
         """Render the compiled state graph as a Mermaid PNG image and save it."""
         cls._graph.get_graph().draw_mermaid_png(
-            output_file_path=cls.settings.directory.assets / "graph.png"
+            output_file_path=cls.settings.directory.assets / "graph.png",
         )
 
     @classmethod
@@ -349,7 +351,8 @@ class App:
                         ChatMessage(
                             role="assistant",
                             content=dumps(
-                                last_agent_message.tool_calls[0]["args"], indent=4
+                                last_agent_message.tool_calls[0]["args"],
+                                indent=4,
                             ),
                             metadata=MetadataDict(
                                 title=last_agent_message.tool_calls[0]["name"],
@@ -360,8 +363,9 @@ class App:
                 else:
                     history.append(
                         ChatMessage(
-                            role="assistant", content=last_agent_message.content
-                        )
+                            role="assistant",
+                            content=last_agent_message.content,
+                        ),
                     )
             elif response.keys() == {"tools"}:
                 last_tool_message: ToolMessage = response["tools"]["messages"][-1]
@@ -373,7 +377,7 @@ class App:
                             title=last_tool_message.name,
                             id=last_tool_message.id,
                         ),
-                    )
+                    ),
                 )
                 if cls._is_url(last_tool_message.content):
                     logger.info(f"Downloading audio from {last_tool_message.content}")
