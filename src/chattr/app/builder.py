@@ -336,7 +336,7 @@ class App:
                             role="assistant", content=last_agent_message.content
                         )
                     )
-            else:
+            elif response.keys() == {"tools"}:
                 last_tool_message = response["tools"]["messages"][-1]
                 history.append(
                     ChatMessage(
@@ -358,6 +358,10 @@ class App:
                     logger.info(f"Audio downloaded to {audio_file}")
                     is_audio_generated = True
                     yield "", history, audio_file
+            else:
+                _msg = f"Unsupported audio source: {response.keys()}"
+                logger.warning(_msg)
+                raise Error(_msg)
             yield "", history, audio_file if is_audio_generated else None
 
     @classmethod
