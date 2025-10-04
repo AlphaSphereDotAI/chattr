@@ -37,7 +37,6 @@ from mem0.llms.configs import LlmConfig
 from mem0.vector_stores.configs import VectorStoreConfig
 from openai import OpenAIError
 from pydantic import FilePath, HttpUrl, ValidationError
-from pydub import AudioSegment
 from qdrant_client.http.exceptions import ResponseHandlingException
 from requests import Session
 
@@ -400,7 +399,7 @@ class App:
         if str(url).endswith(".m3u8"):
             _playlist: M3U8 = load(url)
             url: str = str(url).replace("playlist.m3u8", _playlist.segments[0].uri)
-        print(url)
+        logger.info(f"Downloading {url} to {path}")
         session = Session()
         response = session.get(url, stream=True, timeout=30)
         response.raise_for_status()
@@ -408,20 +407,4 @@ class App:
             for chunk in response.iter_content(chunk_size=8192):
                 if chunk:
                     f.write(chunk)
-
-    @classmethod
-    def _convert_audio_to_wav(cls, input_path: Path, output_path: Path) -> None:
-        """
-        Convert an audio file from aac to WAV format.
-
-        Args:
-            input_path: The path to the input aac file.
-            output_path: The path to the output WAV file.
-
-        Returns:
-            None
-        """
-        logger.info(f"Converting {input_path} to WAV format")
-        audio = AudioSegment.from_file(input_path, "aac")
-        audio.export(output_path, "wav")
-        logger.info(f"Converted {input_path} to {output_path}")
+        logger.info(f"File downloaded to {path}")
