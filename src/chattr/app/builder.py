@@ -121,13 +121,13 @@ class App:
 
                 if memory_list:
                     memory_list = "\n".join(
-                        [f"- {memory.get('memory')}" for memory in memory_list]
+                        [f"- {memory.get('memory')}" for memory in memory_list],
                     )
                     context = dedent(
                         f"""
                         Relevant information from previous conversations:
                         {memory_list}
-                        """
+                        """,
                     )
                 else:
                     context = "No previous conversation history available."
@@ -139,7 +139,7 @@ class App:
                         Use the provided context to personalize your responses and
                         remember user preferences and past interactions.
                         {context}
-                        """
+                        """,
                     )
                 )
                 response = await cls._model.ainvoke([system_message] + messages)
@@ -323,6 +323,7 @@ class App:
             State(messages=[HumanMessage(content=message)], mem0_user_id="1"),
             stream_mode="updates",
         ):
+            logger.debug(f"Response type received: {response.keys()}")
             if response.keys() == {"agent"}:
                 last_agent_message: AIMessage = response["agent"]["messages"][-1]
                 if last_agent_message.tool_calls:
