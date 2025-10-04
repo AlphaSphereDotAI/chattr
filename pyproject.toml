@@ -34,3 +34,5 @@ dev = [
     "ruff>=0.13.3",
     "ty>=0.0.1a20",
 ]
+[tool.ruff]
+extend = ".trunk/configs/ruff.toml"
