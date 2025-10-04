@@ -1,26 +1,16 @@
 {
   "time": {
     "command": "docker",
-    "args": [
-      "run",
-      "-i",
-      "--rm",
-      "mcp/time"
-    ],
+    "args": ["run", "-i", "--rm", "mcp/time"],
     "transport": "stdio"
   },
   "sequential_thinking": {
     "command": "docker",
-    "args": [
-      "run",
-      "-i",
-      "--rm",
-      "mcp/sequentialthinking"
-    ],
+    "args": ["run", "-i", "--rm", "mcp/sequentialthinking"],
     "transport": "stdio"
   },
   "voice_generator": {
-    "url": "http://127.0.0.1:7861/gradio_api/mcp/",
+    "url": "http://localhost:7860/gradio_api/mcp/",
     "transport": "streamable_http"
   }
 }
