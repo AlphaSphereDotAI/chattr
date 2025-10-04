@@ -277,6 +277,10 @@ class App:
             with Row():
                 with Column():
                     video = Video(
+                        label="Output Video",
+                        interactive=False,
+                        autoplay=True,
+                        sources="upload",
                         format="mp4",
                     )
                     audio = Audio(
@@ -297,24 +301,38 @@ class App:
                     with Row():
                         button = Button("Send", variant="primary")
                         ClearButton([msg, chatbot, video], variant="stop")
-            button.click(cls.generate_response, [msg, chatbot], [msg, chatbot, audio])
-            msg.submit(cls.generate_response, [msg, chatbot], [msg, chatbot, audio])
+            button.click(
+                cls.generate_response,
+                [msg, chatbot],
+                [msg, chatbot, audio, video],
+            )
+            msg.submit(
+                cls.generate_response,
+                [msg, chatbot],
+                [msg, chatbot, audio, video],
+            )
         return chat
 
     @classmethod
     async def generate_response(
-        cls, message: str, history: list[ChatMessage]
-    ) -> AsyncGenerator[tuple[str, list[ChatMessage], Path | None]]:
+        cls,
+        message: str,
+        history: list[ChatMessage],
+    ) -> AsyncGenerator[tuple[str, list[ChatMessage], Path | None, Path | None]]:
         """
         Generate a response to a user message and update the conversation history.
-        This asynchronous method streams responses from the state graph and yields updated history and audio file paths as needed.
+
+        This asynchronous method streams responses from the state graph and
+        yields updated history and audio file paths as needed.
 
         Args:
             message: The user's input message as a string.
             history: The conversation history as a list of ChatMessage objects.
 
         Returns:
-            AsyncGenerator[tuple[str, list[ChatMessage], Path | None]]: Yields a tuple containing an empty string, the updated history, and a Path to an audio file if generated.
+            AsyncGenerator: Yields a tuple containing an
+                            empty string, the updated history, and
+                            a Path to an audio file if generated.
         """
         is_audio_generated: bool = False
         audio_file: FilePath | None = None
@@ -337,7 +355,7 @@ class App:
                                 title=last_agent_message.tool_calls[0]["name"],
                                 id=last_agent_message.tool_calls[0]["id"],
                             ),
-                        )
+                        ),
                     )
                 else:
                     history.append(
@@ -366,12 +384,12 @@ class App:
                     cls._download_file(last_tool_message.content, audio_file)
                     logger.info(f"Audio downloaded to {audio_file}")
                     is_audio_generated = True
-                    yield "", history, audio_file
+                    yield "", history, audio_file, None
             else:
                 _msg = f"Unsupported audio source: {response.keys()}"
                 logger.warning(_msg)
                 raise Error(_msg)
-            yield "", history, audio_file if is_audio_generated else None
+            yield "", history, audio_file if is_audio_generated else None, None
 
     @classmethod
     def _is_url(cls, value: str | None) -> bool:
