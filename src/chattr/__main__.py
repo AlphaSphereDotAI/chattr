@@ -10,7 +10,6 @@ def main() -> None:
     """Launch the Gradio Multi-agent system app."""
     application: Blocks = app.gui()
     application.queue(api_open=True).launch(
-        server_port=7860,
         debug=True,
         show_api=True,
         enable_monitoring=True,
