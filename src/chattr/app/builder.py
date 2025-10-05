@@ -79,7 +79,7 @@ class App:
         except Exception as e:
             logger.warning(f"Failed to setup MCP tools: {e}")
         cls._llm = cls._setup_llm()
-        cls._model = cls._llm.bind_tools(cls._tools)
+        cls._model = cls._llm.bind_tools(cls._tools, parallel_tool_calls=False)
         cls._memory = await cls._setup_memory()
         cls._graph = cls._setup_graph()
         return cls()
