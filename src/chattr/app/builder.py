@@ -302,13 +302,13 @@ class App:
                     msg = Textbox()
                     with Row():
                         button = Button("Send", variant="primary")
-                        ClearButton([msg, chatbot, video], variant="stop")
-            button.click(
+                        _ = ClearButton([msg, chatbot, video], variant="stop")
+            _ = button.click(
                 cls.generate_response,
                 [msg, chatbot],
                 [msg, chatbot, audio, video],
             )
-            msg.submit(
+            _ = msg.submit(
                 cls.generate_response,
                 [msg, chatbot],
                 [msg, chatbot, audio, video],
