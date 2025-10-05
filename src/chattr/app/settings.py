@@ -1,11 +1,11 @@
 """Settings for the Chattr app."""
 
 from json import dumps
+from logging import FileHandler
 from pathlib import Path
 from typing import Self
 
 from dotenv import load_dotenv
-from loguru import logger
 from pydantic import (
     BaseModel,
     DirectoryPath,
@@ -17,13 +17,9 @@ from pydantic import (
 )
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-load_dotenv()
+from chattr.app.logger import logger
 
-logger.add(
-    sink=Path.cwd() / "logs" / "chattr.log",
-    format="{time:YYYY-MM-DD at HH:mm:ss} | {level} | {message}",
-    colorize=True,
-)
+load_dotenv()
 
 
 class MemorySettings(BaseModel):
@@ -103,6 +99,8 @@ class DirectorySettings(BaseModel):
                 try:
                     directory.mkdir(exist_ok=True)
                     logger.info("Created directory %s.", directory)
+                    if directory == self.log:
+                        logger.addHandler(FileHandler(self.log / "chattr.log"))
                 except PermissionError as e:
                     logger.error(
                         "Permission denied while creating directory %s: %s",
@@ -122,7 +120,10 @@ class ModelSettings(BaseModel):
     api_key: SecretStr = Field(default=None)
     temperature: float = Field(default=0.0, ge=0.0, le=1.0)
     system_message: str = Field(
-        default="You are a helpful assistant that can answer questions about the time and generate audio files from text."
+        default="""
+        You are a helpful assistant that can answer questions about the time and
+        generate audio files from text and generate video files from generated audio.
+        """,
     )
 
     @model_validator(mode="after")
@@ -140,7 +141,7 @@ class ModelSettings(BaseModel):
         if self.url:
             if not self.api_key or not self.api_key.get_secret_value():
                 raise ValueError(
-                    "You need to provide API Key for the Model provider via `MODEL__API_KEY`"
+                    "You need to provide API Key for the Model provider via `MODEL__API_KEY`",
                 )
             if not self.name:
                 raise ValueError("You need to provide Model name via `MODEL__NAME`")
