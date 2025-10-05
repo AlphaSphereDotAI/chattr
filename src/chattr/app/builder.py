@@ -174,6 +174,7 @@ class App:
     def _setup_llm(cls) -> ChatOpenAI:
         """
         Initialize the ChatOpenAI language model using the provided settings.
+
         This method creates and returns a ChatOpenAI instance configured with
         the model's URL, name, API key, and temperature.
 
@@ -268,9 +269,8 @@ class App:
 
     @classmethod
     def gui(cls) -> Blocks:
-        """Creates and returns the main Gradio Blocks interface for the Chattr app.
-
-        This function sets up the user interface, including video, audio, chatbot, and input controls.
+        """
+        Creates and returns the main Gradio Blocks interface for the Chattr app.
 
         Returns:
             Blocks: The constructed Gradio Blocks interface for the chat application.
