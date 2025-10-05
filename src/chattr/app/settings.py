@@ -5,7 +5,6 @@ from pathlib import Path
 from typing import Self
 
 from dotenv import load_dotenv
-from loguru import logger
 from pydantic import (
     BaseModel,
     DirectoryPath,
@@ -17,13 +16,9 @@ from pydantic import (
 )
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-load_dotenv()
+from chattr.app.logger import logger
 
-logger.add(
-    sink=Path.cwd() / "logs" / "chattr.log",
-    format="{time:YYYY-MM-DD at HH:mm:ss} | {level} | {message}",
-    colorize=True,
-)
+load_dotenv()
 
 
 class MemorySettings(BaseModel):
