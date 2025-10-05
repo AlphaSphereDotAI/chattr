@@ -14,7 +14,6 @@ dependencies = [
     "langchain-mcp-adapters>=0.1.10",
     "langchain-openai>=0.3.34",
     "langgraph>=0.6.8",
-    "loguru>=0.7.3",
     "m3u8>=6.0.0",
     "mem0ai>=0.1.118",
 ]
