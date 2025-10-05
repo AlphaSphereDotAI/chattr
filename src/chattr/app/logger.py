@@ -1,5 +1,4 @@
-from logging import INFO, WARNING, FileHandler, basicConfig, getLogger
-from pathlib import Path
+from logging import INFO, WARNING, basicConfig, getLogger
 
 from rich.logging import RichHandler
 
@@ -13,7 +12,6 @@ basicConfig(
             console=console,
             rich_tracebacks=True,
         ),
-        FileHandler(Path.cwd() / "logs" / "langgraph.log"),
     ],
     format="%(name)s | %(process)d | %(message)s",
 )
