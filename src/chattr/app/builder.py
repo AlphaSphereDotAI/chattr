@@ -79,7 +79,7 @@ class App:
         except Exception as e:
             logger.warning(f"Failed to setup MCP tools: {e}")
         cls._llm = cls._setup_llm()
-        cls._model = cls._llm.bind_tools(cls._tools)
+        cls._model = cls._llm.bind_tools(cls._tools, parallel_tool_calls=False)
         cls._memory = await cls._setup_memory()
         cls._graph = cls._setup_graph()
         return cls()
@@ -174,6 +174,7 @@ class App:
     def _setup_llm(cls) -> ChatOpenAI:
         """
         Initialize the ChatOpenAI language model using the provided settings.
+
         This method creates and returns a ChatOpenAI instance configured with
         the model's URL, name, API key, and temperature.
 
@@ -268,9 +269,8 @@ class App:
 
     @classmethod
     def gui(cls) -> Blocks:
-        """Creates and returns the main Gradio Blocks interface for the Chattr app.
-
-        This function sets up the user interface, including video, audio, chatbot, and input controls.
+        """
+        Creates and returns the main Gradio Blocks interface for the Chattr app.
 
         Returns:
             Blocks: The constructed Gradio Blocks interface for the chat application.
@@ -302,13 +302,13 @@ class App:
                     msg = Textbox()
                     with Row():
                         button = Button("Send", variant="primary")
-                        ClearButton([msg, chatbot, video], variant="stop")
-            button.click(
+                        _ = ClearButton([msg, chatbot, video], variant="stop")
+            _ = button.click(
                 cls.generate_response,
                 [msg, chatbot],
                 [msg, chatbot, audio, video],
             )
-            msg.submit(
+            _ = msg.submit(
                 cls.generate_response,
                 [msg, chatbot],
                 [msg, chatbot, audio, video],
@@ -345,6 +345,7 @@ class App:
         ):
             logger.debug(f"Response type received: {response.keys()}")
             if response.keys() == {"agent"}:
+                logger.debug(f"-------- Agent response {response}")
                 last_agent_message: AIMessage = response["agent"]["messages"][-1]
                 if last_agent_message.tool_calls:
                     history.append(
@@ -368,6 +369,7 @@ class App:
                         ),
                     )
             elif response.keys() == {"tools"}:
+                logger.debug(f"-------- Tool Message: {response}")
                 last_tool_message: ToolMessage = response["tools"]["messages"][-1]
                 history.append(
                     ChatMessage(
