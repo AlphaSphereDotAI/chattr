@@ -345,6 +345,7 @@ class App:
         ):
             logger.debug(f"Response type received: {response.keys()}")
             if response.keys() == {"agent"}:
+                logger.debug(f"-------- Agent response {response}")
                 last_agent_message: AIMessage = response["agent"]["messages"][-1]
                 if last_agent_message.tool_calls:
                     history.append(
@@ -368,6 +369,7 @@ class App:
                         ),
                     )
             elif response.keys() == {"tools"}:
+                logger.debug(f"-------- Tool Message: {response}")
                 last_tool_message: ToolMessage = response["tools"]["messages"][-1]
                 history.append(
                     ChatMessage(
