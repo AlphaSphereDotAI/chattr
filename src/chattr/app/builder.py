@@ -3,7 +3,7 @@
 from json import dumps, loads
 from pathlib import Path
 from textwrap import dedent
-from typing import TYPE_CHECKING, AsyncGenerator, Self
+from typing import TYPE_CHECKING, AsyncGenerator, Self, Sequence
 
 from gradio import (
     Audio,
@@ -23,8 +23,8 @@ from langchain_community.embeddings import FastEmbedEmbeddings
 from langchain_core.messages import (
     AIMessage,
     AnyMessage,
+    BaseMessage,
     HumanMessage,
-    SystemMessage,
     ToolMessage,
 )
 from langchain_core.runnables import Runnable
@@ -41,6 +41,7 @@ from mem0.embeddings.configs import EmbedderConfig
 from mem0.llms.configs import LlmConfig
 from mem0.vector_stores.configs import VectorStoreConfig
 from openai import OpenAIError
+from poml.integration.langchain import LangchainPomlTemplate
 from pydantic import FilePath, HttpUrl, ValidationError
 from qdrant_client.http.exceptions import ResponseHandlingException
 from requests import Session
@@ -134,16 +135,11 @@ class App:
                 else:
                     context = "No previous conversation history available."
                 logger.debug(f"Memory context:\n{context}")
-                system_message: SystemMessage = SystemMessage(
-                    content=dedent(
-                        f"""
-                        {cls.settings.model.system_message}
-                        Use the provided context to personalize your responses and
-                        remember user preferences and past interactions.
-                        {context}
-                        """,
-                    ),
+                prompt_template = LangchainPomlTemplate.from_file(
+                    cls.settings.directory.prompts / "template.poml",
                 )
+                prompt = prompt_template.format(character="Napoleon", context=context)
+                system_message: Sequence[BaseMessage] | BaseMessage = prompt.messages
                 response = await cls._model.ainvoke([system_message, *messages])
                 try:
                     interaction = [
