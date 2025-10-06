@@ -144,7 +144,7 @@ class App:
                         """,
                     ),
                 )
-                response = await cls._model.ainvoke([system_message] + messages)
+                response = await cls._model.ainvoke([system_message, *messages])
                 try:
                     interaction = [
                         {"role": "user", "content": messages[-1].content},
@@ -158,7 +158,7 @@ class App:
                 logger.error(f"Error in chatbot: {e}")
                 # Fallback response without memory context
                 response = await cls._model.ainvoke(
-                    [cls.settings.model.system_message] + messages,
+                    [cls.settings.model.system_message, *messages],
                 )
             return State(messages=[response], mem0_user_id=user_id)
 
