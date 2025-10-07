@@ -12,7 +12,7 @@
   env = {
     GREET = "devenv";
     MODEL__URL = "https://generativelanguage.googleapis.com/v1beta/openai/";
-    # MODEL__API_KEY="${GEMINI_API_KEY}";
+    # MODEL__API_KEY = builtins.getEnv "GEMINI_API_KEY";
     MODEL__NAME = "gemini-2.5-flash-lite";
   };
 
