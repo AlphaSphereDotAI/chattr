@@ -37,21 +37,112 @@
       exec = "${lib.getExe pkgs.uv} run chattr";
       process-compose = {
         availability = {
-          backoff_seconds = 2;
           max_restarts = 5;
           restart = "on_failure";
         };
         depends_on = {
           qdrant = {
-            condition = "process_completed_successfully";
+            condition = "process_healthy";
+          };
+          vocalizr = {
+            condition = "process_healthy";
+          };
+          visualizr = {
+            condition = "process_healthy";
           };
         };
-        # environment = [
-        #   "ENVVAR_FOR_THIS_PROCESS_ONLY=foobar"
-        # ];
+        readiness_probe = {
+          http_get = {
+            host = "127.0.0.1";
+            scheme = "http";
+            path = "/";
+            port = 7860;
+          };
+        };
       };
     };
-    qdrant.exec = "docker run --rm -d -p 6333:6333 -v 'qdrant_storage:/qdrant/storage:z' qdrant/qdrant";
+    qdrant = {
+      exec = ''
+        docker run --rm --name qdrant \
+        -p 6333:6333 \
+        -v 'qdrant_storage:/qdrant/storage:z' \
+        qdrant/qdrant
+      '';
+      process-compose = {
+        availability = {
+          max_restarts = 5;
+          restart = "on_failure";
+        };
+        launch_timeout_seconds = 60;
+        readiness_probe = {
+          http_get = {
+            host = "127.0.0.1";
+            scheme = "http";
+            path = "/";
+            port = 6333;
+          };
+        };
+        shutdown.command = "docker stop qdrant";
+      };
+    };
+    vocalizr = {
+      exec = ''
+        docker run --rm --name vocalizr \
+        -p 7861:7860 \
+        -v 'huggingface:/home/nonroot/hf' \
+        -v 'results:/home/nonroot/results' \
+        -v 'logs:/home/nonroot/logs' \
+        --user root \
+        alphaspheredotai/vocalizr
+      '';
+      process-compose = {
+        availability = {
+          max_restarts = 10;
+          restart = "on_failure";
+        };
+        launch_timeout_seconds = 60;
+        readiness_probe = {
+          http_get = {
+            host = "127.0.0.1";
+            scheme = "http";
+            path = "/";
+            port = 7861;
+          };
+          initial_delay_seconds = 100;
+        };
+        shutdown.command = "docker stop vocalizr";
+      };
+    };
+    visualizr = {
+      exec = ''
+        docker run --rm --name visualizr \
+        -p 7862:7860 \
+        -v 'checkpoint:/home/nonroot/ckpts' \
+        -v 'gfpgan:/home/nonroot/gfpgan' \
+        -v 'results:/home/nonroot/results' \
+        -v 'assets:/home/nonroot/assets' \
+        -v 'logs:/home/nonroot/logs' \
+        --user root \
+        alphaspheredotai/visualizr
+      '';
+      process-compose = {
+        availability = {
+          max_restarts = 10;
+          restart = "on_failure";
+        };
+        launch_timeout_seconds = 60;
+        readiness_probe = {
+          http_get = {
+            host = "127.0.0.1";
+            scheme = "http";
+            path = "/";
+            port = 7862;
+          };
+          initial_delay_seconds = 100;
+        };
+        shutdown.command = "docker stop visualizr";
+      };
+    };
   };
 
   # https://devenv.sh/services/
