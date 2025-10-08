@@ -14,7 +14,7 @@
         {{context}}
       </item>
       <item>Formulate a clear and concise response.</item>
-      <item>Generate audio from the text response using MCP.</item>
+      <item>Generate audio from the generated response using a MCP.</item>
       <item>Create a video file using the generated audio using MCP.</item>
     </list>
   </task>
