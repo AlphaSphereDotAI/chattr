@@ -118,7 +118,7 @@ class App:
                     logger.warning("No user_id found in state")
                     user_id = "default"
                 memories = cls._memory.search(messages[-1].content, user_id=user_id)
-                memory_list = memories["results"]
+                memory_list: list[str] = memories["results"]
                 logger.info(f"Retrieved {len(memory_list)} relevant memories")
                 logger.debug(f"Memories: {memories}")
 
@@ -136,11 +136,13 @@ class App:
                     context = "No previous conversation history available."
                 logger.debug(f"Memory context:\n{context}")
                 prompt_template = LangchainPomlTemplate.from_file(
-                    cls.settings.directory.prompts / "template.poml",
+                    cls.settings.directory.prompts / "template.poml", speaker_mode=True
                 )
                 prompt = prompt_template.format(character="Napoleon", context=context)
-                system_message: Sequence[BaseMessage] | BaseMessage = prompt.messages
-                response = await cls._model.ainvoke([system_message, *messages])
+                system_messages: Sequence[BaseMessage] = prompt.messages
+                if isinstance(system_messages, BaseMessage):
+                    system_messages = [system_messages]
+                response = await cls._model.ainvoke([*system_messages, *messages])
                 try:
                     interaction = [
                         {"role": "user", "content": messages[-1].content},
@@ -151,11 +153,9 @@ class App:
                 except Exception as e:
                     logger.exception(f"Error saving memory: {e}")
             except Exception as e:
-                logger.error(f"Error in chatbot: {e}")
-                # Fallback response without memory context
-                response = await cls._model.ainvoke(
-                    [cls.settings.model.system_message, *messages],
-                )
+                _msg = f"Error in chatbot: {e}"
+                logger.error(_msg)
+                raise Error(_msg) from e
             return State(messages=[response], mem0_user_id=user_id)
 
         graph_builder: StateGraph = StateGraph(State)
