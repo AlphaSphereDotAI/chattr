@@ -3,7 +3,7 @@
 from json import dumps, loads
 from pathlib import Path
 from textwrap import dedent
-from typing import TYPE_CHECKING, AsyncGenerator, Self
+from typing import TYPE_CHECKING, AsyncGenerator, Self, Sequence
 
 from gradio import (
     Audio,
@@ -23,8 +23,8 @@ from langchain_community.embeddings import FastEmbedEmbeddings
 from langchain_core.messages import (
     AIMessage,
     AnyMessage,
+    BaseMessage,
     HumanMessage,
-    SystemMessage,
     ToolMessage,
 )
 from langchain_core.runnables import Runnable
@@ -41,6 +41,7 @@ from mem0.embeddings.configs import EmbedderConfig
 from mem0.llms.configs import LlmConfig
 from mem0.vector_stores.configs import VectorStoreConfig
 from openai import OpenAIError
+from poml.integration.langchain import LangchainPomlTemplate
 from pydantic import FilePath, HttpUrl, ValidationError
 from qdrant_client.http.exceptions import ResponseHandlingException
 from requests import Session
@@ -117,7 +118,7 @@ class App:
                     logger.warning("No user_id found in state")
                     user_id = "default"
                 memories = cls._memory.search(messages[-1].content, user_id=user_id)
-                memory_list = memories["results"]
+                memory_list: list[str] = memories["results"]
                 logger.info(f"Retrieved {len(memory_list)} relevant memories")
                 logger.debug(f"Memories: {memories}")
 
@@ -134,17 +135,14 @@ class App:
                 else:
                     context = "No previous conversation history available."
                 logger.debug(f"Memory context:\n{context}")
-                system_message: SystemMessage = SystemMessage(
-                    content=dedent(
-                        f"""
-                        {cls.settings.model.system_message}
-                        Use the provided context to personalize your responses and
-                        remember user preferences and past interactions.
-                        {context}
-                        """,
-                    ),
+                prompt_template = LangchainPomlTemplate.from_file(
+                    cls.settings.directory.prompts / "template.poml", speaker_mode=True
                 )
-                response = await cls._model.ainvoke([system_message] + messages)
+                prompt = prompt_template.format(character="Napoleon", context=context)
+                system_messages: Sequence[BaseMessage] = prompt.messages
+                if isinstance(system_messages, BaseMessage):
+                    system_messages = [system_messages]
+                response = await cls._model.ainvoke([*system_messages, *messages])
                 try:
                     interaction = [
                         {"role": "user", "content": messages[-1].content},
@@ -155,11 +153,9 @@ class App:
                 except Exception as e:
                     logger.exception(f"Error saving memory: {e}")
             except Exception as e:
-                logger.error(f"Error in chatbot: {e}")
-                # Fallback response without memory context
-                response = await cls._model.ainvoke(
-                    [cls.settings.model.system_message] + messages,
-                )
+                _msg = f"Error in chatbot: {e}"
+                logger.error(_msg)
+                raise Error(_msg) from e
             return State(messages=[response], mem0_user_id=user_id)
 
         graph_builder: StateGraph = StateGraph(State)
