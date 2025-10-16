@@ -14,7 +14,8 @@
 		"source=${localEnv:HOME}/.wakatime.cfg,target=/root/.wakatime.cfg,type=bind,consistency=cached",
 		"source=${localEnv:HOME}/.doppler,target=/root/.doppler,type=bind,consistency=cached",
 		"source=${localEnv:HOME}/.zshrc,target=/root/.zshrc,type=bind,consistency=cached",
-		"source=${localEnv:HOME}/.local/share/uv/python,target=/root/.local/share/uv/python,type=bind,consistency=cached"
+		"source=${localEnv:HOME}/.local/share/uv/python,target=/root/.local/share/uv/python,type=bind,consistency=cached",
+		"source=${localEnv:HOME}/.ssh,target=/root/.ssh,type=bind,consistency=cached"
 	],
 	// The optional 'workspaceFolder' property is the path VS Code should open by default when
 	// connected. This is typically a file mount in .devcontainer/docker-compose.yml
