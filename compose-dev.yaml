@@ -6,6 +6,7 @@ services:
       DEBIAN_FRONTEND: noninteractive
     volumes:
       - ..:/workspaces:cached
+      - ~:/home/ubuntu:cached
     user: ubuntu
     command:
       - "/bin/bash"
