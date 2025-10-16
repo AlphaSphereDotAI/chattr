@@ -5,6 +5,21 @@
       "resolved": "ghcr.io/braun-daniel/devcontainer-features/fzf@sha256:07670aa4fce4a1976c68dc0c296021a9e79dfd9e6522a6eae09d0584c62637bc",
       "integrity": "sha256:07670aa4fce4a1976c68dc0c296021a9e79dfd9e6522a6eae09d0584c62637bc"
     },
+    "ghcr.io/devcontainer-community/devcontainer-features/atuin.sh:1": {
+      "version": "1.0.0",
+      "resolved": "ghcr.io/devcontainer-community/devcontainer-features/atuin.sh@sha256:0aecb190c02a3bd1fe7f25996c542ace29b791b1cc442893ccc1efaeb337053b",
+      "integrity": "sha256:0aecb190c02a3bd1fe7f25996c542ace29b791b1cc442893ccc1efaeb337053b"
+    },
+    "ghcr.io/devcontainer-community/devcontainer-features/opencode.ai:1": {
+      "version": "1.0.0",
+      "resolved": "ghcr.io/devcontainer-community/devcontainer-features/opencode.ai@sha256:5dfac21b809a585cd3f53f2ed5698cc7c25e30bc3fc59d308fbcc70fcb5ba054",
+      "integrity": "sha256:5dfac21b809a585cd3f53f2ed5698cc7c25e30bc3fc59d308fbcc70fcb5ba054"
+    },
+    "ghcr.io/devcontainer-community/devcontainer-features/starship.rs:1": {
+      "version": "1.0.0",
+      "resolved": "ghcr.io/devcontainer-community/devcontainer-features/starship.rs@sha256:436765d97a663dc00b69466dca52dd7dcc073ad43c1aa25237852c291ffb2489",
+      "integrity": "sha256:436765d97a663dc00b69466dca52dd7dcc073ad43c1aa25237852c291ffb2489"
+    },
     "ghcr.io/devcontainers-extra/features/uv:1": {
       "version": "1.0.0",
       "resolved": "ghcr.io/devcontainers-extra/features/uv@sha256:0a340caa82f3be3faebcf9e7094d4d846315edd1060f2b80447ea5ee5bfb1461",
