@@ -13,6 +13,10 @@
 	// The optional 'workspaceFolder' property is the path VS Code should open by default when
 	// connected. This is typically a file mount in .devcontainer/docker-compose.yml
 	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+	"containerEnv": {
+		"DOPPLER_TOKEN": "${localEnv:DOPPLER_TOKEN}",
+		"DOPPLER_ENV": "1"
+	},
 	"features": {
 		"ghcr.io/devcontainers/features/common-utils:2": {
 			"installZsh": true,
@@ -84,7 +88,8 @@
 	// "shutdownAction": "none",
 	// Uncomment the next line to run commands after the container is created.
 	"postCreateCommand": {
-		"Fix Volume Permissions": "sudo chown -R $(whoami): $HOME"
+		"Fix Volume Permissions": "sudo chown -R $(whoami): $HOME",
+		"Setup script": "./.devcontainer/setup.sh"
 	},
 	// Configure tool-specific properties.
 	// "customizations": {},
