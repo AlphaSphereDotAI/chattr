@@ -17,44 +17,44 @@ SRC_FILE="$SRC_DIR/doppler-cli.list"
 
 # ensure sources directory exists
 if [ ! -d "$SRC_DIR" ]; then
-    sudo mkdir -p "$SRC_DIR"
+	sudo mkdir -p "$SRC_DIR"
 fi
 
 # add doppler gpg key only if it's not already present
 if [ ! -f "$GPG_KEY_PATH" ]; then
-    echo "Installing Doppler GPG key..."
-    curl -sLf --retry 3 --tlsv1.2 --proto "=https" "$GPG_KEY_URL" | sudo gpg --dearmor -o "$GPG_KEY_PATH"
+	echo "Installing Doppler GPG key..."
+	curl -sLf --retry 3 --tlsv1.2 --proto "=https" "$GPG_KEY_URL" | sudo gpg --dearmor -o "$GPG_KEY_PATH"
 else
-    echo "Doppler GPG key already present; skipping."
+	echo "Doppler GPG key already present; skipping."
 fi
 
 # add doppler apt source only if it's not already present, and run update only when added
 if [ -f "$SRC_FILE" ] && grep -Fxq "$DOPPLER_DEB_LINE" "$SRC_FILE"; then
-    echo "Doppler APT source already present; skipping add/update."
+	echo "Doppler APT source already present; skipping add/update."
 else
-    echo "Adding Doppler APT source..."
-    echo "$DOPPLER_DEB_LINE" | sudo tee "$SRC_FILE" >/dev/null
-    sudo apt-get update
+	echo "Adding Doppler APT source..."
+	echo "$DOPPLER_DEB_LINE" | sudo tee "$SRC_FILE" >/dev/null
+	sudo apt-get update
 fi
 
 # If Doppler is already installed, skip everything
 if command -v doppler >/dev/null 2>&1; then
-    echo "Doppler already installed; skipping."
+	echo "Doppler already installed; skipping."
 else
-    sudo apt-get install -y doppler
-    echo "Doppler installed successfully."
+	sudo apt-get install -y doppler
+	echo "Doppler installed successfully."
 fi
 
 # install npm from nvm if it doesn't exist
-if [ ! command -v npm >/dev/null 2>&1 ]; then
-    echo "Installing npm..."
-    nvm install --lts
-    echo "NVM installed successfully."
+if [ ! command -v npm ] >/dev/null 2>&1; then
+	echo "Installing npm..."
+	nvm install --lts
+	echo "NVM installed successfully."
 fi
 
 # install gemini if it doesn't exist
-if [ ! command -v gemini >/dev/null 2>&1 ]; then
-    echo "Installing gemini..."
-    npm install -g @google/gemini-cli
-    echo "Gemini installed successfully."
+if [ ! command -v gemini ] >/dev/null 2>&1; then
+	echo "Installing gemini..."
+	npm install -g @google/gemini-cli
+	echo "Gemini installed successfully."
 fi
