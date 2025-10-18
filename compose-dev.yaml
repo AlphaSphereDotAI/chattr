@@ -1,37 +1,26 @@
-name: Chattr
+name: DevContainer
 services:
-  vocalizr:
-    image: ghcr.io/alphaspheredotai/vocalizr:latest
-    user: root
-    ports:
-      - "7860:7860"
-    volumes:
-      - huggingface:/home/nonroot/hf
-      - results:/home/nonroot/results
-      - logs:/home/nonroot/logs
-    post_start:
-      - command: chown -R nonroot:nonroot /home/nonroot
-        user: root
-      - command: chmod -R 755 /home/nonroot
-        user: root
+  devcontainer:
+    image: ubuntu:latest
     environment:
-      - GRADIO_SERVER_PORT=7860
-    healthcheck:
-      test:
-        - "CMD"
-        - "curl"
-        - "-o"
-        - "/dev/null"
-        - "-f"
-        - "-s"
-        - "-w"
-        - "'Status: %{http_code}, Time: %{time_total}s'"
-        - "http://localhost:7860/"
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 40s
-      start_interval: 5s
+      DEBIAN_FRONTEND: noninteractive
+    volumes:
+      - ..:/workspaces:cached
+      - $HOME/.cache:/home/ubuntu/.cache:cached
+      - $HOME/.gemini:/home/ubuntu/.gemini:cached
+      - $HOME/.gitconfig:/home/ubuntu/.gitconfig:cached
+      - $HOME/.ssh:/home/ubuntu/.ssh:cached
+      - $HOME/.doppler:$HOME/.doppler:cached
+      - $HOME/.wakatime.cfg:/home/ubuntu/.wakatime.cfg:cached
+      - $HOME/.wakatime:/home/ubuntu/.wakatime:cached
+      - $HOME/.zshrc:/home/ubuntu/.zshrc:cached
+      - $HOME/.oh-my-zsh:/home/ubuntu/.oh-my-zsh:cached
+    user: ubuntu
+    command:
+      - "/bin/zsh"
+      - "-l"
+    tty: true
+    stdin_open: true
   vector_database:
     image: qdrant/qdrant:latest
     ports:
@@ -39,8 +28,16 @@ services:
       - "6334:6334"
     volumes:
       - qdrant_storage:/qdrant/storage
+  voice_generator:
+    image: alphaspheredotai/vocalizr:latest
+    ports:
+      - "7861:7860"
+    volumes:
+      - huggingface:/home/app/hf
+      - results:/home/app/results
+      - logs:/home/app/logs
 volumes:
+  qdrant_storage:
   huggingface:
   results:
   logs:
-  qdrant_storage:

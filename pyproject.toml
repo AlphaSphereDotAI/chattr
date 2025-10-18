@@ -16,6 +16,7 @@ dependencies = [
     "langgraph>=0.6.8",
     "m3u8>=6.0.0",
     "mem0ai>=0.1.118",
+    "poml>=0.0.8",
 ]
 
 [project.scripts]
