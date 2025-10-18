@@ -1,6 +1,20 @@
 #!/usr/bin/env bash
 set -e
 
+# copy all files from $HOME/tmp/ to $HOME
+if [ -d "$HOME/tmp" ]; then
+    echo "Copying files from $HOME/tmp/ to $HOME..."
+    cp -r "$HOME/tmp/*" "$HOME"
+    echo "Files copied successfully."
+    rm -rd "$HOME/tmp"
+    echo "Temporary directory $HOME/tmp/ removed."
+else
+    echo "No $HOME/tmp/ directory found."
+fi
+
+# Fix volume permissions, only chown files not owned by the user
+find "$HOME" -not -user "$(whoami)" -exec sudo chown "$(whoami):" {} +
+
 # Install prerequisites for adding repository
 sudo apt-get update
 sudo apt-get install -y apt-transport-https ca-certificates curl gnupg
@@ -40,4 +54,18 @@ if command -v doppler >/dev/null 2>&1; then
 else
     sudo apt-get install -y doppler
     echo "Doppler installed successfully."
+fi
+
+# install npm from nvm if it doesn't exist
+if [ ! command -v npm >/dev/null 2>&1 ]; then
+    echo "Installing npm..."
+    nvm install --lts
+    echo "NVM installed successfully."
+fi
+
+# install gemini if it doesn't exist
+if [ ! command -v gemini >/dev/null 2>&1 ]; then
+    echo "Installing gemini..."
+    npm install -g @google/gemini-cli
+    echo "Gemini installed successfully."
 fi
