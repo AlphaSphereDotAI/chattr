@@ -1,17 +1,6 @@
 #!/usr/bin/env bash
 set -e
 
-# copy all files from $HOME/tmp/ to $HOME
-if [ -d "$HOME/tmp" ]; then
-    echo "Copying files from $HOME/tmp/ to $HOME..."
-    cp -r "$HOME/tmp/*" "$HOME"
-    echo "Files copied successfully."
-    rm -rd "$HOME/tmp"
-    echo "Temporary directory $HOME/tmp/ removed."
-else
-    echo "No $HOME/tmp/ directory found."
-fi
-
 # Fix volume permissions, only chown files not owned by the user
 find "$HOME" -not -user "$(whoami)" -exec sudo chown "$(whoami):" {} +
 
