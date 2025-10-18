@@ -25,11 +25,6 @@
       "resolved": "ghcr.io/devcontainers-extra/features/uv@sha256:0a340caa82f3be3faebcf9e7094d4d846315edd1060f2b80447ea5ee5bfb1461",
       "integrity": "sha256:0a340caa82f3be3faebcf9e7094d4d846315edd1060f2b80447ea5ee5bfb1461"
     },
-    "ghcr.io/devcontainers-extra/features/zsh-plugins:0": {
-      "version": "0.0.5",
-      "resolved": "ghcr.io/devcontainers-extra/features/zsh-plugins@sha256:4dcc8e97307345cff26c2b4dfd840c2947b8b5bb20f492a68bdb9fbe9ccb67ba",
-      "integrity": "sha256:4dcc8e97307345cff26c2b4dfd840c2947b8b5bb20f492a68bdb9fbe9ccb67ba"
-    },
     "ghcr.io/devcontainers/features/common-utils:2": {
       "version": "2.5.4",
       "resolved": "ghcr.io/devcontainers/features/common-utils@sha256:00fd45550f578d9d515044d9e2226e908dbc3d7aa6fcb9dee4d8bdb60be114cf",
@@ -49,6 +44,11 @@
       "version": "1.0.15",
       "resolved": "ghcr.io/devcontainers/features/github-cli@sha256:1ad1ec1a806cc9926c84ca5b147427bba03b97e14e91f9df89af83726039ecaf",
       "integrity": "sha256:1ad1ec1a806cc9926c84ca5b147427bba03b97e14e91f9df89af83726039ecaf"
+    },
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "1.6.3",
+      "resolved": "ghcr.io/devcontainers/features/node@sha256:3c35dff2aedeaeb86f03e10c265c29b56a1b3609324d83d6e901dbb6032543a4",
+      "integrity": "sha256:3c35dff2aedeaeb86f03e10c265c29b56a1b3609324d83d6e901dbb6032543a4"
     },
     "ghcr.io/jsburckhardt/devcontainer-features/bat:1": {
       "version": "1.0.0",

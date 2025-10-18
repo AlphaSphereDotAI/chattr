@@ -6,10 +6,17 @@ services:
       DEBIAN_FRONTEND: noninteractive
     volumes:
       - ..:/workspaces:cached
-      - ~:/home/ubuntu:cached
+      - $HOME/.cache:/home/ubuntu/.cache:cached
+      - $HOME/.gemini:/home/ubuntu/tmp/.gemini:cached,ro
+      - $HOME/.gitconfig:/home/ubuntu/tmp/.gitconfig:cached,ro
+      - $HOME/.ssh:/home/ubuntu/tmp/.ssh:cached,ro
+      - $HOME/.wakatime.cfg:/home/ubuntu/tmp/.wakatime.cfg:cached,ro
+      - $HOME/.wakatime:/home/ubuntu/tmp/.wakatime:cached,ro
+      - $HOME/.zshrc:/home/ubuntu/tmp/.zshrc:cached,ro
+      - $HOME/.oh-my-zsh:/home/ubuntu/tmp/.oh-my-zsh:cached,ro
     user: ubuntu
     command:
-      - "/bin/bash"
+      - "/bin/zsh"
       - "-l"
     tty: true
     stdin_open: true
