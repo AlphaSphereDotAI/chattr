@@ -83,6 +83,7 @@ class DirectorySettings(BaseModel):
     assets: DirectoryPath = Path.cwd() / "assets"
     log: DirectoryPath = Path.cwd() / "logs"
     audio: DirectoryPath = assets / "audio"
+    prompts: DirectoryPath = assets / "prompts"
 
     @model_validator(mode="after")
     def create_missing_dirs(self) -> Self:
@@ -94,7 +95,7 @@ class DirectorySettings(BaseModel):
         Returns:
             Self: The validated DirectorySettings instance.
         """
-        for directory in [self.base, self.assets, self.log, self.audio]:
+        for directory in [self.base, self.assets, self.log, self.audio, self.prompts]:
             if not directory.exists():
                 try:
                     directory.mkdir(exist_ok=True)
@@ -119,17 +120,12 @@ class ModelSettings(BaseModel):
     name: str = Field(default=None)
     api_key: SecretStr = Field(default=None)
     temperature: float = Field(default=0.0, ge=0.0, le=1.0)
-    system_message: str = Field(
-        default="""
-        You are a helpful assistant that can answer questions about the time and
-        generate audio files from text and generate video files from generated audio.
-        """,
-    )
 
     @model_validator(mode="after")
     def check_api_key_exist(self) -> Self:
         """
         Ensure that an API key and model name are provided if a model URL is set.
+
         This method validates the presence of required credentials for the model provider.
 
         Returns:
@@ -140,11 +136,11 @@ class ModelSettings(BaseModel):
         """
         if self.url:
             if not self.api_key or not self.api_key.get_secret_value():
-                raise ValueError(
-                    "You need to provide API Key for the Model provider via `MODEL__API_KEY`",
-                )
+                _msg = "You need to provide API Key for the Model provider via `MODEL__API_KEY`"
+                raise ValueError(_msg)
             if not self.name:
-                raise ValueError("You need to provide Model name via `MODEL__NAME`")
+                _msg = "You need to provide Model name via `MODEL__NAME`"
+                raise ValueError(_msg)
         return self
 
 
