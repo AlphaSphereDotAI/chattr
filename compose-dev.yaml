@@ -7,13 +7,14 @@ services:
     volumes:
       - ..:/workspaces:cached
       - $HOME/.cache:/home/ubuntu/.cache:cached
-      - $HOME/.gemini:/home/ubuntu/tmp/.gemini:cached,ro
-      - $HOME/.gitconfig:/home/ubuntu/tmp/.gitconfig:cached,ro
-      - $HOME/.ssh:/home/ubuntu/tmp/.ssh:cached,ro
-      - $HOME/.wakatime.cfg:/home/ubuntu/tmp/.wakatime.cfg:cached,ro
-      - $HOME/.wakatime:/home/ubuntu/tmp/.wakatime:cached,ro
-      - $HOME/.zshrc:/home/ubuntu/tmp/.zshrc:cached,ro
-      - $HOME/.oh-my-zsh:/home/ubuntu/tmp/.oh-my-zsh:cached,ro
+      - $HOME/.gemini:/home/ubuntu/.gemini:cached
+      - $HOME/.gitconfig:/home/ubuntu/.gitconfig:cached
+      - $HOME/.ssh:/home/ubuntu/.ssh:cached
+      - $HOME/.doppler:$HOME/.doppler:cached
+      - $HOME/.wakatime.cfg:/home/ubuntu/.wakatime.cfg:cached
+      - $HOME/.wakatime:/home/ubuntu/.wakatime:cached
+      - $HOME/.zshrc:/home/ubuntu/.zshrc:cached
+      - $HOME/.oh-my-zsh:/home/ubuntu/.oh-my-zsh:cached
     user: ubuntu
     command:
       - "/bin/zsh"
