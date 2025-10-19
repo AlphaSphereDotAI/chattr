@@ -1,4 +1,4 @@
-name: DevContainer
+name: Chattr Dev
 services:
   vector_database:
     image: qdrant/qdrant:latest
@@ -15,6 +15,16 @@ services:
       - huggingface:/home/app/hf
       - results:/home/app/results
       - logs:/home/app/logs
+    healthcheck:
+      test:
+        - "CMD"
+        - "curl"
+        - "-f"
+        - "http://localhost:7861/"
+      interval: 1m30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
 volumes:
   qdrant_storage:
   huggingface:
