@@ -67,6 +67,11 @@ jobs:
         uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
       - name: Checkout repository
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+      - name: Get Python version from pyproject.toml
+        id: get_python_version
+        uses: mikefarah/yq@0ecdce24e83f0fa127940334be98c86b07b0c488 # v4.48.1
+        with:
+          cmd: yq -roy '.project.requires-python' pyproject.toml
       - name: Log in to ${{ inputs.registry }} Registry
         uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3
         with:
@@ -91,14 +96,13 @@ jobs:
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6
         id: push
         with:
-          cache-from: ${{ inputs.is_test && 'type=gha' || '' }}
-          cache-to: ${{ inputs.is_test && 'type=gha,mode=max' || '' }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           annotations: ${{ steps.meta.outputs.annotations }}
           build-args: |
             INSTALL_SOURCE=${{ inputs.install_source }}
+            PYTHON_VERSION=${{ steps.get_python_version.outputs.result }}
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a # v3
         if: ${{ inputs.is_test == false }}
