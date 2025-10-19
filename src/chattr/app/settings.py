@@ -159,6 +159,7 @@ class Settings(BaseSettings):
     vector_database: VectorDatabaseSettings = VectorDatabaseSettings()
     mcp: MCPSettings = MCPSettings()
     directory: DirectorySettings = DirectorySettings()
+    debug: bool = False
 
 
 if __name__ == "__main__":
