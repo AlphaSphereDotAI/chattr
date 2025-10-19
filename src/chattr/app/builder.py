@@ -14,7 +14,10 @@ from gradio import (
     ClearButton,
     Column,
     Error,
+    Image,
+    Markdown,
     Row,
+    Sidebar,
     Textbox,
     Video,
 )
@@ -257,11 +260,12 @@ class App:
             return []
 
     @classmethod
-    def draw_graph(cls) -> None:
+    def draw_graph(cls) -> Path:
         """Render the compiled state graph as a Mermaid PNG image and save it."""
         cls._graph.get_graph().draw_mermaid_png(
             output_file_path=cls.settings.directory.assets / "graph.png",
         )
+        return cls.settings.directory.assets / "graph.png"
 
     @classmethod
     def gui(cls) -> Blocks:
@@ -272,6 +276,16 @@ class App:
             Blocks: The constructed Gradio Blocks interface for the chat application.
         """
         with Blocks() as chat:
+            with Sidebar(visible=cls.settings.debug):
+                with Row():
+                    with Column():
+                        Markdown("# Chattr Graph")
+                        Image(cls.draw_graph())
+                with Row():
+                    with Column():
+                        Markdown("---")
+                        Markdown("# Model Prompt")
+                        Markdown(cls._setup_prompt("")[-1].content)
             with Row():
                 with Column():
                     video = Video(
