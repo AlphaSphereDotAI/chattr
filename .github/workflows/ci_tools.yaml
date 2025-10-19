@@ -1,7 +1,8 @@
 name: CI Tools
 on:
   issue_comment:
-    types: [created]
+    types:
+      - created
   schedule:
     - cron: 0 6 * * *
   push:
@@ -43,7 +44,7 @@ jobs:
           check-mode: populate_cache_only
   opencode:
     if: |
-      github.event_name == 'issue_comment' && 
+      github.event_name == 'issue_comment' &&
       (
         contains(github.event.comment.body, ' /oc') ||
         startsWith(github.event.comment.body, '/oc') ||
