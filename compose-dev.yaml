@@ -1,26 +1,5 @@
 name: DevContainer
 services:
-  devcontainer:
-    image: ubuntu:latest
-    environment:
-      DEBIAN_FRONTEND: noninteractive
-    volumes:
-      - ..:/workspaces:cached
-      - $HOME/.cache:/home/ubuntu/.cache:cached
-      - $HOME/.gemini:/home/ubuntu/.gemini:cached
-      - $HOME/.gitconfig:/home/ubuntu/.gitconfig:cached
-      - $HOME/.ssh:/home/ubuntu/.ssh:cached
-      - $HOME/.doppler:$HOME/.doppler:cached
-      - $HOME/.wakatime.cfg:/home/ubuntu/.wakatime.cfg:cached
-      - $HOME/.wakatime:/home/ubuntu/.wakatime:cached
-      - $HOME/.zshrc:/home/ubuntu/.zshrc:cached
-      - $HOME/.oh-my-zsh:/home/ubuntu/.oh-my-zsh:cached
-    user: ubuntu
-    command:
-      - "/bin/zsh"
-      - "-l"
-    tty: true
-    stdin_open: true
   vector_database:
     image: qdrant/qdrant:latest
     ports:
