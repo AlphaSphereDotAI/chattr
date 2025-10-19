@@ -120,31 +120,10 @@ class App:
                 if not user_id:
                     logger.warning("No user_id found in state")
                     user_id = "default"
-                memories = cls._memory.search(messages[-1].content, user_id=user_id)
-                memory_list: list[str] = memories["results"]
-                logger.info(f"Retrieved {len(memory_list)} relevant memories")
-                logger.debug(f"Memories: {memories}")
 
-                if memory_list:
-                    memory_list = "\n".join(
-                        [f"- {memory.get('memory')}" for memory in memory_list],
-                    )
-                    context = dedent(
-                        f"""
-                        Relevant information from previous conversations:
-                        {memory_list}
-                        """,
-                    )
-                else:
-                    context = "No previous conversation history available."
-                logger.debug(f"Memory context:\n{context}")
-                prompt_template = LangchainPomlTemplate.from_file(
-                    cls.settings.directory.prompts / "template.poml", speaker_mode=True
-                )
-                prompt = prompt_template.format(character="Napoleon", context=context)
-                system_messages: Sequence[BaseMessage] = prompt.messages
-                if isinstance(system_messages, BaseMessage):
-                    system_messages = [system_messages]
+                memory = cls._retrieve_memory(messages, user_id)
+                system_messages = cls._setup_prompt(memory)
+
                 response = await cls._model.ainvoke([*system_messages, *messages])
                 try:
                     interaction = [
@@ -168,6 +147,38 @@ class App:
         graph_builder.add_conditional_edges("agent", tools_condition)
         graph_builder.add_edge("tools", "agent")
         return graph_builder.compile(debug=True)
+
+    @classmethod
+    def _retrieve_memory(cls, messages: list[AnyMessage], user_id: str) -> str:
+        memories = cls._memory.search(messages[-1].content, user_id=user_id)
+        memory_list: list[str] = memories["results"]
+        logger.info(f"Retrieved {len(memory_list)} relevant memories")
+        logger.debug(f"Memories: {memories}")
+
+        if len(memory_list):
+            memory_list = "\n".join(
+                [f"\t- {memory.get('memory')}" for memory in memory_list],
+            )
+            memory = dedent(
+                f"""
+                Relevant information from previous conversations:
+                {memory_list}
+                """,
+            )
+        else:
+            memory = "No previous conversation history available."
+        logger.debug(f"Memory context:\n{memory}")
+        return memory
+
+    @classmethod
+    def _setup_prompt(cls, memory: str) -> Sequence[BaseMessage]:
+        prompt_template = LangchainPomlTemplate.from_file(
+            cls.settings.directory.prompts / "template.poml",
+            speaker_mode=True,
+        )
+        prompt = prompt_template.format(character="Napoleon", context=memory)
+        system_messages: Sequence[BaseMessage] = prompt.messages
+        return system_messages
 
     @classmethod
     def _setup_llm(cls) -> ChatOpenAI:
