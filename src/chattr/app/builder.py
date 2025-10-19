@@ -120,20 +120,10 @@ class App:
                 if not user_id:
                     logger.warning("No user_id found in state")
                     user_id = "default"
-
                 memory = cls._retrieve_memory(messages, user_id)
                 system_messages = cls._setup_prompt(memory)
-
                 response = await cls._model.ainvoke([*system_messages, *messages])
-                try:
-                    interaction = [
-                        {"role": "user", "content": messages[-1].content},
-                        {"role": "assistant", "content": response.content},
-                    ]
-                    mem0_result = cls._memory.add(interaction, user_id=user_id)
-                    logger.info(f"Memory saved: {len(mem0_result.get('results', []))}")
-                except Exception as e:
-                    logger.exception(f"Error saving memory: {e}")
+                cls._update_memory()
             except Exception as e:
                 _msg = f"Error in chatbot: {e}"
                 logger.error(_msg)
@@ -179,6 +169,23 @@ class App:
         prompt = prompt_template.format(character="Napoleon", context=memory)
         system_messages: Sequence[BaseMessage] = prompt.messages
         return system_messages
+
+    @classmethod
+    def _update_memory(
+        cls,
+        messages: list[AnyMessage],
+        response: BaseMessage,
+        user_id: str,
+    ) -> None:
+        try:
+            interaction = [
+                {"role": "user", "content": messages[-1].content},
+                {"role": "assistant", "content": response.content},
+            ]
+            mem0_result = cls._memory.add(interaction, user_id=user_id)
+            logger.info(f"Memory saved: {len(mem0_result.get('results', []))}")
+        except Exception as e:
+            logger.exception(f"Error saving memory: {e}")
 
     @classmethod
     def _setup_llm(cls) -> ChatOpenAI:
