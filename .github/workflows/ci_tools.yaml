@@ -1,7 +1,9 @@
 name: CI Tools
 on:
   issue_comment:
-    types: [created, edited]
+    types:
+      - created
+      - edited
   schedule:
     - cron: 0 6 * * *
   push:
