@@ -468,7 +468,7 @@ class App:
         session = Session()
         response = session.get(url, stream=True, timeout=30)
         response.raise_for_status()
-        with open(path, "wb") as f:
+        with path.open("wb") as f:
             for chunk in response.iter_content(chunk_size=8192):
                 if chunk:
                     f.write(chunk)
