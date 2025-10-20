@@ -100,6 +100,22 @@ class App:
             CompiledStateGraph: The compiled state graph is ready for execution.
         """
 
+        def _clean_old_files(state: State) -> State:
+            """Clean up temporary old audio and video files."""
+            if any(cls.settings.directory.audio.iterdir()):
+                for file in cls.settings.directory.audio.iterdir():
+                    try:
+                        file.unlink()
+                    except OSError as e:
+                        logger.error(f"Failed to delete audio file {file}: {e}")
+            if any(cls.settings.directory.video.iterdir()):
+                for file in cls.settings.directory.video.iterdir():
+                    try:
+                        file.unlink()
+                    except OSError as e:
+                        logger.error(f"Failed to delete video file {file}: {e}")
+            return state
+
         async def _call_model(state: State) -> State:
             """
             Generate a model response based on the current state and user memory.
@@ -123,7 +139,7 @@ class App:
                 memory = cls._retrieve_memory(messages, user_id)
                 system_messages = cls._setup_prompt(memory)
                 response = await cls._model.ainvoke([*system_messages, *messages])
-                cls._update_memory()
+                cls._update_memory(messages, response, user_id)
             except Exception as e:
                 _msg = f"Error in chatbot: {e}"
                 logger.error(_msg)
@@ -131,9 +147,11 @@ class App:
             return State(messages=[response], mem0_user_id=user_id)
 
         graph_builder: StateGraph = StateGraph(State)
+        graph_builder.add_node("clean_old_files", _clean_old_files)
         graph_builder.add_node("agent", _call_model)
         graph_builder.add_node("tools", ToolNode(cls._tools))
-        graph_builder.add_edge(START, "agent")
+        graph_builder.add_edge(START, "clean_old_files")
+        graph_builder.add_edge("clean_old_files", "agent")
         graph_builder.add_conditional_edges("agent", tools_condition)
         graph_builder.add_edge("tools", "agent")
         return graph_builder.compile(debug=True)
