@@ -83,6 +83,7 @@ class DirectorySettings(BaseModel):
     assets: DirectoryPath = Path.cwd() / "assets"
     log: DirectoryPath = Path.cwd() / "logs"
     audio: DirectoryPath = assets / "audio"
+    video: DirectoryPath = assets / "video"
     prompts: DirectoryPath = assets / "prompts"
 
     @model_validator(mode="after")
@@ -95,7 +96,14 @@ class DirectorySettings(BaseModel):
         Returns:
             Self: The validated DirectorySettings instance.
         """
-        for directory in [self.base, self.assets, self.log, self.audio, self.prompts]:
+        for directory in [
+            self.base,
+            self.assets,
+            self.log,
+            self.audio,
+            self.video,
+            self.prompts,
+        ]:
             if not directory.exists():
                 try:
                     directory.mkdir(exist_ok=True)
