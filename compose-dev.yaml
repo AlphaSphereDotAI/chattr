@@ -1,0 +1,32 @@
+name: Chattr Dev
+services:
+  vector_database:
+    image: qdrant/qdrant:latest
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_storage:/qdrant/storage
+  voice_generator:
+    image: alphaspheredotai/vocalizr:latest
+    ports:
+      - "7861:7860"
+    volumes:
+      - huggingface:/home/app/hf
+      - results:/home/app/results
+      - logs:/home/app/logs
+    healthcheck:
+      test:
+        - "CMD"
+        - "curl"
+        - "-f"
+        - "http://localhost:7861/"
+      interval: 1m30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+volumes:
+  qdrant_storage:
+  huggingface:
+  results:
+  logs:
