@@ -1,10 +1,13 @@
 """Main orchestration graph for the Chattr application."""
 
-from json import dumps, loads
+from collections.abc import AsyncGenerator, Sequence
+from json import dumps
 from pathlib import Path
-from textwrap import dedent
-from typing import TYPE_CHECKING, AsyncGenerator, Self, Sequence
+from this import s
 
+from agno.agent import Agent
+from agno.models.anthropic import Claude
+from agno.tools.hackernews import HackerNewsTools
 from gradio import (
     Audio,
     Blocks,
@@ -22,191 +25,50 @@ from gradio import (
     Video,
 )
 from gradio.components.chatbot import MetadataDict
-from langchain_community.embeddings import FastEmbedEmbeddings
-from langchain_core.messages import (
-    AIMessage,
-    AnyMessage,
-    BaseMessage,
-    HumanMessage,
-    ToolMessage,
-)
-from langchain_core.runnables import Runnable
-from langchain_core.tools import BaseTool
-from langchain_mcp_adapters.client import MultiServerMCPClient
-from langchain_openai import ChatOpenAI
-from langgraph.graph import START, StateGraph
-from langgraph.graph.state import CompiledStateGraph
-from langgraph.prebuilt import ToolNode, tools_condition
 from m3u8 import M3U8, load
-from mem0 import Memory
-from mem0.configs.base import MemoryConfig
-from mem0.embeddings.configs import EmbedderConfig
-from mem0.llms.configs import LlmConfig
-from mem0.vector_stores.configs import VectorStoreConfig
 from openai import OpenAIError
-from poml.integration.langchain import LangchainPomlTemplate
+from poml import poml
 from pydantic import FilePath, HttpUrl, ValidationError
+from pydantic.type_adapter import TypeAdapterT
 from qdrant_client.http.exceptions import ResponseHandlingException
 from requests import Session
 
+from agno.models.openai.like import OpenAILike
 from chattr.app.settings import Settings, logger
 from chattr.app.state import State
+from agno.knowledge.knowledge import Knowledge
+from agno.vectordb.qdrant import Qdrant
+from agno.db.json import JsonDb
 
-if TYPE_CHECKING:
-    from langchain_mcp_adapters.sessions import Connection
+agent = Agent(
+    model=Claude(id="claude-sonnet-4-5"),
+    tools=[HackerNewsTools()],
+    instructions="Write a report on the topic. Output only the report.",
+    markdown=True,
+)
+agent.print_response("Trending startups and products.", stream=True)
 
 
 class App:
     """Main application class for the Chattr Multi-agent system app."""
 
-    settings: Settings
-    _llm: ChatOpenAI
-    _model: Runnable
-    _tools: list[BaseTool]
-    _memory: Memory
-    _graph: CompiledStateGraph
+    def __init__(self, settings: Settings):
+        self.settings = settings
 
-    @classmethod
-    async def create(cls, settings: Settings) -> Self:
-        """Async factory method to create a Graph instance."""
-        cls.settings = settings
-        cls._tools = []
-        try:
-            mcp_config: dict[str, Connection] = loads(
-                cls.settings.mcp.path.read_text(encoding="utf-8"),
-            )
-            cls._tools = await cls._setup_tools(MultiServerMCPClient(mcp_config))
-        except OSError as e:
-            logger.warning(f"Failed to read MCP config file: {e}")
-        except (ValueError, TypeError) as e:
-            logger.warning(f"Failed to parse MCP config JSON: {e}")
-        except Exception as e:
-            logger.warning(f"Failed to setup MCP tools: {e}")
-        cls._llm = cls._setup_llm()
-        cls._model = cls._llm.bind_tools(cls._tools, parallel_tool_calls=False)
-        cls._memory = await cls._setup_memory()
-        cls._graph = cls._setup_graph()
-        return cls()
-
-    @classmethod
-    def _setup_graph(cls) -> CompiledStateGraph:
-        """
-        Construct and compile the state graph for the Chattr application.
-
-        This method defines the nodes and edges for the conversational agent
-        and tool interactions.
-
-        Returns:
-            CompiledStateGraph: The compiled state graph is ready for execution.
-        """
-
-        def _clean_old_files(state: State) -> State:
-            """Clean up temporary old audio and video files."""
-            if any(cls.settings.directory.audio.iterdir()):
-                for file in cls.settings.directory.audio.iterdir():
-                    try:
-                        file.unlink()
-                    except OSError as e:
-                        logger.error(f"Failed to delete audio file {file}: {e}")
-            if any(cls.settings.directory.video.iterdir()):
-                for file in cls.settings.directory.video.iterdir():
-                    try:
-                        file.unlink()
-                    except OSError as e:
-                        logger.error(f"Failed to delete video file {file}: {e}")
-            return state
-
-        async def _call_model(state: State) -> State:
-            """
-            Generate a model response based on the current state and user memory.
-
-            This asynchronous function retrieves relevant memories,
-            constructs a system message, and invokes the language model.
-
-            Args:
-                state: The current State object containing messages and user ID.
-
-            Returns:
-                State: The updated State object with the model's response message.
-            """
-            messages = state["messages"]
-            user_id = state["mem0_user_id"]
-
-            try:
-                if not user_id:
-                    logger.warning("No user_id found in state")
-                    user_id = "default"
-                memory = cls._retrieve_memory(messages, user_id)
-                system_messages = cls._setup_prompt(memory)
-                response = await cls._model.ainvoke([*system_messages, *messages])
-                cls._update_memory(messages, response, user_id)
-            except Exception as e:
-                _msg = f"Error in chatbot: {e}"
-                logger.error(_msg)
-                raise Error(_msg) from e
-            return State(messages=[response], mem0_user_id=user_id)
-
-        graph_builder: StateGraph = StateGraph(State)
-        graph_builder.add_node("clean_old_files", _clean_old_files)
-        graph_builder.add_node("agent", _call_model)
-        graph_builder.add_node("tools", ToolNode(cls._tools))
-        graph_builder.add_edge(START, "clean_old_files")
-        graph_builder.add_edge("clean_old_files", "agent")
-        graph_builder.add_conditional_edges("agent", tools_condition)
-        graph_builder.add_edge("tools", "agent")
-        return graph_builder.compile(debug=True)
-
-    @classmethod
-    def _retrieve_memory(cls, messages: list[AnyMessage], user_id: str) -> str:
-        memories = cls._memory.search(messages[-1].content, user_id=user_id)
-        memory_list: list[str] = memories["results"]
-        logger.info(f"Retrieved {len(memory_list)} relevant memories")
-        logger.debug(f"Memories: {memories}")
-
-        if len(memory_list):
-            memory_list = "\n".join(
-                [f"\t- {memory.get('memory')}" for memory in memory_list],
-            )
-            memory = dedent(
-                f"""
-                Relevant information from previous conversations:
-                {memory_list}
-                """,
-            )
-        else:
-            memory = "No previous conversation history available."
-        logger.debug(f"Memory context:\n{memory}")
-        return memory
-
-    @classmethod
-    def _setup_prompt(cls, memory: str) -> Sequence[BaseMessage]:
-        prompt_template = LangchainPomlTemplate.from_file(
-            cls.settings.directory.prompts / "template.poml",
-            speaker_mode=True,
+    def _setup_prompt(self) -> str:
+        prompt_template = poml(
+            self.settings.directory.prompts / "template.poml",
+            {"character": "Napoleon"},
+            chat=False,
+            format="raw",
         )
-        prompt = prompt_template.format(character="Napoleon", context=memory)
-        system_messages: Sequence[BaseMessage] = prompt.messages
-        return system_messages
+        if not isinstance(prompt_template, str):
+            _msg = "Prompt template must be a string."
+            raise TypeError(_msg)
+        return prompt_template
 
     @classmethod
-    def _update_memory(
-        cls,
-        messages: list[AnyMessage],
-        response: BaseMessage,
-        user_id: str,
-    ) -> None:
-        try:
-            interaction = [
-                {"role": "user", "content": messages[-1].content},
-                {"role": "assistant", "content": response.content},
-            ]
-            mem0_result = cls._memory.add(interaction, user_id=user_id)
-            logger.info(f"Memory saved: {len(mem0_result.get('results', []))}")
-        except Exception as e:
-            logger.exception(f"Error saving memory: {e}")
-
-    @classmethod
-    def _setup_llm(cls) -> ChatOpenAI:
+    def _setup_model(cls):
         """
         Initialize the ChatOpenAI language model using the provided settings.
 
@@ -220,9 +82,9 @@ class App:
             Exception: If the model initialization fails.
         """
         try:
-            return ChatOpenAI(
+            return OpenAILike(
                 base_url=str(cls.settings.model.url),
-                model=cls.settings.model.name,
+                id=cls.settings.model.name,
                 api_key=cls.settings.model.api_key,
                 temperature=cls.settings.model.temperature,
             )
@@ -231,77 +93,21 @@ class App:
             logger.error(_msg)
             raise Error(_msg) from e
 
-    @classmethod
-    async def _setup_memory(cls) -> Memory:
-        """
-        Initialize and set up the Memory for state persistence.
-
-        Returns:
-            Memory: Configured memory instances.
-        """
-        try:
-            return Memory(
-                MemoryConfig(
-                    vector_store=VectorStoreConfig(
-                        provider="qdrant",
-                        config={
-                            "host": cls.settings.vector_database.url.host,
-                            "port": cls.settings.vector_database.url.port,
-                            "collection_name": cls.settings.memory.collection_name,
-                            "embedding_model_dims": cls.settings.memory.embedding_dims,
-                        },
-                    ),
-                    llm=LlmConfig(
-                        provider="langchain",
-                        config={"model": cls._llm},
-                    ),
-                    embedder=EmbedderConfig(
-                        provider="langchain",
-                        config={"model": FastEmbedEmbeddings()},
-                    ),
-                ),
-            )
-        except ResponseHandlingException as e:
-            _msg = f"Failed to connect to Qdrant server: {e}"
-            logger.error(_msg)
-            raise Error(_msg) from e
-        except OpenAIError as e:
-            _msg = (
-                "Failed to connect to Chat Model server: "
-                "setting the `MODEL__API_KEY` environment variable"
-            )
-            logger.error(_msg)
-            raise Error(_msg) from e
-        except ValueError as e:
-            _msg = f"Failed to initialize memory: {e}"
-            logger.exception(_msg)
-            raise Error(_msg) from e
-
-    @staticmethod
-    async def _setup_tools(_mcp_client: MultiServerMCPClient) -> list[BaseTool]:
-        """
-        Retrieve a list of tools from the provided MCP client.
-
-        Args:
-            _mcp_client: The MultiServerMCPClient instance used to fetch available tools.
-
-        Returns:
-            list[BaseTool]: A list of BaseTool objects retrieved from the MCP client.
-        """
-        try:
-            return await _mcp_client.get_tools()
-        except Exception as e:
-            logger.warning(f"Failed to setup tools: {e}")
-            logger.warning("Using empty tool list")
-            return []
-
-    @classmethod
-    def draw_graph(cls) -> Path:
-        """Render the compiled state graph as a Mermaid PNG image and save it."""
-        cls._graph.get_graph().draw_mermaid_png(
-            output_file_path=cls.settings.directory.assets / "graph.png",
+    def _setup_vector_database(self) -> Qdrant:
+        return Qdrant(
+            collection=self.settings.vector_database.name,
+            url=self.settings.vector_database.url.host,
         )
-        return cls.settings.directory.assets / "graph.png"
+
+    def _setup_knowledge_base(self, vector_db: Qdrant) -> Knowledge:
+        return Knowledge(
+            vector_db=vector_db,
+        )
+
+    def _setup_database(self) -> JsonDb:
+        return JsonDb(
+            db_file="agno.json",
+        )
 
     @classmethod
     def gui(cls) -> Blocks:
