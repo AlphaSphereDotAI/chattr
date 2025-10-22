@@ -1,13 +1,14 @@
 """Main orchestration graph for the Chattr application."""
 
-from collections.abc import AsyncGenerator, Sequence
+from collections.abc import AsyncGenerator
 from json import dumps
 from pathlib import Path
-from this import s
 
 from agno.agent import Agent
-from agno.models.anthropic import Claude
-from agno.tools.hackernews import HackerNewsTools
+from agno.db.json import JsonDb
+from agno.knowledge.knowledge import Knowledge
+from agno.models.openai.like import OpenAILike
+from agno.vectordb.qdrant import Qdrant
 from gradio import (
     Audio,
     Blocks,
@@ -26,34 +27,27 @@ from gradio import (
 )
 from gradio.components.chatbot import MetadataDict
 from m3u8 import M3U8, load
-from openai import OpenAIError
 from poml import poml
 from pydantic import FilePath, HttpUrl, ValidationError
-from pydantic.type_adapter import TypeAdapterT
-from qdrant_client.http.exceptions import ResponseHandlingException
 from requests import Session
 
-from agno.models.openai.like import OpenAILike
 from chattr.app.settings import Settings, logger
 from chattr.app.state import State
-from agno.knowledge.knowledge import Knowledge
-from agno.vectordb.qdrant import Qdrant
-from agno.db.json import JsonDb
-
-agent = Agent(
-    model=Claude(id="claude-sonnet-4-5"),
-    tools=[HackerNewsTools()],
-    instructions="Write a report on the topic. Output only the report.",
-    markdown=True,
-)
-agent.print_response("Trending startups and products.", stream=True)
 
 
 class App:
     """Main application class for the Chattr Multi-agent system app."""
 
-    def __init__(self, settings: Settings):
+    def __init__(self, settings: Settings) -> None:
         self.settings = settings
+
+    def _setup_agent(self) -> Agent:
+        return Agent(
+            model=self._setup_model(),
+            tools=self._setup_tools(),
+            instructions=self._setup_instructions(),
+            markdown=True,
+        )
 
     def _setup_prompt(self) -> str:
         prompt_template = poml(
@@ -67,8 +61,7 @@ class App:
             raise TypeError(_msg)
         return prompt_template
 
-    @classmethod
-    def _setup_model(cls):
+    def _setup_model(self) -> OpenAILike:
         """
         Initialize the ChatOpenAI language model using the provided settings.
 
@@ -83,10 +76,10 @@ class App:
         """
         try:
             return OpenAILike(
-                base_url=str(cls.settings.model.url),
-                id=cls.settings.model.name,
-                api_key=cls.settings.model.api_key,
-                temperature=cls.settings.model.temperature,
+                base_url=str(self.settings.model.url),
+                id=self.settings.model.name,
+                api_key=self.settings.model.api_key,
+                temperature=self.settings.model.temperature,
             )
         except Exception as e:
             _msg = f"Failed to initialize ChatOpenAI model: {e}"
