@@ -7,6 +7,7 @@ from pathlib import Path
 from agno.agent import Agent
 from agno.db.json import JsonDb
 from agno.knowledge.knowledge import Knowledge
+from agno.models.message import Message
 from agno.models.openai.like import OpenAILike
 from agno.vectordb.qdrant import Qdrant
 from gradio import (
@@ -40,12 +41,15 @@ class App:
 
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
+        self.agent = self._setup_agent()
 
     def _setup_agent(self) -> Agent:
         return Agent(
             model=self._setup_model(),
-            tools=self._setup_tools(),
-            instructions=self._setup_instructions(),
+            # tools=self._setup_tools(),
+            instructions=self._setup_prompt(),
+            db=self._setup_database(),
+            knowledge=self._setup_knowledge(self._setup_vector_database()),
             markdown=True,
         )
 
@@ -54,12 +58,12 @@ class App:
             self.settings.directory.prompts / "template.poml",
             {"character": "Napoleon"},
             chat=False,
-            format="raw",
+            format="dict",
         )
-        if not isinstance(prompt_template, str):
+        if not isinstance(prompt_template, dict):
             _msg = "Prompt template must be a string."
             raise TypeError(_msg)
-        return prompt_template
+        return prompt_template["messages"]
 
     def _setup_model(self) -> OpenAILike:
         """
@@ -92,18 +96,17 @@ class App:
             url=self.settings.vector_database.url.host,
         )
 
-    def _setup_knowledge_base(self, vector_db: Qdrant) -> Knowledge:
+    def _setup_knowledge(self, vector_db: Qdrant) -> Knowledge:
         return Knowledge(
             vector_db=vector_db,
         )
 
     def _setup_database(self) -> JsonDb:
         return JsonDb(
-            db_file="agno.json",
+            db_path="agno.json",
         )
 
-    @classmethod
-    def gui(cls) -> Blocks:
+    def gui(self) -> Blocks:
         """
         Creates and returns the main Gradio Blocks interface for the Chattr app.
 
@@ -111,16 +114,11 @@ class App:
             Blocks: The constructed Gradio Blocks interface for the chat application.
         """
         with Blocks() as chat:
-            with Sidebar(visible=cls.settings.debug):
+            with Sidebar(visible=self.settings.debug):
                 with Row():
                     with Column():
-                        Markdown("# Chattr Graph")
-                        Image(cls.draw_graph())
-                with Row():
-                    with Column():
-                        Markdown("---")
                         Markdown("# Model Prompt")
-                        Markdown(cls._setup_prompt("")[-1].content)
+                        Markdown(self._setup_prompt())
             with Row():
                 with Column():
                     video = Video(
@@ -149,20 +147,19 @@ class App:
                         button = Button("Send", variant="primary")
                         _ = ClearButton([msg, chatbot, video], variant="stop")
             _ = button.click(
-                cls.generate_response,
+                self.generate_response,
                 [msg, chatbot],
                 [msg, chatbot, audio, video],
             )
             _ = msg.submit(
-                cls.generate_response,
+                self.generate_response,
                 [msg, chatbot],
                 [msg, chatbot, audio, video],
             )
         return chat
 
-    @classmethod
     async def generate_response(
-        cls,
+        self,
         message: str,
         history: list[ChatMessage],
     ) -> AsyncGenerator[tuple[str, list[ChatMessage], Path | None, Path | None]]:
@@ -183,15 +180,17 @@ class App:
         """
         is_audio_generated: bool = False
         audio_file: FilePath | None = None
-        last_agent_message: AnyMessage | None = None
-        async for response in cls._graph.astream(
-            State(messages=[HumanMessage(content=message)], mem0_user_id="1"),
+        last_agent_message: Message | None = None
+        async for response in self.agent.arun(
+            Message(
+                content=message,
+            ),
             stream_mode="updates",
         ):
             logger.debug(f"Response type received: {response.keys()}")
             if response.keys() == {"agent"}:
                 logger.debug(f"-------- Agent response {response}")
-                last_agent_message: AIMessage = response["agent"]["messages"][-1]
+                last_agent_message: Message = response["agent"]["messages"][-1]
                 if last_agent_message.tool_calls:
                     history.append(
                         ChatMessage(
@@ -215,7 +214,7 @@ class App:
                     )
             elif response.keys() == {"tools"}:
                 logger.debug(f"-------- Tool Message: {response}")
-                last_tool_message: ToolMessage = response["tools"]["messages"][-1]
+                last_tool_message: Message = response["tools"]["messages"][-1]
                 history.append(
                     ChatMessage(
                         role="assistant",
@@ -226,13 +225,13 @@ class App:
                         ),
                     ),
                 )
-                if cls._is_url(last_tool_message.content):
+                if self._is_url(last_tool_message.content):
                     logger.info(f"Downloading audio from {last_tool_message.content}")
                     file_path: Path = (
-                        cls.settings.directory.audio / last_tool_message.id
+                        self.settings.directory.audio / last_tool_message.id
                     )
                     audio_file = file_path.with_suffix(".wav")
-                    cls._download_file(last_tool_message.content, audio_file)
+                    self._download_file(last_tool_message.content, audio_file)
                     logger.info(f"Audio downloaded to {audio_file}")
                     is_audio_generated = True
                     yield "", history, audio_file, None
@@ -242,8 +241,7 @@ class App:
                 raise Error(_msg)
             yield "", history, audio_file if is_audio_generated else None, None
 
-    @classmethod
-    def _is_url(cls, value: str | None) -> bool:
+    def _is_url(self, value: str | None) -> bool:
         """
         Check if a string is a valid URL.
 
@@ -262,8 +260,7 @@ class App:
         except ValidationError:
             return False
 
-    @classmethod
-    def _download_file(cls, url: HttpUrl, path: Path) -> None:
+    def _download_file(self, url: HttpUrl, path: Path) -> None:
         """
         Download a file from a URL and save it to a local path.
 
