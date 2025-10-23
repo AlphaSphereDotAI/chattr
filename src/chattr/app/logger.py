@@ -1,11 +1,11 @@
-from logging import INFO, WARNING, basicConfig, getLogger
+from logging import DEBUG, INFO, WARNING, basicConfig, getLogger
 
 from rich.logging import RichHandler
 
 from chattr import console
 
 basicConfig(
-    level=INFO,
+    level=DEBUG,  # INFO,
     handlers=[
         RichHandler(
             level=INFO,
