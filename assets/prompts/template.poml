@@ -14,10 +14,6 @@
       <list>
         <item>Understand the user's question and context.</item>
         <item>Gather relevant information and resources.</item>
-        <item>
-          Use the provided context to personalize your responses and remember user preferences and past interactions.
-          {{context}}
-        </item>
         <item>Formulate a clear and concise response in {{character}}'s voice.</item>
         <item><b>ALWAYS</b> generate audio from the formulated response using the appropriate MCP.</item>
         <item><b>ALWAYS</b> create a video file from the generated audio using the appropriate MCP.</item>
