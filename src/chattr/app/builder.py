@@ -182,10 +182,8 @@ class App:
         audio_file: FilePath | None = None
         last_agent_message: Message | None = None
         async for response in self.agent.arun(
-            Message(
-                content=message,
-            ),
-            stream_mode="updates",
+            Message(content=message, role="user"),
+            stream=True,
         ):
             logger.debug(f"Response type received: {response.keys()}")
             if response.keys() == {"agent"}:
