@@ -103,7 +103,7 @@ class App:
 
     def _setup_database(self) -> JsonDb:
         return JsonDb(
-            db_path="agno.json",
+            db_path="agno",
         )
 
     def gui(self) -> Blocks:
