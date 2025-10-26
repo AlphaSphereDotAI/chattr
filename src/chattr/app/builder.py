@@ -4,11 +4,19 @@ from collections.abc import AsyncGenerator
 from json import dumps
 from pathlib import Path
 
-from agno.agent import Agent
+from agno.agent import (
+    Agent,
+    RunContentEvent,
+    ToolCallCompletedEvent,
+    ToolCallStartedEvent,
+)
+from agno.db import BaseDb
 from agno.db.json import JsonDb
 from agno.knowledge.knowledge import Knowledge
 from agno.models.message import Message
 from agno.models.openai.like import OpenAILike
+from agno.tools import Toolkit
+from agno.tools.mcp import MultiMCPTools
 from agno.vectordb.qdrant import Qdrant
 from gradio import (
     Audio,
@@ -19,7 +27,6 @@ from gradio import (
     ClearButton,
     Column,
     Error,
-    Image,
     Markdown,
     Row,
     Sidebar,
@@ -31,9 +38,9 @@ from m3u8 import M3U8, load
 from poml import poml
 from pydantic import FilePath, HttpUrl, ValidationError
 from requests import Session
+from rich.pretty import pprint
 
 from chattr.app.settings import Settings, logger
-from chattr.app.state import State
 
 
 class App:
@@ -41,17 +48,42 @@ class App:
 
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
-        self.agent = self._setup_agent()
 
-    def _setup_agent(self) -> Agent:
+    async def _setup_agent(self) -> Agent:
         return Agent(
             model=self._setup_model(),
-            # tools=self._setup_tools(),
-            instructions=self._setup_prompt(),
-            db=self._setup_database(),
-            knowledge=self._setup_knowledge(self._setup_vector_database()),
+            tools=await self._setup_tools(),
+            description="You are a helpful assistant who can act and mimic Napoleon's character and answer questions about the era.",
+            instructions=[
+                "Understand the user's question and context.",
+                "Gather relevant information and resources.",
+                "Formulate a clear and concise response in Napoleon's voice.",
+                "ALWAYS generate audio from the formulated response using the appropriate Tool.",
+            ],
+            knowledge=self._setup_knowledge(
+                self._setup_vector_database(),
+                self._setup_database(),
+            ),
             markdown=True,
+            add_datetime_to_context=True,
+            timezone_identifier="Africa/Cairo",
+            # pre_hooks=[PIIDetectionGuardrail(), PromptInjectionGuardrail()],
+            # debug_mode=True,
+            save_response_to_file="response.txt",
+            add_history_to_context=True,
+            add_memories_to_context=True,
         )
+
+    async def _setup_tools(self) -> list[Toolkit]:
+        self.mcp_tools = MultiMCPTools(
+            urls=[
+                "https://docs.agno.com/mcp",
+                "http://localhost:7861/gradio_api/mcp/",
+            ],
+            urls_transports=["streamable-http", "streamable-http"],
+        )
+        await self.mcp_tools.connect()
+        return [self.mcp_tools]
 
     def _setup_prompt(self) -> str:
         prompt_template = poml(
@@ -82,7 +114,7 @@ class App:
             return OpenAILike(
                 base_url=str(self.settings.model.url),
                 id=self.settings.model.name,
-                api_key=self.settings.model.api_key,
+                api_key=self.settings.model.api_key.get_secret_value(),
                 temperature=self.settings.model.temperature,
             )
         except Exception as e:
@@ -96,9 +128,10 @@ class App:
             url=self.settings.vector_database.url.host,
         )
 
-    def _setup_knowledge(self, vector_db: Qdrant) -> Knowledge:
+    def _setup_knowledge(self, vector_db: Qdrant, db: BaseDb) -> Knowledge:
         return Knowledge(
             vector_db=vector_db,
+            contents_db=db,
         )
 
     def _setup_database(self) -> JsonDb:
@@ -108,13 +141,13 @@ class App:
 
     def gui(self) -> Blocks:
         """
-        Creates and returns the main Gradio Blocks interface for the Chattr app.
+        Create and return the main Gradio Blocks interface for the Chattr app.
 
         Returns:
             Blocks: The constructed Gradio Blocks interface for the chat application.
         """
         with Blocks() as chat:
-            with Sidebar(visible=self.settings.debug):
+            with Sidebar():
                 with Row():
                     with Column():
                         Markdown("# Model Prompt")
@@ -180,64 +213,64 @@ class App:
         """
         is_audio_generated: bool = False
         audio_file: FilePath | None = None
-        last_agent_message: Message | None = None
-        async for response in self.agent.arun(
-            Message(content=message, role="user"),
-            stream=True,
-        ):
-            logger.debug(f"Response type received: {response.keys()}")
-            if response.keys() == {"agent"}:
-                logger.debug(f"-------- Agent response {response}")
-                last_agent_message: Message = response["agent"]["messages"][-1]
-                if last_agent_message.tool_calls:
+        try:
+            agent = await self._setup_agent()
+            async for response in agent.arun(
+                Message(content=message, role="user"),
+                stream=True,
+            ):
+                pprint(response)
+                if isinstance(response, RunContentEvent):
                     history.append(
                         ChatMessage(
                             role="assistant",
-                            content=dumps(
-                                last_agent_message.tool_calls[0]["args"],
-                                indent=4,
-                            ),
+                            content=response.content,
+                        ),
+                    )
+                elif isinstance(response, ToolCallStartedEvent):
+                    history.append(
+                        ChatMessage(
+                            role="assistant",
+                            content=dumps(response.tool.tool_args, indent=4),
                             metadata=MetadataDict(
-                                title=last_agent_message.tool_calls[0]["name"],
-                                id=last_agent_message.tool_calls[0]["id"],
+                                title=response.tool.tool_name,
+                                id=response.tool.tool_call_id,
+                                duration=response.tool.created_at,
                             ),
                         ),
                     )
-                else:
-                    history.append(
-                        ChatMessage(
-                            role="assistant",
-                            content=last_agent_message.content,
-                        ),
-                    )
-            elif response.keys() == {"tools"}:
-                logger.debug(f"-------- Tool Message: {response}")
-                last_tool_message: Message = response["tools"]["messages"][-1]
-                history.append(
-                    ChatMessage(
-                        role="assistant",
-                        content=last_tool_message.content,
-                        metadata=MetadataDict(
-                            title=last_tool_message.name,
-                            id=last_tool_message.id,
-                        ),
-                    ),
-                )
-                if self._is_url(last_tool_message.content):
-                    logger.info(f"Downloading audio from {last_tool_message.content}")
-                    file_path: Path = (
-                        self.settings.directory.audio / last_tool_message.id
-                    )
-                    audio_file = file_path.with_suffix(".wav")
-                    self._download_file(last_tool_message.content, audio_file)
-                    logger.info(f"Audio downloaded to {audio_file}")
-                    is_audio_generated = True
-                    yield "", history, audio_file, None
-            else:
-                _msg = f"Unsupported audio source: {response.keys()}"
-                logger.warning(_msg)
-                raise Error(_msg)
-            yield "", history, audio_file if is_audio_generated else None, None
+                elif isinstance(response, ToolCallCompletedEvent):
+                    if response.tool.tool_call_error:
+                        history.append(
+                            ChatMessage(
+                                role="assistant",
+                                content=dumps(response.tool.tool_args, indent=4),
+                                metadata=MetadataDict(
+                                    title=response.tool.tool_name,
+                                    id=response.tool.tool_call_id,
+                                    log="Tool Call Failed",
+                                    duration=response.tool.metrics.duration,
+                                ),
+                            ),
+                        )
+                    else:
+                        history.append(
+                            ChatMessage(
+                                role="assistant",
+                                content=dumps(response.tool.tool_args, indent=4),
+                                metadata=MetadataDict(
+                                    title=response.tool.tool_name,
+                                    id=response.tool.tool_call_id,
+                                    log="Tool Call Succeeded",
+                                    duration=response.tool.metrics.duration,
+                                ),
+                            ),
+                        )
+                        is_audio_generated = True
+                        audio_file = response.tool.result
+                yield "", history, audio_file if is_audio_generated else None, None
+        finally:
+            await self._close()
 
     def _is_url(self, value: str | None) -> bool:
         """
@@ -285,3 +318,25 @@ class App:
                 if chunk:
                     f.write(chunk)
         logger.info(f"File downloaded to {path}")
+
+    async def _close(self) -> None:
+        await self.mcp_tools.close()
+
+
+async def test():
+    from chattr.app.builder import App
+    from chattr.app.settings import Settings
+
+    settings: Settings = Settings()
+    app: App = App(settings)
+    agent = await app._setup_agent()
+    try:
+        await agent.aprint_response("Hello!", debug_mode=True)
+    finally:
+        await app._close()
+
+
+if __name__ == "__main__":
+    import asyncio
+
+    asyncio.run(test())
