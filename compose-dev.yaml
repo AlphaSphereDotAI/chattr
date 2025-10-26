@@ -9,12 +9,13 @@ services:
       - qdrant_storage:/qdrant/storage
   voice_generator:
     image: alphaspheredotai/vocalizr:latest
+    user: root
     ports:
       - "7861:7860"
     volumes:
-      - huggingface:/home/app/hf
-      - results:/home/app/results
-      - logs:/home/app/logs
+      - huggingface:/home/nonroot/hf
+      - results:/home/nonroot/results
+      - logs:/home/nonroot/logs
     healthcheck:
       test:
         - "CMD"
