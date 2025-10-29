@@ -24,7 +24,7 @@
     "transport": "streamable_http"
   },
   "video_generator": {
-    "url": "http://localhost:7862/gradio_api/mcp/?tools=generate_video_from_name",
+    "url": "http://localhost:7862/gradio_api/mcp/?tools=generate_video_mcp",
     "transport": "streamable_http"
   }
 }
