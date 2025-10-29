@@ -15,8 +15,8 @@ services:
       - command: chmod -R 777 /home/nonroot
         user: root
     environment:
-      MODEL__URL: https://api.groq.com/openai/v1
-      MODEL__NAME: llama3-70b-8192
+      MODEL__URL: ${MODEL__URL}
+      MODEL__NAME: ${MODEL__NAME}
       MODEL__API_KEY: ${MODEL__API_KEY}
       VECTOR_DATABASE__URL: http://vector_database:6333
       VECTOR_DATABASE__NAME: test
