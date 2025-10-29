@@ -24,7 +24,12 @@ services:
       test:
         - "CMD"
         - "curl"
+        - "-o"
+        - "/dev/null"
         - "-f"
+        - "-s"
+        - "-w"
+        - "'Status: %{http_code},\tTime: %{time_total}s'"
         - "http://localhost:7860/"
       interval: 1m30s
       timeout: 10s
