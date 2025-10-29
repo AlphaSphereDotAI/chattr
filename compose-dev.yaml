@@ -20,6 +20,8 @@ services:
       - huggingface:/home/nonroot/hf
       - results:/home/nonroot/results
       - logs:/home/nonroot/logs
+    environment:
+      GRADIO_DEBUG: 1
     healthcheck:
       test:
         - "CMD"
