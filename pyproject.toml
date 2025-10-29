@@ -14,6 +14,7 @@ dependencies = [
     "google-genai>=1.45.0",
     "gradio>=5.48.0",
     "m3u8>=6.0.0",
+    "mcp>=1.19.0",
     "mem0ai>=0.1.118",
     "poml>=0.0.8",
 ]
