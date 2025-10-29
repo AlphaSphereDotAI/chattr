@@ -9,9 +9,13 @@ services:
       - qdrant_storage:/qdrant/storage
   voice_generator:
     image: alphaspheredotai/vocalizr:latest
-    user: root
     ports:
       - "7861:7860"
+    post_start:
+      - command: chown -R nonroot:nonroot /home/nonroot
+        user: root
+      - command: chmod -R 777 /home/nonroot
+        user: root
     volumes:
       - huggingface:/home/nonroot/hf
       - results:/home/nonroot/results
@@ -21,7 +25,7 @@ services:
         - "CMD"
         - "curl"
         - "-f"
-        - "http://localhost:7861/"
+        - "http://localhost:7860/"
       interval: 1m30s
       timeout: 10s
       retries: 5
