@@ -21,16 +21,9 @@ from agno.vectordb.qdrant import Qdrant
 from gradio import (
     Audio,
     Blocks,
-    Button,
-    Chatbot,
+    ChatInterface,
     ChatMessage,
-    ClearButton,
-    Column,
     Error,
-    Markdown,
-    Row,
-    Sidebar,
-    Textbox,
     Video,
 )
 from gradio.components.chatbot import MetadataDict
@@ -59,7 +52,9 @@ class App:
                 "Gather relevant information and resources.",
                 "Formulate a clear and concise response in Napoleon's voice.",
                 "ALWAYS generate audio from the formulated response using the appropriate Tool.",
+                "Generate video from the resulted audio using the appropriate Tool.",
             ],
+            db=self._setup_database(),
             knowledge=self._setup_knowledge(
                 self._setup_vector_database(),
                 self._setup_database(),
@@ -77,8 +72,8 @@ class App:
     async def _setup_tools(self) -> list[Toolkit]:
         self.mcp_tools = MultiMCPTools(
             urls=[
-                "https://docs.agno.com/mcp",
                 "http://localhost:7861/gradio_api/mcp/",
+                "http://localhost:7862/gradio_api/mcp/?tools=generate_video_mcp",
             ],
             urls_transports=["streamable-http", "streamable-http"],
         )
@@ -118,7 +113,7 @@ class App:
                 temperature=self.settings.model.temperature,
             )
         except Exception as e:
-            _msg = f"Failed to initialize ChatOpenAI model: {e}"
+            _msg: str = f"Failed to initialize ChatOpenAI model: {e}"
             logger.error(_msg)
             raise Error(_msg) from e
 
@@ -146,50 +141,9 @@ class App:
         Returns:
             Blocks: The constructed Gradio Blocks interface for the chat application.
         """
-        with Blocks() as chat:
-            with Sidebar():
-                with Row():
-                    with Column():
-                        Markdown("# Model Prompt")
-                        Markdown(self._setup_prompt())
-            with Row():
-                with Column():
-                    video = Video(
-                        label="Output Video",
-                        interactive=False,
-                        autoplay=True,
-                        sources="upload",
-                        format="mp4",
-                    )
-                    audio = Audio(
-                        label="Output Audio",
-                        interactive=False,
-                        autoplay=True,
-                        sources="upload",
-                        type="filepath",
-                        format="wav",
-                    )
-                with Column():
-                    chatbot = Chatbot(
-                        type="messages",
-                        show_copy_button=True,
-                        show_share_button=True,
-                    )
-                    msg = Textbox()
-                    with Row():
-                        button = Button("Send", variant="primary")
-                        _ = ClearButton([msg, chatbot, video], variant="stop")
-            _ = button.click(
-                self.generate_response,
-                [msg, chatbot],
-                [msg, chatbot, audio, video],
-            )
-            _ = msg.submit(
-                self.generate_response,
-                [msg, chatbot],
-                [msg, chatbot, audio, video],
-            )
-        return chat
+        return ChatInterface(
+            fn=self.generate_response, type="messages", save_history=True
+        )
 
     async def generate_response(
         self,
@@ -211,10 +165,8 @@ class App:
                             empty string, the updated history, and
                             a Path to an audio file if generated.
         """
-        is_audio_generated: bool = False
-        audio_file: FilePath | None = None
         try:
-            agent = await self._setup_agent()
+            agent: Agent = await self._setup_agent()
             async for response in agent.arun(
                 Message(content=message, role="user"),
                 stream=True,
@@ -266,9 +218,32 @@ class App:
                                 ),
                             ),
                         )
-                        is_audio_generated = True
-                        audio_file = response.tool.result
-                yield "", history, audio_file if is_audio_generated else None, None
+                        if response.tool.tool_name == "generate_audio_for_text":
+                            history.append(
+                                Audio(
+                                    response.tool.result,
+                                    autoplay=True,
+                                    show_download_button=True,
+                                    show_share_button=True,
+                                ),
+                            )
+                        elif response.tool.tool_name == "generate_video_mcp":
+                            history.append(
+                                Video(
+                                    response.tool.result,
+                                    autoplay=True,
+                                    show_download_button=True,
+                                    show_share_button=True,
+                                ),
+                            )
+                        else:
+                            msg = f"Unknown tool name: {response.tool.tool_name}"
+                            raise Error(msg)
+                yield history
+        except Exception as e:
+            _msg: str = f"Error generating response: {e}"
+            logger.error(_msg)
+            raise Error(_msg) from e
         finally:
             await self._close()
 
@@ -287,9 +262,9 @@ class App:
 
         try:
             _ = HttpUrl(value)
-            return True
         except ValidationError:
             return False
+        return True
 
     def _download_file(self, url: HttpUrl, path: Path) -> None:
         """
@@ -320,16 +295,24 @@ class App:
         logger.info(f"File downloaded to {path}")
 
     async def _close(self) -> None:
-        await self.mcp_tools.close()
+        try:
+            logger.info("Closing MCP tools...")
+            await self.mcp_tools.close()
+        except Exception as e:
+            msg: str = (
+                f"Error closing MCP tools: {e}, Check if the Tool services are running."
+            )
+            logger.error(msg)
+            raise Error(msg) from e
 
 
-async def test():
+async def test() -> None:
     from chattr.app.builder import App
     from chattr.app.settings import Settings
 
     settings: Settings = Settings()
     app: App = App(settings)
-    agent = await app._setup_agent()
+    agent: Agent = await app._setup_agent()
     try:
         await agent.aprint_response("Hello!", debug_mode=True)
     finally:
