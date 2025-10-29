@@ -11,6 +11,8 @@ services:
     post_start:
       - command: chown -R nonroot:nonroot /home/nonroot
         user: root
+      - command: chmod -R 777 /home/nonroot
+        user: root
     environment:
       MODEL__URL: https://api.groq.com/openai/v1
       MODEL__NAME: llama3-70b-8192
