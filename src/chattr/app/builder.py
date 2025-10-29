@@ -64,7 +64,7 @@ class App:
             timezone_identifier="Africa/Cairo",
             # pre_hooks=[PIIDetectionGuardrail(), PromptInjectionGuardrail()],
             # debug_mode=True,
-            save_response_to_file="response.txt",
+            save_response_to_file="agno/response.txt",
             add_history_to_context=True,
             add_memories_to_context=True,
         )
