@@ -29,7 +29,7 @@ from gradio import (
 from gradio.components.chatbot import MetadataDict
 from m3u8 import M3U8, load
 from poml import poml
-from pydantic import FilePath, HttpUrl, ValidationError
+from pydantic import HttpUrl, ValidationError
 from requests import Session
 from rich.pretty import pprint
 
