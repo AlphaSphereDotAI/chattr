@@ -143,9 +143,9 @@ class DirectorySettings(BaseModel):
 class ModelSettings(BaseModel):
     """Settings related to model execution."""
 
-    url: HttpUrl = Field(default=None)
-    name: str = Field(default=None)
-    api_key: SecretStr = Field(default=None)
+    url: HttpUrl | None = Field(default=None)
+    name: str | None = Field(default=None)
+    api_key: SecretStr | None = Field(default=None)
     temperature: float = Field(default=0.0, ge=0.0, le=1.0)
 
     @model_validator(mode="after")
