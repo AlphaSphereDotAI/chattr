@@ -70,7 +70,8 @@ class MCPSettings(BaseModel):
     def is_valid(self) -> Self:
         """Validate that the MCP config file is a JSON file."""
         if self.path and self.path.suffix != ".json":
-            raise ValueError("MCP config file must be a JSON file")
+            msg = "MCP config file must be a JSON file"
+            raise ValueError(msg)
         return self
 
 
