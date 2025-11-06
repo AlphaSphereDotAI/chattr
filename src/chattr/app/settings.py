@@ -174,19 +174,21 @@ class ModelSettings(BaseModel):
 class Settings(BaseSettings):
     """Configuration for the Chattr app."""
 
-    model_config = SettingsConfigDict(
+    model_config: SettingsConfigDict = SettingsConfigDict(
         env_nested_delimiter="__",
         env_parse_none_str="None",
         env_file=".env",
         extra="ignore",
     )
 
-    model: ModelSettings = ModelSettings()
-    memory: MemorySettings = MemorySettings()
-    vector_database: VectorDatabaseSettings = VectorDatabaseSettings()
-    mcp: MCPSettings = MCPSettings()
-    directory: DirectorySettings = DirectorySettings()
-    debug: bool = False
+    directory: DirectorySettings = Field(default_factory=DirectorySettings, frozen=True)
+    model: ModelSettings = Field(default_factory=ModelSettings)
+    memory: MemorySettings = Field(default_factory=MemorySettings)
+    vector_database: VectorDatabaseSettings = Field(
+        default_factory=VectorDatabaseSettings,
+    )
+    mcp: MCPSettings = Field(default_factory=MCPSettings)
+    debug: bool = Field(default=False)
 
 
 if __name__ == "__main__":
