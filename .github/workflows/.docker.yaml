@@ -175,8 +175,8 @@ jobs:
           VECTOR_DATABASE__URL: "http://vector_database:6333"
           VECTOR_DATABASE__NAME: "test"
         options: >-
-          --health-cmd "curl -o /dev/null -f -s -w 'Status: %{http_code}, Time: %{time_total}s' http://localhost:7860/" --health-interval 10s
-          --health-timeout 10s --health-start-period 20s --health-retries 15
+          --health-cmd "curl -o /dev/null -f -s -w 'Status: %{http_code}, Time: %{time_total}s' http://localhost:7860/" --health-interval 10s --health-timeout
+          10s --health-start-period 20s --health-retries 15
     steps:
       - name: Echo URL
         run: echo "Chattr available on localhost:${{ job.services.chattr.ports['7860'] }}"
