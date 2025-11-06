@@ -13,10 +13,12 @@ from pydantic import (
     FilePath,
     HttpUrl,
     SecretStr,
+    computed_field,
     model_validator,
 )
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from chattr import APP_NAME
 from chattr.app.logger import logger
 
 load_dotenv()
@@ -153,20 +155,28 @@ class ModelSettings(BaseModel):
         """
         Ensure that an API key and model name are provided if a model URL is set.
 
-        This method validates the presence of required credentials for the model provider.
+        This method validates the presence of required
+        credentials for the model provider.
 
         Returns:
             Self: The validated ModelSettings instance.
 
         Raises:
-            ValueError: If the API key or model name is missing when a model URL is provided.
+            ValueError: If the API key or model name is missing
+                        when a model URL is provided.
         """
         if self.url:
             if not self.api_key or not self.api_key.get_secret_value():
-                _msg = "You need to provide API Key for the Model provider via `MODEL__API_KEY`"
+                _msg: str = (
+                    "You need to provide API Key for the Model provider:"
+                    " Set via `MODEL__API_KEY`"
+                )
                 raise ValueError(_msg)
             if not self.name:
-                _msg = "You need to provide Model name via `MODEL__NAME`"
+                _msg: str = (
+                    "You need to provide Model name for the Model provider:"
+                    " Set via `MODEL__NAME`"
+                )
                 raise ValueError(_msg)
         return self
 
