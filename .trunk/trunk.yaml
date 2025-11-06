@@ -4,10 +4,10 @@ cli:
 plugins:
   sources:
     - id: trunk
-      ref: v1.7.2
+      ref: v1.7.3
       uri: https://github.com/trunk-io/plugins
     - id: configs
-      ref: v1.1.1
+      ref: v1.1.2
       uri: https://github.com/trunk-io/configs
 runtimes:
   enabled:
@@ -15,21 +15,21 @@ runtimes:
     - python@3.10.8
 lint:
   enabled:
-    - ty@0.0.1-alpha.21
-    - trufflehog-git@3.90.8
+    - ty@0.0.1-alpha.25
+    - trufflehog-git@3.90.12
     - pre-commit-hooks@5.0.0
-    - trivy@0.67.0
-    - yamlfmt@0.17.2
-    - gitleaks@8.28.0
-    - actionlint@1.7.7
+    - trivy@0.67.2
+    - yamlfmt@0.20.0
+    - gitleaks@8.29.0
+    - actionlint@1.7.8
     - bandit@1.8.6
-    - checkov@3.2.473
+    - checkov@3.2.490
     - git-diff-check
     - hadolint@2.14.0
     - markdownlint@0.45.0
     - oxipng@9.1.5
-    - renovate@41.132.5
-    - ruff@0.13.2:
+    - renovate@41.171.4
+    - ruff@0.14.3:
         commands:
           - lint
           - format
@@ -37,7 +37,7 @@ lint:
         commands:
           - lint
           - format
-    - trufflehog@3.90.8
+    - trufflehog@3.90.12
     - yamllint@1.37.1
   disabled:
     - prettier
