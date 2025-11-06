@@ -1,0 +1,16 @@
+[
+  {
+    "label": "Run Chattr",
+    "command": "uv",
+    "args": ["run", "chattr"],
+    "reveal_target": "center",
+    "shell": "system"
+  },
+  {
+    "label": "Run Docker Compose",
+    "command": "docker",
+    "args": ["compose", "-f", "compose-dev.yaml", "up"],
+    "reveal_target": "center",
+    "shell": "system"
+  }
+]
