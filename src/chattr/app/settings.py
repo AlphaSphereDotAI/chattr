@@ -13,30 +13,39 @@ from pydantic import (
     FilePath,
     HttpUrl,
     SecretStr,
+    computed_field,
     model_validator,
 )
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from chattr import APP_NAME
 from chattr.app.logger import logger
 
 load_dotenv()
 
 
 class MemorySettings(BaseModel):
+    """Settings for memory configuration."""
+
     collection_name: str = Field(default="memories")
     embedding_dims: int = Field(default=384)
 
 
 class VectorDatabaseSettings(BaseModel):
+    """Settings for vector database configuration."""
+
     name: str = Field(default="chattr")
     url: HttpUrl = HttpUrl("http://localhost:6333")
 
 
 class MCPSettings(BaseModel):
+    """Settings for MCP configuration."""
+
     path: FilePath = Path.cwd() / "mcp.json"
 
     @model_validator(mode="after")
     def create_init_mcp(self) -> Self:
+        """Create an initial MCP config file if it does not exist."""
         if not self.path.exists():
             self.path.write_text(
                 dumps(
@@ -61,30 +70,47 @@ class MCPSettings(BaseModel):
 
     @model_validator(mode="after")
     def is_valid(self) -> Self:
-        """
-        Validate that the MCP config file is a JSON file.
-        This method checks the file extension of the provided MCP config path.
-
-        Returns:
-            Self: The validated MCPSettings instance.
-
-        Raises:
-            ValueError: If the MCP config file does not have a .json extension.
-        """
+        """Validate that the MCP config file is a JSON file."""
         if self.path and self.path.suffix != ".json":
-            raise ValueError("MCP config file must be a JSON file")
+            msg = "MCP config file must be a JSON file"
+            raise ValueError(msg)
         return self
 
 
 class DirectorySettings(BaseModel):
-    """Hold directory path configurations and ensures their existence."""
+    """Settings for application directories."""
 
-    base: DirectoryPath = Path.cwd()
-    assets: DirectoryPath = Path.cwd() / "assets"
-    log: DirectoryPath = Path.cwd() / "logs"
-    audio: DirectoryPath = assets / "audio"
-    video: DirectoryPath = assets / "video"
-    prompts: DirectoryPath = assets / "prompts"
+    base: DirectoryPath = Field(default_factory=Path.cwd, frozen=True)
+
+    @computed_field
+    @property
+    def log(self) -> DirectoryPath:
+        """Path to the log directory."""
+        return self.base / "logs" / APP_NAME
+
+    @computed_field
+    @property
+    def assets(self) -> DirectoryPath:
+        """Path to the assets directory."""
+        return self.base / "assets"
+
+    @computed_field
+    @property
+    def audio(self) -> DirectoryPath:
+        """Path to the audio directory."""
+        return self.assets / "audio"
+
+    @computed_field
+    @property
+    def video(self) -> DirectoryPath:
+        """Path to the video directory."""
+        return self.assets / "video"
+
+    @computed_field
+    @property
+    def prompts(self) -> DirectoryPath:
+        """Path to the prompts directory."""
+        return self.assets / "prompts"
 
     @model_validator(mode="after")
     def create_missing_dirs(self) -> Self:
@@ -106,27 +132,22 @@ class DirectorySettings(BaseModel):
         ]:
             if not directory.exists():
                 try:
-                    directory.mkdir(exist_ok=True)
+                    directory.mkdir(parents=True, exist_ok=True)
                     logger.info("Created directory %s.", directory)
                     if directory == self.log:
                         logger.addHandler(FileHandler(self.log / "chattr.log"))
-                except PermissionError as e:
-                    logger.error(
-                        "Permission denied while creating directory %s: %s",
-                        directory,
-                        e,
-                    )
-                except Exception as e:
+                except OSError as e:
                     logger.error("Error creating directory %s: %s", directory, e)
+                    raise
         return self
 
 
 class ModelSettings(BaseModel):
     """Settings related to model execution."""
 
-    url: HttpUrl = Field(default=None)
-    name: str = Field(default=None)
-    api_key: SecretStr = Field(default=None)
+    url: HttpUrl | None = Field(default=None)
+    name: str | None = Field(default=None)
+    api_key: SecretStr | None = Field(default=None)
     temperature: float = Field(default=0.0, ge=0.0, le=1.0)
 
     @model_validator(mode="after")
@@ -134,20 +155,28 @@ class ModelSettings(BaseModel):
         """
         Ensure that an API key and model name are provided if a model URL is set.
 
-        This method validates the presence of required credentials for the model provider.
+        This method validates the presence of required
+        credentials for the model provider.
 
         Returns:
             Self: The validated ModelSettings instance.
 
         Raises:
-            ValueError: If the API key or model name is missing when a model URL is provided.
+            ValueError: If the API key or model name is missing
+                        when a model URL is provided.
         """
         if self.url:
             if not self.api_key or not self.api_key.get_secret_value():
-                _msg = "You need to provide API Key for the Model provider via `MODEL__API_KEY`"
+                _msg: str = (
+                    "You need to provide API Key for the Model provider:"
+                    " Set via `MODEL__API_KEY`"
+                )
                 raise ValueError(_msg)
             if not self.name:
-                _msg = "You need to provide Model name via `MODEL__NAME`"
+                _msg: str = (
+                    "You need to provide Model name for the Model provider:"
+                    " Set via `MODEL__NAME`"
+                )
                 raise ValueError(_msg)
         return self
 
@@ -155,20 +184,24 @@ class ModelSettings(BaseModel):
 class Settings(BaseSettings):
     """Configuration for the Chattr app."""
 
-    model_config = SettingsConfigDict(
+    model_config: SettingsConfigDict = SettingsConfigDict(
         env_nested_delimiter="__",
         env_parse_none_str="None",
         env_file=".env",
         extra="ignore",
     )
 
-    model: ModelSettings = ModelSettings()
-    memory: MemorySettings = MemorySettings()
-    vector_database: VectorDatabaseSettings = VectorDatabaseSettings()
-    mcp: MCPSettings = MCPSettings()
-    directory: DirectorySettings = DirectorySettings()
-    debug: bool = False
+    directory: DirectorySettings = Field(default_factory=DirectorySettings, frozen=True)
+    model: ModelSettings = Field(default_factory=ModelSettings)
+    memory: MemorySettings = Field(default_factory=MemorySettings)
+    vector_database: VectorDatabaseSettings = Field(
+        default_factory=VectorDatabaseSettings,
+    )
+    mcp: MCPSettings = Field(default_factory=MCPSettings)
+    debug: bool = Field(default=False)
 
 
 if __name__ == "__main__":
-    print(Settings().model_dump())
+    from rich import print as rprint
+
+    rprint(Settings().model_dump_json(indent=4))
