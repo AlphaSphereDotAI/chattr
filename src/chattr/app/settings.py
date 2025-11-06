@@ -78,12 +78,37 @@ class MCPSettings(BaseModel):
 class DirectorySettings(BaseModel):
     """Settings for application directories."""
 
-    base: DirectoryPath = Path.cwd()
-    assets: DirectoryPath = Path.cwd() / "assets"
-    log: DirectoryPath = Path.cwd() / "logs"
-    audio: DirectoryPath = assets / "audio"
-    video: DirectoryPath = assets / "video"
-    prompts: DirectoryPath = assets / "prompts"
+    base: DirectoryPath = Field(default_factory=Path.cwd, frozen=True)
+
+    @computed_field
+    @property
+    def log(self) -> DirectoryPath:
+        """Path to the log directory."""
+        return self.base / "logs" / APP_NAME
+
+    @computed_field
+    @property
+    def assets(self) -> DirectoryPath:
+        """Path to the assets directory."""
+        return self.base / "assets"
+
+    @computed_field
+    @property
+    def audio(self) -> DirectoryPath:
+        """Path to the audio directory."""
+        return self.assets / "audio"
+
+    @computed_field
+    @property
+    def video(self) -> DirectoryPath:
+        """Path to the video directory."""
+        return self.assets / "video"
+
+    @computed_field
+    @property
+    def prompts(self) -> DirectoryPath:
+        """Path to the prompts directory."""
+        return self.assets / "prompts"
 
     @model_validator(mode="after")
     def create_missing_dirs(self) -> Self:
