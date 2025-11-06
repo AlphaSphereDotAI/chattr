@@ -28,15 +28,20 @@ class MemorySettings(BaseModel):
 
 
 class VectorDatabaseSettings(BaseModel):
+    """Settings for vector database configuration."""
+
     name: str = Field(default="chattr")
     url: HttpUrl = HttpUrl("http://localhost:6333")
 
 
 class MCPSettings(BaseModel):
+    """Settings for MCP configuration."""
+
     path: FilePath = Path.cwd() / "mcp.json"
 
     @model_validator(mode="after")
     def create_init_mcp(self) -> Self:
+        """Create an initial MCP config file if it does not exist."""
         if not self.path.exists():
             self.path.write_text(
                 dumps(
@@ -61,23 +66,14 @@ class MCPSettings(BaseModel):
 
     @model_validator(mode="after")
     def is_valid(self) -> Self:
-        """
-        Validate that the MCP config file is a JSON file.
-        This method checks the file extension of the provided MCP config path.
-
-        Returns:
-            Self: The validated MCPSettings instance.
-
-        Raises:
-            ValueError: If the MCP config file does not have a .json extension.
-        """
+        """Validate that the MCP config file is a JSON file."""
         if self.path and self.path.suffix != ".json":
             raise ValueError("MCP config file must be a JSON file")
         return self
 
 
 class DirectorySettings(BaseModel):
-    """Hold directory path configurations and ensures their existence."""
+    """Settings for application directories."""
 
     base: DirectoryPath = Path.cwd()
     assets: DirectoryPath = Path.cwd() / "assets"
