@@ -115,8 +115,6 @@ class DirectorySettings(BaseModel):
                 try:
                     directory.mkdir(parents=True, exist_ok=True)
                     logger.info("Created directory %s.", directory)
-                    if directory == self.log:
-                        logger.addHandler(FileHandler(self.log / "chattr.log"))
                 except OSError as e:
                     logger.error("Error creating directory %s: %s", directory, e)
                     raise
