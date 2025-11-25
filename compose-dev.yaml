@@ -1,0 +1,44 @@
+name: Chattr Dev
+services:
+  vector_database:
+    image: qdrant/qdrant:latest
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_storage:/qdrant/storage
+  voice_generator:
+    image: alphaspheredotai/vocalizr:latest
+    ports:
+      - "7861:7860"
+    post_start:
+      - command: chown -R nonroot:nonroot /home/nonroot
+        user: root
+      - command: chmod -R 777 /home/nonroot
+        user: root
+    volumes:
+      - huggingface:/home/nonroot/hf
+      - results:/home/nonroot/results
+      - logs:/home/nonroot/logs
+    environment:
+      GRADIO_DEBUG: 1
+    healthcheck:
+      test:
+        - "CMD"
+        - "curl"
+        - "-o"
+        - "/dev/null"
+        - "-f"
+        - "-s"
+        - "-w"
+        - "'Status: %{http_code},\tTime: %{time_total}s'"
+        - "http://localhost:7860/"
+      interval: 1m30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+volumes:
+  qdrant_storage:
+  huggingface:
+  results:
+  logs:
