@@ -1,6 +1,5 @@
 """Settings for the Chattr app."""
 
-from logging import FileHandler
 from pathlib import Path
 from typing import Self
 
