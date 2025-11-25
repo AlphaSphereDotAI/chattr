@@ -5,7 +5,7 @@ from rich.logging import RichHandler
 from chattr import APP_NAME, console
 
 basicConfig(
-    level=DEBUG,  # INFO,
+    level=INFO,  # INFO,
     handlers=[
         RichHandler(
             level=INFO,
