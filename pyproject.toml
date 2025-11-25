@@ -8,15 +8,15 @@ authors = [
 ]
 requires-python = ">=3.13.7, <3.14"
 dependencies = [
+    "agno>=2.1.10",
+    "ddgs>=9.6.1",
     "fastembed>=0.7.3",
+    "google-genai>=1.45.0",
     "gradio>=5.48.0",
-    "langchain-community>=0.3.30",
-    "langchain-mcp-adapters>=0.1.10",
-    "langchain-openai>=0.3.34",
-    "langgraph>=0.6.8",
-    "loguru>=0.7.3",
     "m3u8>=6.0.0",
+    "mcp>=1.19.0",
     "mem0ai>=0.1.118",
+    "poml>=0.0.8",
 ]
 
 [project.scripts]
@@ -28,9 +28,14 @@ build-backend = "uv_build"
 
 [dependency-groups]
 dev = [
+    "doppler-env>=0.3.1",
     "pytest-emoji>=0.2.0",
     "pytest-md>=0.2.0",
     "pytest-mergify>=2025.9.24.2",
     "ruff>=0.13.3",
     "ty>=0.0.1a20",
+    "uv-build>=0.9.4",
 ]
+
+[tool.ruff]
+extend = ".trunk/configs/ruff.toml"
