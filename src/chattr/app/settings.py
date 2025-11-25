@@ -1,6 +1,5 @@
 """Settings for the Chattr app."""
 
-from json import dumps
 from logging import FileHandler
 from pathlib import Path
 from typing import Self
@@ -41,31 +40,13 @@ class VectorDatabaseSettings(BaseModel):
 class MCPSettings(BaseModel):
     """Settings for MCP configuration."""
 
-    path: FilePath = Path.cwd() / "mcp.json"
+    path: FilePath = Field(default_factory=lambda: Path.cwd() / "mcp.json")
 
     @model_validator(mode="after")
-    def create_init_mcp(self) -> Self:
-        """Create an initial MCP config file if it does not exist."""
+    def is_exists(self) -> Self:
+        """Check if the MCP config file exists."""
         if not self.path.exists():
-            self.path.write_text(
-                dumps(
-                    {
-                        "mcpServers": {
-                            "time": {
-                                "command": "docker",
-                                "args": ["run", "-i", "--rm", "mcp/time"],
-                            },
-                            "sequential_thinking": {
-                                "command": "docker",
-                                "args": ["run", "-i", "--rm", "mcp/sequentialthinking"],
-                            },
-                        },
-                    },
-                    indent=2,
-                ),
-                encoding="utf-8",
-            )
-            logger.info("`mcp.json` not found. Created initial MCP config file.")
+            logger.warning("`mcp.json` not found.")
         return self
 
     @model_validator(mode="after")
