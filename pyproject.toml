@@ -17,6 +17,7 @@ dependencies = [
     "mcp>=1.19.0",
     "mem0ai>=0.1.118",
     "poml>=0.0.8",
+    "rich>=14.1.0",
 ]
 
 [project.scripts]
