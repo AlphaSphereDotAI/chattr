@@ -1,8 +1,8 @@
-from logging import DEBUG, INFO, WARNING, basicConfig, getLogger, Logger
+from logging import DEBUG, INFO, WARNING, Logger, basicConfig, getLogger
 
 from rich.logging import RichHandler
 
-from chattr import console, APP_NAME
+from chattr import APP_NAME, console
 
 basicConfig(
     level=DEBUG,  # INFO,
