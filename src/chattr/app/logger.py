@@ -1,8 +1,8 @@
-from logging import DEBUG, INFO, WARNING, basicConfig, getLogger
+from logging import DEBUG, INFO, WARNING, basicConfig, getLogger, Logger
 
 from rich.logging import RichHandler
 
-from chattr import console
+from chattr import console, APP_NAME
 
 basicConfig(
     level=DEBUG,  # INFO,
@@ -16,4 +16,4 @@ basicConfig(
     format="%(name)s | %(process)d | %(message)s",
 )
 getLogger("httpx").setLevel(WARNING)
-logger = getLogger(__package__)
+logger: Logger = getLogger(APP_NAME)
