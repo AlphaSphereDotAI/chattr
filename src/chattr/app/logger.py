@@ -1,4 +1,5 @@
-from logging import DEBUG, INFO, WARNING, Logger, basicConfig, getLogger
+from logging import INFO, WARNING, FileHandler, Logger, basicConfig, getLogger
+from pathlib import Path
 
 from rich.logging import RichHandler
 
@@ -12,6 +13,7 @@ basicConfig(
             console=console,
             rich_tracebacks=True,
         ),
+        FileHandler(Path.cwd() / "logs" / APP_NAME / "chattr.log", delay=True),
     ],
     format="%(name)s | %(process)d | %(message)s",
 )
