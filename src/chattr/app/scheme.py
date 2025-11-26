@@ -50,11 +50,17 @@ if __name__ == "__main__":
         {
             "mcp_servers": [
                 {
+                    "name": "example_command_server",
                     "type": "command",
                     "command": "mcp-server",
                     "args": ["--port", "8080"],
                 },
-                {"type": "url", "url": "https://example.com/mcp", "transport": "sse"},
+                {
+                    "name": "example_url_server",
+                    "type": "url",
+                    "url": "https://example.com/mcp",
+                    "transport": "sse",
+                },
             ],
         },
     )
