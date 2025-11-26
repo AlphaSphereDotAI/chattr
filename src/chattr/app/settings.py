@@ -18,6 +18,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from chattr import APP_NAME
 from chattr.app.logger import logger
+from chattr.app.scheme import MCPScheme
 
 load_dotenv()
 
@@ -54,6 +55,13 @@ class MCPSettings(BaseModel):
         if self.path and self.path.suffix != ".json":
             msg = "MCP config file must be a JSON file"
             raise ValueError(msg)
+        return self
+
+    @model_validator(mode="after")
+    def is_valid_scheme(self) -> Self:
+        """Validate that the MCP config file has a valid scheme."""
+        if self.path and self.path.exists():
+            _ = MCPScheme.model_validate_json(self.path.read_text())
         return self
 
 
