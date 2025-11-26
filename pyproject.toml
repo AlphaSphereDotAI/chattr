@@ -8,10 +8,9 @@ authors = [
 ]
 requires-python = ">=3.13, <3.14"
 dependencies = [
-    "agno>=2.1.10",
+    "agno[google,qdrant]>=2.1.10",
     "ddgs>=9.6.1",
     "fastembed>=0.7.3",
-    "google-genai>=1.45.0",
     "gradio[mcp]>=5.48.0",
     "m3u8>=6.0.0",
     "mem0ai>=0.1.118",
