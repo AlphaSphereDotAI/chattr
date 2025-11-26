@@ -2,6 +2,7 @@
     "mcp_servers": [
         {
             "name": "time",
+            "type": "command",
             "command": "docker",
             "args": [
                 "run",
@@ -13,6 +14,7 @@
         },
         {
             "name": "sequential_thinking",
+            "type": "command",
             "command": "docker",
             "args": [
                 "run",
@@ -24,13 +26,15 @@
         },
         {
             "name": "voice_generator",
+            "type": "url",
             "url": "http://localhost:7861/gradio_api/mcp/",
-            "transport": "streamable_http"
+            "transport": "streamable-http"
         },
         {
             "name": "video_generator",
+            "type": "url",
             "url": "http://localhost:7862/gradio_api/mcp/?tools=generate_video_mcp",
-            "transport": "streamable_http"
+            "transport": "streamable-http"
         }
     ]
 }
