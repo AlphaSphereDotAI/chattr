@@ -22,6 +22,8 @@ services:
       - results:/home/nonroot/results
       - logs:/home/nonroot/logs
     restart: on-failure:3
+    environment:
+      GRADIO_DEBUG: 1
     healthcheck:
       test:
         - "CMD"
@@ -59,6 +61,8 @@ services:
       - command: chmod -R 777 /home/nonroot
         user: root
     restart: on-failure:3
+    environment:
+      GRADIO_DEBUG: 1
     healthcheck:
       test:
         - "CMD"
