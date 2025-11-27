@@ -40,7 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: code_quality
-    needs: format
+    # needs: format
     permissions:
       contents: write
       pull-requests: write
