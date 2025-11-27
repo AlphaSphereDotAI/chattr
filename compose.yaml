@@ -123,6 +123,4 @@ volumes:
   fastembed:
   qdrant_storage:
   checkpoint:
-    name: Checkpoint of AniTalker
   gfpgan:
-    name: Weights of face enhancer
