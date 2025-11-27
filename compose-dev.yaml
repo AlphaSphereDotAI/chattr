@@ -1,12 +1,13 @@
 name: Chattr Dev
 services:
   vector_database:
-    image: qdrant/qdrant:latest
+    image: qdrant/qdrant:latest@sha256:0fb8897412abc81d1c0430a899b9a81eb8328aa634e7242d1bc804c1fe8fe863
     ports:
       - "6333:6333"
       - "6334:6334"
     volumes:
       - qdrant_storage:/qdrant/storage
+    restart: on-failure:3
   voice_generator:
     image: alphaspheredotai/vocalizr:latest
     ports:
@@ -20,8 +21,7 @@ services:
       - huggingface:/home/nonroot/hf
       - results:/home/nonroot/results
       - logs:/home/nonroot/logs
-    environment:
-      GRADIO_DEBUG: 1
+    restart: on-failure:3
     healthcheck:
       test:
         - "CMD"
@@ -37,8 +37,55 @@ services:
       timeout: 10s
       retries: 5
       start_period: 40s
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities:
+                - gpu
+  video_generator:
+    image: ghcr.io/alphaspheredotai/visualizr:latest@sha256:175490f99e805be119e83d91ed85aba6c40f573551ba125ee90c8f6ed37bf40d
+    ports:
+      - "7862:7860"
+    volumes:
+      - assets:/home/nonroot/assets
+      - checkpoint:/home/nonroot/ckpts
+      - gfpgan:/home/nonroot/gfpgan
+    post_start:
+      - command: chown -R nonroot:nonroot /home/nonroot
+        user: root
+      - command: chmod -R 777 /home/nonroot
+        user: root
+    restart: on-failure:3
+    healthcheck:
+      test:
+        - "CMD"
+        - "curl"
+        - "-o"
+        - "/dev/null"
+        - "-f"
+        - "-s"
+        - "-w"
+        - "'Status: %{http_code},\tTime: %{time_total}s'"
+        - "http://localhost:7860/"
+      interval: 1m30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities:
+                - gpu
 volumes:
-  qdrant_storage:
-  huggingface:
-  results:
   logs:
+  assets:
+  fastembed:
+  qdrant_storage:
+  checkpoint:
+  gfpgan:
