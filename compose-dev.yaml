@@ -1,7 +1,7 @@
 name: Chattr Dev
 services:
   vector_database:
-    image: qdrant/qdrant:latest@sha256:0fb8897412abc81d1c0430a899b9a81eb8328aa634e7242d1bc804c1fe8fe863
+    image: qdrant/qdrant:latest
     ports:
       - "6333:6333"
       - "6334:6334"
@@ -48,7 +48,7 @@ services:
               capabilities:
                 - gpu
   video_generator:
-    image: ghcr.io/alphaspheredotai/visualizr:latest@sha256:175490f99e805be119e83d91ed85aba6c40f573551ba125ee90c8f6ed37bf40d
+    image: ghcr.io/alphaspheredotai/visualizr:latest
     ports:
       - "7862:7860"
     volumes:
