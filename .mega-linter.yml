@@ -76,6 +76,7 @@ FILTER_REGEX_EXCLUDE: '(\.automation/test|\.automation/generated|\.venv|\.github
 # MARKDOWN_FILTER_REGEX_EXCLUDE: '(license\.md|docs/licenses)'
 PYTHON_DEFAULT_STYLE: ruff
 PYTHON_RUFF_FORMAT_CONFIG_FILE: .github/ruff.toml
+GITHUB_STATUS_REPORTER: true
 SPELL_VALE_FILE_EXTENSIONS:
   - .md
 SPELL_FILTER_REGEX_EXCLUDE: (valestyles|\.github|docs/licenses)
