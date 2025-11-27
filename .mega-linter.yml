@@ -70,6 +70,7 @@ FILTER_REGEX_EXCLUDE: '(\.automation/test|\.automation/generated|\.venv|\.github
 # YAML_V8R_FILTER_REGEX_EXCLUDE: '(descriptors|templates/\.mega-linter\.yml|\.codecov\.yml)'
 # BASH_FILTER_REGEX_EXCLUDE: "(lib)"
 # MARKDOWN_FILTER_REGEX_EXCLUDE: '(license\.md|docs/licenses)'
+PYTHON_DEFAULT_STYLE: ruff
 SPELL_VALE_FILE_EXTENSIONS:
   - .md
 SPELL_FILTER_REGEX_EXCLUDE: (valestyles|\.github|docs/licenses)
