@@ -24,7 +24,6 @@ DISABLE:
   - GROOVY
   - HTML
   - JAVA
-  - JAVASCRIPT
   - JSX
   - KOTLIN
   - KUBERNETES
