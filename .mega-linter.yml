@@ -39,8 +39,8 @@ SPELL_FILTER_REGEX_EXCLUDE: (\.github|docs/licenses)
 REPOSITORY_TRIVY_ARGUMENTS:
   - "--skip-dirs"
   - ".venv"
-REPOSITORY_TRUFFLEHOG_ARGUMENTS:
-  - --exclude-paths=.trufflehogignore
+# REPOSITORY_TRUFFLEHOG_ARGUMENTS:
+#   - --exclude-paths=.trufflehogignore
 REPORTERS_MARKDOWN_SUMMARY_TYPE: sections
 SHOW_ELAPSED_TIME: true
 FLAVOR_SUGGESTIONS: true
