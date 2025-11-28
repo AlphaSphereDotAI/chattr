@@ -6,6 +6,8 @@ LLM_TEMPERATURE: 0.1
 VALIDATE_ALL_CODEBASE: true
 APPLY_FIXES: all
 # ENABLE: PYTHON
+PLUGINS:
+  - https://raw.githubusercontent.com/wesley-dean/mega-linter-plugin-dclint/refs/heads/main/mega-linter-plugin-dclint/dclint.megalinter-descriptor.yml
 ENABLE_LINTERS:
   - PYTHON_RUFF
   - PYTHON_RUFF_FORMAT
@@ -38,5 +40,3 @@ FLAVOR_SUGGESTIONS: true
 EMAIL_REPORTER: true
 FILEIO_REPORTER: true
 JSON_REPORTER: true
-PLUGINS:
-  - https://raw.githubusercontent.com/wesley-dean/mega-linter-plugin-dclint/refs/heads/main/mega-linter-plugin-dclint/dclint.megalinter-descriptor.yml
