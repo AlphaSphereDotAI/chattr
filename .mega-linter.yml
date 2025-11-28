@@ -60,7 +60,7 @@ EXCLUDED_DIRECTORIES:
 PRINT_ALL_FILES: true
 FILTER_REGEX_EXCLUDE: '(\.venv|\.github/workflows|docs/javascripts|docs/overrides|docs/json-schemas|flavors|TEMPLATES)'
 PYTHON_DEFAULT_STYLE: ruff
-PYTHON_RUFF_FORMAT_CONFIG_FILE: .github/ruff.toml
+PYTHON_RUFF_FORMAT_CONFIG_FILE: .github/lint/ruff.toml
 GITHUB_STATUS_REPORTER: true
 SARIF_REPORTER: true
 SPELL_VALE_FILE_EXTENSIONS:
