@@ -36,6 +36,11 @@ jobs:
           path: |
             megalinter-reports
             mega-linter.log
+      - name: Upload MegaLinter scan results to GitHub Security tab
+        if: success() || failure()
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+            sarif_file: 'megalinter-reports/megalinter-report.sarif'
       - name: Commit and push applied linter fixes
         uses: stefanzweifel/git-auto-commit-action@v7
         if: steps.megalinter.outputs.has_updated_sources == 1
