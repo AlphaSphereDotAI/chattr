@@ -37,4 +37,4 @@ jobs:
       - name: Export requirements to requirements.txt
         run: uv export --no-hashes --format requirements.txt --output-file requirements.txt
       - name: Run Snyk to check for vulnerabilities
-        run: snyk test
+        run: snyk test -d
