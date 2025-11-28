@@ -34,8 +34,6 @@ jobs:
           enable-cache: true
           cache-dependency-glob: "uv.lock"
           activate-environment: true
-      - name: Install the project
-        run: uv sync --frozen
       - name: Export requirements to requirements.txt
         run: uv export --no-hashes --format requirements.txt --output-file requirements.txt
       - name: Run Snyk to check for vulnerabilities
