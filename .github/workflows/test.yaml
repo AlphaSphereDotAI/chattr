@@ -46,6 +46,8 @@ jobs:
       contents: write
       pull-requests: write
       checks: write
+      security-events: write
+      actions: read
     needs: compatibility
     uses: ./.github/workflows/.lint.yaml
     secrets: inherit
