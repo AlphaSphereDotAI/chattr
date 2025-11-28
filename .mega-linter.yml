@@ -32,6 +32,7 @@ EXCLUDED_DIRECTORIES:
 PRINT_ALL_FILES: true
 FILTER_REGEX_EXCLUDE: '(\.venv|\.github/workflows|docs/javascripts|docs/overrides|docs/json-schemas|flavors|TEMPLATES)'
 PYTHON_DEFAULT_STYLE: ruff
+PYTHON_RUFF_CONFIG_FILE: .github/lint/.ruff.toml
 PYTHON_RUFF_FORMAT_CONFIG_FILE: .github/lint/.ruff.toml
 PYTHON_BANDIT_CONFIG_FILE: .github/lint/.bandit.yaml
 GITHUB_STATUS_REPORTER: true
