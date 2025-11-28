@@ -20,33 +20,14 @@ jobs:
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
         with:
           token: ${{ secrets.GH_TOKEN }}
-          fetch-depth: 0
-      - name: MegaLinter
-        uses: oxsecurity/megalinter@v9.1.0
-        id: megalinter
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/python@v1.0.0
+        continue-on-error: true
         env:
-          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - run: echo ${{ steps.megalinter.outputs.has_updated_sources }}
-      - name: Archive production artifacts
-        if: success() || failure()
-        uses: actions/upload-artifact@v4
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          name: MegaLinter reports
-          include-hidden-files: "true"
-          path: |
-            megalinter-reports
-            mega-linter.log
-      - name: Upload MegaLinter scan results to GitHub Security tab
-        if: success() || failure()
+          args: --sarif-file-output=snyk.sarif
+      - name: Upload result to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v3
         with:
-            sarif_file: 'megalinter-reports/megalinter-report.sarif'
-      - name: Commit and push applied linter fixes
-        uses: stefanzweifel/git-auto-commit-action@v7
-        if: ${{ steps.megalinter.outputs.has_updated_sources != 0 }}
-        with:
-          commit_message: "[MegaLinter] Apply linters fixes"
-          commit_user_name: megalinter-bot
-          commit_user_email: 129584137+megalinter-bot@users.noreply.github.com
-          commit_options: '--no-verify'
+          sarif_file: snyk.sarif
