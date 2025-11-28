@@ -44,7 +44,7 @@ jobs:
             sarif_file: 'megalinter-reports/megalinter-report.sarif'
       - name: Commit and push applied linter fixes
         uses: stefanzweifel/git-auto-commit-action@v7
-        if: ${{ steps.megalinter.outputs.has_updated_sources == '1' }}
+        if: ${{ steps.megalinter.outputs.has_updated_sources != 0 }}
         with:
           commit_message: "[MegaLinter] Apply linters fixes"
           commit_user_name: megalinter-bot
