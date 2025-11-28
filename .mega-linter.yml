@@ -37,6 +37,7 @@ PYTHON_RUFF_FORMAT_CONFIG_FILE: .github/lint/.ruff.toml
 PYTHON_BANDIT_CONFIG_FILE: .github/lint/.bandit.yaml
 REPOSITORY_CHECKOV_CONFIG_FILE: .github/lint/.checkov.yaml
 DOCKERFILE_HADOLINT_CONFIG_FILE: .github/lint/.hadolint.yaml
+REPOSITORY_TRIVY_CONFIG_FILE: .github/lint/.trivy.yaml
 GITHUB_STATUS_REPORTER: true
 SARIF_REPORTER: true
 SPELL_VALE_FILE_EXTENSIONS:
