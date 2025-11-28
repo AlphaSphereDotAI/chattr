@@ -7,7 +7,7 @@ permissions:
   checks: write
 jobs:
   snyk:
-    name: Check
+    name: Snyk
     runs-on: ubuntu-latest
     environment:
       name: code_quality
@@ -38,3 +38,19 @@ jobs:
         run: uv export --no-hashes --format requirements.txt --output-file requirements.txt
       - name: Run Snyk to check for vulnerabilities
         run: snyk test -d
+  bandit:
+    name: Bandit
+    runs-on: ubuntu-latest
+    environment:
+      name: code_quality
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Bandit Scan
+        uses: shundor/python-bandit-scan@ab1d87dfccc5a0ffab88be3aaac6ffe35c10d6cd
+        with:
+          exit_zero: true
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
