@@ -22,7 +22,7 @@ jobs:
           token: ${{ secrets.GH_TOKEN }}
           fetch-depth: 0
       - name: MegaLinter
-        uses: oxsecurity/megalinter@v8
+        uses: oxsecurity/megalinter@v9.1.0
         id: megalinter
         env:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
