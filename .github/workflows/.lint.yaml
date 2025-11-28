@@ -6,7 +6,7 @@ permissions:
   pull-requests: write
   checks: write
 jobs:
-  check:
+  snyk:
     name: Check
     runs-on: ubuntu-latest
     environment:
