@@ -5,12 +5,19 @@ LLM_MAX_TOKENS: 1000
 LLM_TEMPERATURE: 0.1
 VALIDATE_ALL_CODEBASE: true
 APPLY_FIXES: all
-# ENABLE: PYTHON
 PLUGINS:
   - https://raw.githubusercontent.com/wesley-dean/mega-linter-plugin-dclint/refs/heads/main/mega-linter-plugin-dclint/dclint.megalinter-descriptor.yml
+ENABLE:
+  - ACTION
+  - DOCKERFILE
+  - REPOSITORY
+  - YAML
+  - MARKDOWN
+  - JSON
 ENABLE_LINTERS:
   - PYTHON_RUFF
   - PYTHON_RUFF_FORMAT
+  - PYTHON_BANDIT
   - DOCKERFILE_DCLINT
 DISABLE_LINTERS:
   - PYTHON_PYRIGHT
