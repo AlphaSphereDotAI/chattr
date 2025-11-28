@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [
     { name = "Mohamed Hisham Abdelzaher", email = "mohamed.hisham.abdelzaher@gmail.com" },
 ]
-requires-python = ">=3.13.7, <3.14"
+requires-python = ">=3.13, <3.14"
 dependencies = [
     "fastembed>=0.7.3",
     "gradio>=5.48.0",
