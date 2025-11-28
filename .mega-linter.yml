@@ -92,7 +92,6 @@ FLAVOR_SUGGESTIONS: true
 EMAIL_REPORTER: true
 FILEIO_REPORTER: true
 JSON_REPORTER: true
-GITHUB_STATUS_REPORTER: true
 PLUGINS:
   - https://raw.githubusercontent.com/wesley-dean/mega-linter-plugin-dclint/refs/heads/main/mega-linter-plugin-dclint/dclint.megalinter-descriptor.yml
 PRE_COMMANDS:
