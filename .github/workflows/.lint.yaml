@@ -14,7 +14,7 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-      - name: Check
+      - name: Format
         uses: astral-sh/ruff-action@v3.5.1
         with:
           args: format . --config .github/lint/.ruff.toml
