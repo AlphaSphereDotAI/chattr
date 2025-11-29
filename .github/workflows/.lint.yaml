@@ -37,7 +37,7 @@ jobs:
       - name: Install dependencies
         run: uv sync
       - name: Export requirements to requirements.txt
-        run: uv export --no-hashes --format requirements.txt --output-file requirements.txt
+        run: uv export --quiet --no-hashes --format requirements.txt --output-file requirements.txt
       - name: Run Snyk to check for vulnerabilities
         run: snyk monitor --all-projects --org=f6547592-40c6-42c6-946a-8d2306b94897
   bandit:
@@ -105,7 +105,7 @@ jobs:
           cache-dependency-glob: "uv.lock"
           activate-environment: true
       - name: Export requirements to requirements.txt
-        run: uv export --no-hashes --format requirements.txt --output-file requirements.txt
+        run: uv export --quiet --no-hashes --format requirements.txt --output-file requirements.txt
       - name: Install CRDA CLI
         uses: redhat-actions/openshift-tools-installer@v1
         with:
