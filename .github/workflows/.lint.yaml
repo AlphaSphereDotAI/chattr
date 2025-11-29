@@ -47,7 +47,7 @@ jobs:
           --no-annotate 
           --no-header
       - name: Run Snyk to check for vulnerabilities
-        run: snyk monitor --debug --all-projects --org=f6547592-40c6-42c6-946a-8d2306b94897
+        run: snyk monitor --all-projects --org=f6547592-40c6-42c6-946a-8d2306b94897
   bandit:
     name: Bandit
     runs-on: ubuntu-latest
