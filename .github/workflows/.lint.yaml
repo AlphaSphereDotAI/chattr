@@ -45,7 +45,7 @@ jobs:
           --no-annotate 
           --no-header
       - name: Install dependencies
-        run: uv pip install --system -r requirements.txt
+        run: pip install -r requirements.txt
       - name: Run Snyk to check for vulnerabilities
         run: snyk monitor --all-projects --org=f6547592-40c6-42c6-946a-8d2306b94897
   bandit:
