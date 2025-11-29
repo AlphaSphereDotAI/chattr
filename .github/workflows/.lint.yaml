@@ -27,6 +27,7 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
+      - run: pip install -e .
         # Runs Snyk Code (SAST) analysis and uploads result into GitHub.
         # Use || true to not fail the pipeline
       - name: Snyk Code test
