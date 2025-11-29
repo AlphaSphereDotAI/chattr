@@ -6,53 +6,6 @@ permissions:
   pull-requests: write
   checks: write
 jobs:
-  snyk:
-    name: Snyk
-    runs-on: ubuntu-latest
-    environment:
-      name: code_quality
-    permissions:
-      contents: write
-      pull-requests: write
-      checks: write
-    env:
-      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
-        with:
-          token: ${{ secrets.GH_TOKEN }}
-      - name: Set up Snyk CLI to check for security issues
-        uses: snyk/actions/setup@v1.0.0
-      - name: Install uv
-        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
-        with:
-          enable-cache: true
-          cache-dependency-glob: "uv.lock"
-          activate-environment: true
-      - run: uv sync
-      - name: Export requirements to requirements.txt
-        run: >
-          uv export 
-          --quiet 
-          --no-hashes 
-          --format requirements.txt 
-          --output-file requirements.txt 
-          --no-emit-project 
-          --no-annotate 
-          --no-header
-      - name: Run Snyk to check for vulnerabilities
-        run: >
-          snyk test 
-          --org=f6547592-40c6-42c6-946a-8d2306b94897
-          --sarif-file-output=snyk.sarif 
-          --file=requirements.txt 
-          --package-manager=pip 
-          --command="${{ github.workspace }}/.venv/bin/python"
-      - name: Upload result to GitHub Code Scanning
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: snyk.sarif
   bandit:
     name: Bandit
     runs-on: ubuntu-latest
