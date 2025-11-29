@@ -27,7 +27,6 @@ jobs:
         with:
           enable-cache: true
           cache-dependency-glob: "uv.lock"
-          activate-environment: true
       - name: Export requirements to requirements.txt
         run: >
           uv export 
