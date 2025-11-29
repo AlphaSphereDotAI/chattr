@@ -53,35 +53,6 @@ jobs:
         run: uv sync --frozen
       - name: Check
         run: ty check --output-format github
-  crda:
-    name: CodeReady Dependency Analytics
-    runs-on: ubuntu-latest
-    environment:
-      name: code_quality
-    permissions:
-      contents: read           
-      security-events: write  
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-      - name: Install uv
-        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
-        with:
-          enable-cache: true
-          cache-dependency-glob: "uv.lock"
-          activate-environment: true
-      - name: Export requirements to requirements.txt
-        run: uv export --quiet --no-hashes --format requirements.txt --output-file requirements.txt
-      - name: Install CRDA CLI
-        uses: redhat-actions/openshift-tools-installer@v1
-        with:
-          source: github
-          crda: "latest"
-      - name: CRDA Scan
-        id: scan
-        uses: redhat-actions/crda@v1
-        with:
-          snyk_token: ${{ secrets.SNYK_TOKEN }}
   ruff:
     name: Ruff
     runs-on: ubuntu-latest
