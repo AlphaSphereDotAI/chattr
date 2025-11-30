@@ -65,6 +65,11 @@ jobs:
         run: uv sync --frozen --only-dev
       - name: Format
         run: yamlfix --config-file .github/lint/.yamlfix.toml . 
+      - name: Commit and push applied linter fixes
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: "[YamlFix] Apply linters fixes"
+          commit_options: '--no-verify'
   grype:
     name: Grype
     runs-on: ubuntu-latest
