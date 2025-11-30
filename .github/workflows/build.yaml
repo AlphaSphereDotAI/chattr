@@ -55,7 +55,7 @@ jobs:
           path: dist/
       - name: Update the main branch to the updated version
         if: ${{ github.ref_name != steps.get_package_version.outputs.result }}
-        uses: step-security/git-auto-commit-action@e2d505468267a3cb406af729d48d664de1f16393 # v6.0.2
+        uses: stefanzweifel/git-auto-commit-action@778341af668090896ca464160c2def5d1d1a3eb0 # v6
         with:
           commit_message: "Version: ${{ github.ref_name }}"
           branch: main
