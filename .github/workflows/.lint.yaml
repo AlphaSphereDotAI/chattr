@@ -158,4 +158,4 @@ jobs:
       - name: Check
         uses: astral-sh/ruff-action@v3.5.1
         with:
-          args: check . --output-format=github --config .github/lint/.ruff.toml
+          args: check --output-format github --config .github/lint/.ruff.toml
