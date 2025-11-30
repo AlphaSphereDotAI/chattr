@@ -29,6 +29,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ls-lint/action@v2
+        with:
+          config: .github/lint/.ls-lint.yaml
   ruff_format:
     name: Ruff Format
     runs-on: ubuntu-latest
