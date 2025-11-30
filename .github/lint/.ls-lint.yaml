@@ -1,0 +1,4 @@
+ls:
+  .py: snakecase
+ignore:
+  - .git
