@@ -166,6 +166,20 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: ${{ steps.scan.outputs.sarif }}
+  trivy:
+    name: Trivy
+    needs: build_image
+    runs-on: ubuntu-latest
+    environment:
+      name: docker_image
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: ${{ needs.build_image.outputs.image_tag }}          
+          trivy-config: .github/lint/.trivy.yaml
   api_test:
     name: API Test
     needs: build_image
