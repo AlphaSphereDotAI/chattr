@@ -20,10 +20,19 @@ jobs:
       uses: trufflesecurity/trufflehog@main
       with:
         extra_args: --results=verified,unknown
+  ls_lint:
+    name: ls-lint
+    runs-on: ubuntu-latest
+    needs: trufflehog
+    environment:
+      name: code_quality
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ls-lint/action@v2
   ruff_format:
     name: Ruff Format
     runs-on: ubuntu-latest
-    needs: trufflehog
+    needs: ls-lint
     environment:
       name: code_quality
     steps:
