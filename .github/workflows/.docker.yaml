@@ -19,6 +19,8 @@ permissions:
   packages: write
   attestations: write
   id-token: write
+  actions: read 
+  security-events: write
 jobs:
   check_dockerfile:
     name: Validate Dockerfile
@@ -151,6 +153,8 @@ jobs:
     environment:
       name: docker_image
     steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
       - name: Scan image
         uses: anchore/scan-action@v6
         id: scan
