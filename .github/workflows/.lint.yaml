@@ -42,10 +42,17 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_TOKEN }}
       - name: Format
         uses: astral-sh/ruff-action@v3.5.1
         with:
           args: format . --config .github/lint/.ruff.toml
+      - name: Commit and push applied linter fixes
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: '[Ruff] Apply linters fixes'
+          commit_options: --no-verify
   yamlfix:
     name: YamlFix
     runs-on: ubuntu-latest
