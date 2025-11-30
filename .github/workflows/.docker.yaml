@@ -180,6 +180,12 @@ jobs:
         with:
           image-ref: ${{ needs.build_image.outputs.image_tag }}
           trivy-config: .github/lint/.trivy.yaml
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-results.sarif'
   dockle:
     name: Dockle
     needs: build_image
