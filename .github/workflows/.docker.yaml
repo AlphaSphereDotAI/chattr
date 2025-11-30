@@ -180,6 +180,19 @@ jobs:
         with:
           image-ref: ${{ needs.build_image.outputs.image_tag }}
           trivy-config: .github/lint/.trivy.yaml
+  dockle:
+    name: Dockle
+    needs: build_image
+    runs-on: ubuntu-latest
+    environment:
+      name: docker_image
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+      - uses: goodwithtech/dockle-action@main
+        with:
+          image: ${{ needs.build_image.outputs.image_tag }}
+          format: 'list'    
   api_test:
     name: API Test
     needs: build_image
