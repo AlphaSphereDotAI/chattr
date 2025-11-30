@@ -66,7 +66,7 @@ jobs:
       - name: Install the project
         run: uv sync --frozen --only-dev
       - name: Format
-        run: yamlfix --config-file .github/lint/.yamlfix.toml --exclude .venv . 
+        run: yamlfix --config-file .github/lint/.yamlfix.toml --exclude *venv . 
   grype:
     name: Grype
     runs-on: ubuntu-latest
