@@ -192,7 +192,7 @@ jobs:
       - uses: goodwithtech/dockle-action@main
         with:
           image: ${{ needs.build_image.outputs.image_tag }}
-          format: 'list'    
+          format: list
   api_test:
     name: API Test
     needs: build_image
