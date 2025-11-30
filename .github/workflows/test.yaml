@@ -58,6 +58,8 @@ jobs:
       packages: write
       attestations: write
       id-token: write
+      security-events: write
+      actions: read
     needs: compatibility
     uses: ./.github/workflows/.docker.yaml
     with:
