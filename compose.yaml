@@ -15,8 +15,8 @@ services:
       - command: chmod -R 777 /home/nonroot
         user: root
     environment:
-      MODEL__URL: ${MODEL__URL}
-      MODEL__NAME: ${MODEL__NAME}
+      MODEL__URL: ${MODEL__URL:-https://generativelanguage.googleapis.com/v1beta/openai}
+      MODEL__NAME: ${MODEL__NAME:-gemini-2.5-flash}
       MODEL__API_KEY: ${MODEL__API_KEY}
       VECTOR_DATABASE__URL: http://vector_database:6333
       VECTOR_DATABASE__NAME: main
