@@ -44,6 +44,29 @@ jobs:
         uses: astral-sh/ruff-action@v3.5.1
         with:
           args: format . --config .github/lint/.ruff.toml
+  grype:
+    name: Grype
+    runs-on: ubuntu-latest
+    needs: ruff_format
+    environment:
+      name: code_quality
+    permissions:
+      security-events: write
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+          activate-environment: true
+      - name: Export requirements to requirements.txt
+        run: uv export --quiet --no-hashes --format requirements.txt --output-file requirements.txt
+      - name: Scan current project
+        uses: anchore/scan-action@v6
+        with:
+          path: "."          
   bandit:
     name: Bandit
     runs-on: ubuntu-latest
