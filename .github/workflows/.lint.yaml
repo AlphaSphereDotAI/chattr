@@ -65,9 +65,14 @@ jobs:
         run: uv export --quiet --no-hashes --format requirements.txt --output-file requirements.txt
       - name: Scan current project
         uses: anchore/scan-action@v6
+        id: scan
         with:
           path: .          
           cache-db: true
+      - name: upload Anchore scan SARIF report
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: ${{ steps.scan.outputs.sarif }}
   bandit:
     name: Bandit
     runs-on: ubuntu-latest
