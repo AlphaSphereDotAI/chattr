@@ -1,4 +1,2 @@
 explicit_start = false
 sequence_style = 'block_style'
-none_representation = 'null'
-line_length = 120
