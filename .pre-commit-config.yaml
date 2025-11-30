@@ -7,6 +7,22 @@ repos:
       - id: trailing-whitespace
       - id: check-added-large-files
       - id: check-ast
+      - id: check-illegal-windows-names
+      - id: check-json
+      - id: check-merge-conflict
+        args:
+          - "--assume-in-merge"
+      - id: check-symlinks
+      - id: check-toml
+      - id: check-vcs-permalinks
+      - id: check-xml
+      - id: debug-statements
+      - id: destroyed-symlinks
+      - id: detect-private-key
+      - id: mixed-line-ending
+        args: ["--fix=lf"]
+      - id: pretty-format-json
+        args: ["--autofix"]
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.14.6
     hooks:
