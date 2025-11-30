@@ -82,7 +82,7 @@ jobs:
   grype:
     name: Grype
     runs-on: ubuntu-latest
-    needs: ruff_format
+    needs: [ruff_format,yamlfix]
     environment:
       name: code_quality
     permissions:
@@ -113,7 +113,7 @@ jobs:
   trivy:
     name: Trivy
     runs-on: ubuntu-latest
-    needs: ruff_format
+    needs: [ruff_format,yamlfix]
     environment:
       name: code_quality
     steps:
@@ -133,7 +133,7 @@ jobs:
   bandit:
     name: Bandit
     runs-on: ubuntu-latest
-    needs: ruff_format
+    needs: [ruff_format,yamlfix]
     environment:
       name: code_quality
     permissions:
@@ -150,7 +150,7 @@ jobs:
   dclint:
     name: DCLint
     runs-on: ubuntu-latest
-    needs: ruff_format
+    needs: [ruff_format,yamlfix]
     environment:
       name: code_quality
     steps:
@@ -162,7 +162,7 @@ jobs:
   ty:
     name: Ty
     runs-on: ubuntu-latest
-    needs: ruff_format
+    needs: [ruff_format,yamlfix]
     environment:
       name: code_quality
     steps:
@@ -183,7 +183,7 @@ jobs:
   ruff:
     name: Ruff
     runs-on: ubuntu-latest
-    needs: ruff_format
+    needs: [ruff_format,yamlfix]
     environment:
       name: code_quality
     steps:
