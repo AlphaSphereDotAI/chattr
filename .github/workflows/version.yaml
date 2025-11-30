@@ -6,6 +6,7 @@ on:
     paths:
       - pyproject.toml
       - uv.lock
+      - Dockerfile
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}
   cancel-in-progress: true
@@ -29,20 +30,20 @@ jobs:
           token: ${{ secrets.GH_TOKEN }}
           fetch-depth: 0
       - name: Install uv
-        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        uses: astral-sh/setup-uv@1e862dfacbd1d6d858c55d9b792c756523627244 # v7
         with:
           enable-cache: true
           cache-dependency-glob: "uv.lock"
           activate-environment: true
       - name: Increase the patch version
         run: uv version --bump patch
-      - name: Read version from pyproject.toml
-        id: read_version
-        run: |
-          VERSION=$(grep -E '^version\s*=' pyproject.toml | head -n 1 | cut -d '=' -f 2 | tr -d ' "')
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-      - name: Commit updated count
-        uses: step-security/git-auto-commit-action@e2d505468267a3cb406af729d48d664de1f16393 # v6.0.2
+      - name: Get Package version from pyproject.toml
+        id: get_package_version
+        uses: mikefarah/yq@45be35c06387d692bb6bf689919919e0e32e796f # v4.49.1
         with:
-          commit_message: "Tag: ${{ steps.read_version.outputs.version }}"
-          tagging_message: ${{ steps.read_version.outputs.version }}
+          cmd: yq -roy '.project.version' pyproject.toml
+      - name: Commit updated count
+        uses: stefanzweifel/git-auto-commit-action@28e16e81777b558cc906c8750092100bbb34c5e3 # v7
+        with:
+          commit_message: "Tag: ${{ steps.get_package_version.outputs.result }}"
+          tagging_message: ${{ steps.get_package_version.outputs.result }}
