@@ -192,7 +192,12 @@ jobs:
       - uses: goodwithtech/dockle-action@main
         with:
           image: ${{ needs.build_image.outputs.image_tag }}
-          format: list
+          format: sarif
+          output: dockle.sarif
+      - name: upload Dockle scan SARIF report
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: dockle.sarif
   api_test:
     name: API Test
     needs: build_image
