@@ -152,6 +152,17 @@ jobs:
           dockerhub-password: ${{ secrets.TOKEN_KEY_DOCKER }}
           image: ${{ needs.build_image.outputs.image_tag }}
           github-token: ${{ secrets.GH_TOKEN }}
+  grype:
+    name: Grype
+    needs: build_image
+    runs-on: ubuntu-latest
+    environment:
+      name: docker_image
+    steps:
+      - name: Scan image
+        uses: anchore/scan-action@v6
+        with:
+          image: ${{ needs.build_image.outputs.image_tag }}
   api_test:
     name: API Test
     needs: build_image
