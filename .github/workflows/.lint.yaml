@@ -90,8 +90,8 @@ jobs:
           cache-dependency-glob: uv.lock
           activate-environment: true
       - name: Export requirements to requirements.txt
-        run: uv export --quiet --no-hashes --format requirements.txt --output-file
-          requirements.txt
+        run: >
+          uv export --quiet --no-hashes --format requirements.txt --output-file requirements.txt
       - name: Scan current project
         uses: anchore/scan-action@v6
         id: scan
