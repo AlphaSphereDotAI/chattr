@@ -28,6 +28,8 @@ build-backend = "uv_build"
 
 [dependency-groups]
 dev = [
+    "pre-commit>=4.5.0",
+    "pyrefly>=0.43.1",
     "pytest-emoji>=0.2.0",
     "pytest-md>=0.2.0",
     "pytest-mergify>=2025.9.24.2",
