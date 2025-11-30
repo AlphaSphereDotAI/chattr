@@ -9,7 +9,7 @@ RUN apk add --no-cache build-base git uv
 USER nonroot
 
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv tool install "${INSTALL_SOURCE}" --python "${PYTHON_VERSION}"
+    uv tool install ${INSTALL_SOURCE} --python ${PYTHON_VERSION}
 
 FROM cgr.dev/chainguard/wolfi-base:latest@sha256:3e3a125c18346ee7b95980be96529d39eb9f799e140aab2b02218a1bd67bfb18 AS production
 
