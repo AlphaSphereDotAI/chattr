@@ -79,6 +79,22 @@ jobs:
         with:
           commit_message: '[YamlFix] Apply linters fixes'
           commit_options: --no-verify
+  syft:
+    name: Syft
+    runs-on: ubuntu-latest
+    needs:
+      - ruff_format
+      - yamlfix
+    environment:
+      name: code_quality
+    permissions:
+      security-events: write
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - uses: anchore/sbom-action@v0.20.10
+        with:
+          path: .
   grype:
     name: Grype
     runs-on: ubuntu-latest
