@@ -130,7 +130,7 @@ jobs:
     if: ${{ always() && !cancelled() }}
     runs-on: ubuntu-latest
     environment:
-      name: docker_image
+      name: container_health
     steps:
       - name: Log in to ${{ inputs.registry }} Registry
         uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef  # v3
@@ -151,7 +151,7 @@ jobs:
     needs: build_image
     runs-on: ubuntu-latest
     environment:
-      name: docker_image
+      name: container_health
     steps:
       - name: Check out the code
         uses: actions/checkout@v4
@@ -163,16 +163,57 @@ jobs:
           cache-db: true
           fail-build: false
       - name: upload Anchore scan SARIF report
+        if: success() || failure()
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: ${{ steps.scan.outputs.sarif }}
+  trivy:
+    name: Trivy
+    needs: build_image
+    runs-on: ubuntu-latest
+    environment:
+      name: container_health
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: ${{ needs.build_image.outputs.image_tag }}
+          trivy-config: .github/lint/.trivy.yaml
+          format: sarif
+          output: trivy-results.sarif
+      - name: Upload Trivy scan results to GitHub Security tab
+        if: success() || failure()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-results.sarif
+  dockle:
+    name: Dockle
+    needs: build_image
+    runs-on: ubuntu-latest
+    environment:
+      name: container_health
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+      - uses: goodwithtech/dockle-action@main
+        with:
+          image: ${{ needs.build_image.outputs.image_tag }}
+          format: sarif
+          output: dockle.sarif
+      - name: upload Dockle scan SARIF report
+        if: success() || failure()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: dockle.sarif
   api_test:
     name: API Test
     needs: build_image
     runs-on: ubuntu-latest
     if: ${{ always() && !cancelled() && inputs.is_test }}
     environment:
-      name: api_test
+      name: container_health
     services:
       vector_database:
         image: qdrant/qdrant:latest@sha256:0fb8897412abc81d1c0430a899b9a81eb8328aa634e7242d1bc804c1fe8fe863
@@ -218,6 +259,9 @@ jobs:
     needs:
       - api_test
       - docker_scout
+      - dockle
+      - trivy
+      - grype
     if: ${{ always() && !cancelled() && inputs.registry == 'ghcr.io' }}
     runs-on: ubuntu-latest
     environment:

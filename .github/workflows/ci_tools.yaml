@@ -4,42 +4,9 @@ on:
     types:
       - created
       - edited
-  schedule:
-    - cron: 0 6 * * *
-  push:
-    branches:
-      - main
-    paths:
-      - .trunk/trunk.yaml
   workflow_dispatch:
 permissions: read-all
 jobs:
-  trunk_upgrade:
-    name: Upgrade Trunk
-    runs-on: ubuntu-latest
-    if: github.event_name == 'schedule'
-    permissions:
-      contents: write
-      pull-requests: write
-      issues: write
-    steps:
-      - name: Checkout
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v5
-      - name: Trunk Upgrade
-        uses: trunk-io/trunk-action/upgrade@75699af9e26881e564e9d832ef7dc3af25ec031b  # v1
-  cache_trunk:
-    name: Cache Trunk
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push'
-    permissions:
-      actions: write
-    steps:
-      - name: Checkout
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v5
-      - name: Trunk Cache
-        uses: trunk-io/trunk-action@75699af9e26881e564e9d832ef7dc3af25ec031b  # v1
-        with:
-          check-mode: populate_cache_only
   opencode:
     if: |
       github.event_name == 'issue_comment' &&
@@ -60,7 +27,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Run opencode
-        uses: sst/opencode/github@latest
+        uses: sst/opencode/github@v1.0.122
         env:
           OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
         with:
