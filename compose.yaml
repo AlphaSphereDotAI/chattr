@@ -1,7 +1,7 @@
 name: Chattr
 services:
   chattr:
-    image: ghcr.io/alphaspheredotai/chattr:latest
+    image: alphaspheredotai/chattr:latest
     ports:
       - "7860:7860"
     volumes:
@@ -81,7 +81,7 @@ services:
               capabilities:
                 - gpu
   video_generator:
-    image: ghcr.io/alphaspheredotai/visualizr:latest
+    image: alphaspheredotai/visualizr:latest
     ports:
       - "7862:7860"
     volumes:
