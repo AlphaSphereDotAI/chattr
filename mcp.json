@@ -27,7 +27,7 @@
         {
             "name": "voice_generator",
             "type": "url",
-            "url": "http://localhost:7861/gradio_api/mcp/",
+            "url": "http://localhost:7861/gradio_api/mcp",
             "transport": "streamable-http"
         },
         {
