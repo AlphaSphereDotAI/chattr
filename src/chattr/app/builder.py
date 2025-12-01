@@ -1,7 +1,7 @@
 """Main orchestration graph for the Chattr application."""
 
 from collections.abc import AsyncGenerator
-from json import dumps
+from json import dumps, loads
 from pathlib import Path
 
 from agno.agent import (
@@ -12,6 +12,7 @@ from agno.agent import (
 )
 from agno.db import BaseDb
 from agno.db.json import JsonDb
+from agno.guardrails import PIIDetectionGuardrail, PromptInjectionGuardrail
 from agno.knowledge.knowledge import Knowledge
 from agno.models.message import Message
 from agno.models.openai.like import OpenAILike
@@ -62,8 +63,8 @@ class App:
             markdown=True,
             add_datetime_to_context=True,
             timezone_identifier="Africa/Cairo",
-            # pre_hooks=[PIIDetectionGuardrail(), PromptInjectionGuardrail()],
-            # debug_mode=True,
+            pre_hooks=[PIIDetectionGuardrail(), PromptInjectionGuardrail()],
+            debug_mode=True,
             save_response_to_file="agno/response.txt",
             add_history_to_context=True,
             add_memories_to_context=True,
@@ -72,10 +73,15 @@ class App:
     async def _setup_tools(self) -> list[Toolkit]:
         self.mcp_tools = MultiMCPTools(
             urls=[
-                "http://localhost:7861/gradio_api/mcp/",
-                "http://localhost:7862/gradio_api/mcp/?tools=generate_video_mcp",
+                m.get("url")
+                for m in loads(self.settings.mcp.path.read_text()).get("mcp_servers")
+                if m.get("type") == "url"
             ],
-            urls_transports=["streamable-http", "streamable-http"],
+            urls_transports=[
+                m.get("transport")
+                for m in loads(self.settings.mcp.path.read_text()).get("mcp_servers")
+                if m.get("type") == "url"
+            ],
         )
         await self.mcp_tools.connect()
         return [self.mcp_tools]
