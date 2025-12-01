@@ -15,7 +15,7 @@ services:
     post_start:
       - command: chown -R nonroot:nonroot /home/nonroot
         user: root
-      - command: chmod -R 777 /home/nonroot
+      - command: chmod -R 700 /home/nonroot
         user: root
     volumes:
       - huggingface:/home/nonroot/hf
@@ -48,7 +48,7 @@ services:
               capabilities:
                 - gpu
   video_generator:
-    image: ghcr.io/alphaspheredotai/visualizr:latest
+    image: alphaspheredotai/visualizr:latest
     ports:
       - "7862:7860"
     volumes:
@@ -58,7 +58,7 @@ services:
     post_start:
       - command: chown -R nonroot:nonroot /home/nonroot
         user: root
-      - command: chmod -R 777 /home/nonroot
+      - command: chmod -R 700 /home/nonroot
         user: root
     restart: on-failure:3
     environment:
@@ -93,3 +93,5 @@ volumes:
   qdrant_storage:
   checkpoint:
   gfpgan:
+  huggingface:
+  results:

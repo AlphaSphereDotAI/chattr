@@ -12,7 +12,7 @@ services:
     post_start:
       - command: chown -R nonroot:nonroot /home/nonroot
         user: root
-      - command: chmod -R 777 /home/nonroot
+      - command: chmod -R 700 /home/nonroot
         user: root
     environment:
       MODEL__URL: ${MODEL__URL:-https://generativelanguage.googleapis.com/v1beta/openai}
@@ -50,7 +50,7 @@ services:
     post_start:
       - command: chown -R nonroot:nonroot /home/nonroot
         user: root
-      - command: chmod -R 777 /home/nonroot
+      - command: chmod -R 700 /home/nonroot
         user: root
     volumes:
       - huggingface:/home/nonroot/hf
@@ -91,7 +91,7 @@ services:
     post_start:
       - command: chown -R nonroot:nonroot /home/nonroot
         user: root
-      - command: chmod -R 777 /home/nonroot
+      - command: chmod -R 700 /home/nonroot
         user: root
     restart: on-failure:3
     healthcheck:
