@@ -9,7 +9,7 @@ services:
       - qdrant_storage:/qdrant/storage
     restart: on-failure:3
   voice_generator:
-    image: alphaspheredotai/vocalizr:latest
+    image: ghcr.io/alphaspheredotai/vocalizr:latest
     ports:
       - "7861:7860"
     post_start:
@@ -48,7 +48,7 @@ services:
               capabilities:
                 - gpu
   video_generator:
-    image: alphaspheredotai/visualizr:latest
+    image: ghcr.io/alphaspheredotai/visualizr:latest
     ports:
       - "7862:7860"
     volumes:
