@@ -71,17 +71,13 @@ class App:
         )
 
     async def _setup_tools(self) -> list[Toolkit]:
+        mcp_servers: list[dict] = loads(self.settings.mcp.path.read_text()).get(
+            "mcp_servers", []
+        )
+        url_servers = [m for m in mcp_servers if m.get("type") == "url"]
         self.mcp_tools = MultiMCPTools(
-            urls=[
-                m.get("url")
-                for m in loads(self.settings.mcp.path.read_text()).get("mcp_servers")
-                if m.get("type") == "url"
-            ],
-            urls_transports=[
-                m.get("transport")
-                for m in loads(self.settings.mcp.path.read_text()).get("mcp_servers")
-                if m.get("type") == "url"
-            ],
+            urls=[m.get("url") for m in url_servers],
+            urls_transports=[m.get("transport") for m in url_servers],
         )
         await self.mcp_tools.connect()
         return [self.mcp_tools]
