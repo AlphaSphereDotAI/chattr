@@ -1,6 +1,6 @@
 version = 1
 revision = 3
-requires-python = ">=3.13.7, <3.14"
+requires-python = "==3.13.*"
 
 [[package]]
 name = "agno"
@@ -24,6 +24,14 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/4d/45/d7af2f5306a0f6981ab6575f60acfcdbbc2f1e07c397f7e0e6d20638b3fd/agno-2.1.10.tar.gz", hash = "sha256:02a0676d43ef706b4e56c26e65334ba4cf3dbfc536b61aee252c809603dc0451", size = 1004257, upload-time = "2025-10-21T14:53:14.384Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/ef/0d/c5f357b2917bbf01b9633cfa025b10d3b4fbbb973aa67527f8a03b3c9929/agno-2.1.10-py3-none-any.whl", hash = "sha256:3dddfbf8edbe029139abc1b66b324a9688af0b194ec562f37f1f6b7ccf50cc57", size = 1245392, upload-time = "2025-10-21T14:53:11.668Z" },
+]
+
+[package.optional-dependencies]
+google = [
+    { name = "google-genai" },
+]
+qdrant = [
+    { name = "qdrant-client" },
 ]
 
 [[package]]
@@ -218,13 +226,11 @@ name = "chattr"
 version = "0.0.39"
 source = { editable = "." }
 dependencies = [
-    { name = "agno" },
+    { name = "agno", extra = ["google", "qdrant"] },
     { name = "ddgs" },
     { name = "fastembed" },
-    { name = "google-genai" },
-    { name = "gradio" },
+    { name = "gradio", extra = ["mcp"] },
     { name = "m3u8" },
-    { name = "mcp" },
     { name = "mem0ai" },
     { name = "poml" },
     { name = "rich" },
@@ -243,13 +249,11 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "agno", specifier = ">=2.1.10" },
+    { name = "agno", extras = ["google", "qdrant"], specifier = ">=2.1.10" },
     { name = "ddgs", specifier = ">=9.6.1" },
     { name = "fastembed", specifier = ">=0.7.3" },
-    { name = "google-genai", specifier = ">=1.45.0" },
-    { name = "gradio", specifier = ">=5.48.0" },
+    { name = "gradio", extras = ["mcp"], specifier = ">=5.48.0" },
     { name = "m3u8", specifier = ">=6.0.0" },
-    { name = "mcp", specifier = ">=1.19.0" },
     { name = "mem0ai", specifier = ">=0.1.118" },
     { name = "poml", specifier = ">=0.0.8" },
     { name = "rich", specifier = ">=14.1.0" },
@@ -523,6 +527,12 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/9a/47/966b2bf0c0bbd45e0ab0eff45422ca1f371f65c8414aa6b1289dea2e8352/gradio-5.48.0.tar.gz", hash = "sha256:9c5ab19d147e65b00302c6a88256a9c902cfdc5e958848a38849a6400f731705", size = 73787406, upload-time = "2025-10-02T01:39:32.319Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/7f/16/f3b73698bb12e3cb0b72671ebc243b42ecebcd058f782111e6d068c1cd7e/gradio-5.48.0-py3-none-any.whl", hash = "sha256:621f3cf3866286d711b73713b6bd2dd72e9a39ddcc4ca0c6e5ef054d46b72af9", size = 63520643, upload-time = "2025-10-02T01:39:27.3Z" },
+]
+
+[package.optional-dependencies]
+mcp = [
+    { name = "mcp" },
+    { name = "pydantic" },
 ]
 
 [[package]]
@@ -910,7 +920,7 @@ wheels = [
 
 [[package]]
 name = "mcp"
-version = "1.19.0"
+version = "1.10.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anyio" },
@@ -920,14 +930,13 @@ dependencies = [
     { name = "pydantic" },
     { name = "pydantic-settings" },
     { name = "python-multipart" },
-    { name = "pywin32", marker = "sys_platform == 'win32'" },
     { name = "sse-starlette" },
     { name = "starlette" },
     { name = "uvicorn", marker = "sys_platform != 'emscripten'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/69/2b/916852a5668f45d8787378461eaa1244876d77575ffef024483c94c0649c/mcp-1.19.0.tar.gz", hash = "sha256:213de0d3cd63f71bc08ffe9cc8d4409cc87acffd383f6195d2ce0457c021b5c1", size = 444163, upload-time = "2025-10-24T01:11:15.839Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/7c/68/63045305f29ff680a9cd5be360c755270109e6b76f696ea6824547ddbc30/mcp-1.10.1.tar.gz", hash = "sha256:aaa0957d8307feeff180da2d9d359f2b801f35c0c67f1882136239055ef034c2", size = 392969, upload-time = "2025-06-27T12:03:08.982Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ce/a3/3e71a875a08b6a830b88c40bc413bff01f1650f1efe8a054b5e90a9d4f56/mcp-1.19.0-py3-none-any.whl", hash = "sha256:f5907fe1c0167255f916718f376d05f09a830a215327a3ccdd5ec8a519f2e572", size = 170105, upload-time = "2025-10-24T01:11:14.151Z" },
+    { url = "https://files.pythonhosted.org/packages/d7/3f/435a5b3d10ae242a9d6c2b33175551173c3c61fe637dc893be05c4ed0aaf/mcp-1.10.1-py3-none-any.whl", hash = "sha256:4d08301aefe906dce0fa482289db55ce1db831e3e67212e65b5e23ad8454b3c5", size = 150878, upload-time = "2025-06-27T12:03:07.328Z" },
 ]
 
 [[package]]
