@@ -127,13 +127,13 @@ jobs:
           name: sbom
           path: ${{ github.event.repository.name }}-sbom.json
       - name: Scan SBOM
-        uses: anchore/scan-action@v6
+        uses: anchore/scan-action@v7.2.1
         with:
           sbom: ${{ github.event.repository.name }}-sbom.json
           cache-db: true
           fail-build: false
       - name: Scan current project
-        uses: anchore/scan-action@v6
+        uses: anchore/scan-action@v7.2.1
         id: scan
         with:
           path: .
