@@ -106,6 +106,7 @@ jobs:
     needs:
       - ruff_format
       - yamlfix
+      - syft
     environment:
       name: code_quality
     steps:
@@ -129,6 +130,7 @@ jobs:
         uses: anchore/scan-action@v6
         with:
           sbom: ${{ github.event.repository.name }}-sbom.json
+          cache-db: true
       - name: Scan current project
         uses: anchore/scan-action@v6
         id: scan
