@@ -96,7 +96,6 @@ jobs:
           dependency-snapshot: true
           output-file: ${{ github.event.repository.name }}-sbom.json
           format: syft-json
-          artifact-name: sbom
   grype:
     name: Grype
     runs-on: ubuntu-latest
