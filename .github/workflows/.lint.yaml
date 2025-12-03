@@ -93,6 +93,7 @@ jobs:
       - name: SBOM Generation
         uses: anchore/sbom-action@v0.20.10
         with:
+          path: .
           dependency-snapshot: true
           output-file: ${{ github.event.repository.name }}-sbom.json
           format: syft-json
