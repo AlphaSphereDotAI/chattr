@@ -110,6 +110,14 @@ jobs:
       - syft
     environment:
       name: code_quality
+    strategy:
+      matrix:
+        scan-type: [sbom, project]
+        include:
+          - scan-type: sbom
+            input: ${{ github.event.repository.name }}-sbom.json
+          - scan-type: project
+            input: .
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -124,26 +132,30 @@ jobs:
           uv export --quiet --no-hashes --format requirements.txt --output-file requirements.txt
       - name: Download artifacts
         uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0  # v5
+        if: matrix.scan-type == 'sbom'
         with:
           name: sbom
           path: ${{ github.event.repository.name }}-sbom.json
       - name: Scan SBOM
         uses: anchore/scan-action@v7.2.1
+        if: matrix.scan-type == 'sbom'
+        id: scan_sbom
         with:
-          sbom: ${{ github.event.repository.name }}-sbom.json
+          sbom: ${{ matrix.input }}
           cache-db: true
           fail-build: false
       - name: Scan current project
         uses: anchore/scan-action@v7.2.1
-        id: scan
+        if: matrix.scan-type == 'project'
+        id: scan_project
         with:
-          path: .
+          path: ${{ matrix.input }}
           cache-db: true
       - name: upload Anchore scan SARIF report
         if: success() || failure()
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: ${{ steps.scan.outputs.sarif }}
+          sarif_file: ${{ steps.scan_${{matrix.scan-type}}.outputs.sarif }}
   trivy:
     name: Trivy
     runs-on: ubuntu-latest
