@@ -92,9 +92,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-      - uses: anchore/sbom-action@v0.20.10
-        with:
-          path: .
+      - name: SBOM Generation
+        uses: anchore/sbom-action@v0.20.10
   grype:
     name: Grype
     runs-on: ubuntu-latest
