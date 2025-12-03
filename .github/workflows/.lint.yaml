@@ -87,8 +87,6 @@ jobs:
       - yamlfix
     environment:
       name: code_quality
-    permissions:
-      security-events: write
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -105,8 +103,6 @@ jobs:
       - yamlfix
     environment:
       name: code_quality
-    permissions:
-      security-events: write
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -161,10 +157,6 @@ jobs:
       - yamlfix
     environment:
       name: code_quality
-    permissions:
-      contents: read
-      security-events: write
-      actions: read
     steps:
       - uses: actions/checkout@v4
       - name: Bandit Scan
