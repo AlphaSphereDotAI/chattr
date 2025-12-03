@@ -94,6 +94,9 @@ jobs:
         uses: actions/checkout@v4
       - name: SBOM Generation
         uses: anchore/sbom-action@v0.20.10
+        with:
+          dependency-snapshot: true
+          output-file: "${{ github.event.repository.name }}-sbom.json"
   grype:
     name: Grype
     runs-on: ubuntu-latest
