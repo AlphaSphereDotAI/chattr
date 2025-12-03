@@ -309,7 +309,6 @@ class App:
 
 
 async def test() -> None:
-    from chattr.app.builder import App
     from chattr.app.settings import Settings
 
     settings: Settings = Settings()
