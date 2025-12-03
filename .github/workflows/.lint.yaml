@@ -96,11 +96,7 @@ jobs:
           dependency-snapshot: true
           output-file: ${{ github.event.repository.name }}-sbom.json
           format: syft-json
-      - name: Upload artifacts
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4
-        with:
-          name: sbom
-          path: ${{ github.event.repository.name }}-sbom.json
+          artifact-name: sbom
   grype_repo:
     name: Grype Repo
     runs-on: ubuntu-latest
