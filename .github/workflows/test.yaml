@@ -54,7 +54,7 @@ jobs:
   image:
     name: Test Image
     permissions:
-      contents: read
+      contents: write
       packages: write
       attestations: write
       id-token: write
