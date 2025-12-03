@@ -162,7 +162,6 @@ jobs:
           dependency-snapshot: true
           output-file: ${{ github.event.repository.name }}-sbom.json
           format: syft-json
-          artifact-name: sbom
   grype:
     name: Grype
     needs: build_image
@@ -279,6 +278,7 @@ jobs:
       - dockle
       - trivy
       - grype
+      - syft
     if: ${{ always() && !cancelled() && inputs.registry == 'ghcr.io' }}
     runs-on: ubuntu-latest
     environment:
