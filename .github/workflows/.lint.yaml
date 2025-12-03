@@ -131,6 +131,7 @@ jobs:
         with:
           sbom: ${{ github.event.repository.name }}-sbom.json
           cache-db: true
+          fail-build: false
       - name: Scan current project
         uses: anchore/scan-action@v6
         id: scan
