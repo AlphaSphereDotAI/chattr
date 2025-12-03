@@ -152,6 +152,8 @@ jobs:
     needs: build_image
     environment:
       name: container_health
+    permissions:
+      contents: write
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
