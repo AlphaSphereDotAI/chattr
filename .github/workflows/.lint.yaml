@@ -97,13 +97,12 @@ jobs:
           output-file: ${{ github.event.repository.name }}-sbom.json
           format: syft-json
           artifact-name: sbom
-  grype_repo:
-    name: Grype Repo
+  grype:
+    name: Grype
     runs-on: ubuntu-latest
     needs:
       - ruff_format
       - yamlfix
-      - syft
     environment:
       name: code_quality
     steps:
@@ -124,33 +123,6 @@ jobs:
         with:
           path: .
           cache-db: true
-      - name: upload Anchore scan SARIF report
-        if: success() || failure()
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: ${{ steps.scan.outputs.sarif }}
-  grype_sbom:
-    name: Grype SBOM
-    runs-on: ubuntu-latest
-    needs:
-      - ruff_format
-      - yamlfix
-      - syft
-    environment:
-      name: code_quality
-    steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0  # v5
-        with:
-          name: sbom
-          path: ${{ github.event.repository.name }}-sbom.json
-      - name: Scan SBOM
-        uses: anchore/scan-action@v7.2.1
-        id: scan
-        with:
-          sbom: ${{ github.event.repository.name }}-sbom.json
-          cache-db: true
-          fail-build: false
       - name: upload Anchore scan SARIF report
         if: success() || failure()
         uses: github/codeql-action/upload-sarif@v3
