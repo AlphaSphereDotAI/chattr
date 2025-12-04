@@ -22,7 +22,7 @@ jobs:
           shell: bash
           run: >
             trufflehog git ${{github.event.repository.html_url}} --branch=${{github.head_ref || github.ref_name}}
-            --fail --github-actions --results=verified,unknown --log-level=4
+            --fail --github-actions --results=verified,unknown --log-level=4 --no-update
   ls_lint:
     name: ls-lint
     runs-on: ubuntu-latest
