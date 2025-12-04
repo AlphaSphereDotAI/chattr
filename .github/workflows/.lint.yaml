@@ -8,6 +8,15 @@ permissions:
   security-events: write
   actions: read
 jobs:
+  pre-commit:
+    name: pre-commit
+    runs-on: ubuntu-latest
+    environment:
+      name: code_quality
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pre-commit-ci/lite-action@v1.1.0
+        if: always()
   trufflehog:
     name: TruffleHog
     runs-on: ubuntu-latest
