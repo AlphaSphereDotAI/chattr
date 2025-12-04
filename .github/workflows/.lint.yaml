@@ -22,7 +22,7 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
           image: trufflesecurity/trufflehog:latest
-          options: --rm -v .:/tmp -w /tmp
+          options: --rm -v ${{ github.workspace }}:/repo -w /repo
           shell: bash
           run: >
             trufflehog git file:///tmp/ --fail --github-actions --results=verified,unknown
