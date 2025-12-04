@@ -167,6 +167,12 @@ class ModelSettings(BaseModel):
         return self
 
 
+class CharacterSettings(BaseModel):
+    """Settings related to character configuration."""
+
+    name: str | None = Field(default=None)
+
+
 class Settings(BaseSettings):
     """Configuration for the Chattr app."""
 
@@ -184,6 +190,7 @@ class Settings(BaseSettings):
         default_factory=VectorDatabaseSettings,
     )
     mcp: MCPSettings = Field(default_factory=MCPSettings)
+    character: CharacterSettings = Field(default_factory=CharacterSettings)
     debug: bool = Field(default=False)
 
 
