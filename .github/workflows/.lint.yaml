@@ -18,12 +18,14 @@ jobs:
         uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd  # v5
         with:
           fetch-depth: 0
-      - name: Secret Scanning
-        uses: trufflesecurity/trufflehog@main
+      - name: Git Secret Scanning
+        uses: addnab/docker-run-action@v3
         with:
-          base: ''
-          head: ${{ github.ref_name }}
-          extra_args: --results=verified,unknown
+          image: trufflesecurity/trufflehog:latest
+          options: --rm -v .:/tmp -w /tmp
+          shell: bash
+          run: >
+            trufflehog git file:///tmp/ --fail --github-actions --results=verified,unknown
   ls_lint:
     name: ls-lint
     runs-on: ubuntu-latest
