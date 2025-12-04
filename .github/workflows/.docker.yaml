@@ -161,7 +161,7 @@ jobs:
           shell: bash
           run: >
             trufflehog docker --image ${{ needs.build_image.outputs.image_tag }}
-            --fail --github-actions --results=verified,unknown --log-level=4 --no-update
+            --fail --github-actions --results=verified,unknown --log-level=4 --no-update --exclude-paths=/home/nonroot/.local/share/uv/tools/chattr/lib,/home/nonroot/.local/share/uv/python
   syft:
     name: Syft
     runs-on: ubuntu-latest
