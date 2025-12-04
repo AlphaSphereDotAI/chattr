@@ -53,3 +53,7 @@ repos:
     rev: v1.6.24
     hooks:
       - id: actionlint-docker
+  - repo: https://github.com/trufflesecurity/trufflehog
+    rev: v3.91.2
+    hooks:
+      - id: trufflehog
