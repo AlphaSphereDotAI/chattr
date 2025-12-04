@@ -25,7 +25,7 @@ jobs:
           options: --rm -v ${{ github.workspace }}:/repo -w /repo
           shell: bash
           run: >
-            trufflehog git file:///repo/ --fail --github-actions --results=verified,unknown
+            trufflehog git file:///repo/ --branch=${{ github.ref_name }} --fail --github-actions --results=verified,unknown
             --log-level=5
   ls_lint:
     name: ls-lint
