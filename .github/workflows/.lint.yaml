@@ -21,7 +21,7 @@ jobs:
           options: --rm
           shell: bash
           run: >
-            trufflehog git ${{github.event.repository.html_url}}  --fail  --github-actions  --results=verified,unknown
+            trufflehog git ${{github.event.repository.html_url}} --fail --github-actions --results=verified,unknown
   ls_lint:
     name: ls-lint
     runs-on: ubuntu-latest
