@@ -14,15 +14,18 @@ jobs:
     environment:
       name: code_quality
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd  # v5
+        with:
+          fetch-depth: 0
       - name: Git Secret Scanning
         uses: addnab/docker-run-action@v3
         with:
           image: trufflesecurity/trufflehog:latest
-          options: --rm
+          options: --rm -v ${{ github.workspace }}:/repo -w /repo
           shell: bash
           run: >
-            trufflehog git ${{github.event.repository.html_url}} --fail --github-actions
-            --results=verified,unknown
+            trufflehog git file:///repo/ --fail --github-actions --results=verified,unknown
   ls_lint:
     name: ls-lint
     runs-on: ubuntu-latest
