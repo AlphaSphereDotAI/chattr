@@ -146,6 +146,22 @@ jobs:
           dockerhub-password: ${{ secrets.TOKEN_KEY_DOCKER }}
           image: ${{ needs.build_image.outputs.image_tag }}
           github-token: ${{ secrets.GH_TOKEN }}
+  trufflehog:
+    name: TruffleHog
+    runs-on: ubuntu-latest
+    needs: build_image
+    environment:
+      name: container_health
+    steps:
+      - name: Git Secret Scanning
+        uses: addnab/docker-run-action@v3
+        with:
+          image: trufflesecurity/trufflehog:latest
+          options: --rm
+          shell: bash
+          run: >
+            trufflehog docker --image ${{ needs.build_image.outputs.image_tag }}
+            --fail --github-actions --results=verified,unknown --log-level=4 --no-update
   syft:
     name: Syft
     runs-on: ubuntu-latest
