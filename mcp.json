@@ -1,0 +1,22 @@
+{
+  "mcpServers": {
+    "sequential_thinking": {
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "mcp/sequentialthinking"
+      ],
+      "command": "docker"
+    },
+    "time": {
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "mcp/time"
+      ],
+      "command": "docker"
+    }
+  }
+}
