@@ -150,7 +150,7 @@ jobs:
         with:
           sarif_file: ${{ steps.scan.outputs.sarif }}
   trivy:
-    name: Trivy
+    name: Trivy ${{ matrix.name }}
     runs-on: ubuntu-latest
     needs: trufflehog
     environment:
@@ -166,12 +166,15 @@ jobs:
           - scan-type: repo
             format: sarif
             output: trivy-results-repo.sarif
+            name: Repo
           - scan-type: config
             format: sarif
             output: trivy-results-config.sarif
+            name: IaC
           - scan-type: fs
             format: github
             output: dependency-results.sbom.json
+            name: SBOM
     steps:
       - name: Checkout repository
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v5
