@@ -8,24 +8,32 @@ permissions:
   security-events: write
   actions: read
 jobs:
+  pre-commit:
+    name: pre-commit
+    runs-on: ubuntu-latest
+    environment:
+      name: code_quality
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v4
+      - uses: pre-commit/action@v3.0.1
+      - uses: pre-commit-ci/lite-action@v1.1.0
+        if: always()
   trufflehog:
     name: TruffleHog
     runs-on: ubuntu-latest
     environment:
       name: code_quality
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd  # v5
-        with:
-          fetch-depth: 0
       - name: Git Secret Scanning
         uses: addnab/docker-run-action@v3
         with:
           image: trufflesecurity/trufflehog:latest
-          options: --rm -v ${{ github.workspace }}:/repo -w /repo
+          options: --rm
           shell: bash
           run: >
-            trufflehog git file:///repo/ --fail --github-actions --results=verified,unknown
+            trufflehog git ${{github.event.repository.html_url}} --branch=${{github.head_ref || github.ref_name}}
+            --fail --github-actions --results=verified,unknown --log-level=4 --no-update
   ls_lint:
     name: ls-lint
     runs-on: ubuntu-latest
