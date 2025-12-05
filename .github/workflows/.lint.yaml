@@ -183,7 +183,7 @@ jobs:
           github-pat: ${{ secrets.GH_TOKEN }}
           exit-code: '1'
       - name: Upload Trivy scan results to GitHub Security tab
-        if: success() || failure()
+        if: matrix.scan-type != fs && success() || failure()
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: trivy-results.sarif
