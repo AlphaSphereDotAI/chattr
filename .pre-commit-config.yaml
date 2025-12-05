@@ -29,7 +29,8 @@ repos:
     rev: 42.38.0
     hooks:
       - id: renovate-config-validator
-        args: [--strict]
+        args:
+          - --strict
   - repo: https://github.com/astral-sh/uv-pre-commit
     rev: 0.9.15
     hooks:
