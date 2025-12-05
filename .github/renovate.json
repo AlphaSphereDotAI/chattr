@@ -11,6 +11,12 @@
       "dependencies"
     ]
   },
+  "pre-commit": {
+    "enabled": true,
+    "labels": [
+      "pre-commit"
+    ]
+  },
   "osvVulnerabilityAlerts": true,
   "packageRules": [
     {
