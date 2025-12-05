@@ -1,1 +1,1 @@
-ignorefile: .trivyignore.yaml
+ignorefile: .github/lint/.trivyignore.yaml
