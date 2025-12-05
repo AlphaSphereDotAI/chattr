@@ -298,6 +298,7 @@ jobs:
       - trivy
       - grype
       - syft
+      - trufflehog
     if: ${{ always() && !cancelled() && inputs.registry == 'ghcr.io' }}
     runs-on: ubuntu-latest
     environment:
