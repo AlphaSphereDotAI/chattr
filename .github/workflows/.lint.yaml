@@ -8,9 +8,25 @@ permissions:
   security-events: write
   actions: read
 jobs:
+  trufflehog:
+    name: TruffleHog
+    runs-on: ubuntu-latest
+    environment:
+      name: code_quality
+    steps:
+      - name: Git Secret Scanning
+        uses: addnab/docker-run-action@v3
+        with:
+          image: trufflesecurity/trufflehog:latest
+          options: --rm
+          shell: bash
+          run: >
+            trufflehog git ${{github.event.repository.html_url}} --branch=${{github.head_ref || github.ref_name}}
+            --fail --github-actions --results=verified,unknown --log-level=4 --no-update
   pre-commit:
     name: pre-commit
     runs-on: ubuntu-latest
+    needs: trufflehog
     environment:
       name: code_quality
     steps:
@@ -31,21 +47,6 @@ jobs:
       - run: pre-commit run --show-diff-on-failure --color=always --all-files
         continue-on-error: true
       - uses: pre-commit-ci/lite-action@v1.1.0
-  trufflehog:
-    name: TruffleHog
-    runs-on: ubuntu-latest
-    environment:
-      name: code_quality
-    steps:
-      - name: Git Secret Scanning
-        uses: addnab/docker-run-action@v3
-        with:
-          image: trufflesecurity/trufflehog:latest
-          options: --rm
-          shell: bash
-          run: >
-            trufflehog git ${{github.event.repository.html_url}} --branch=${{github.head_ref || github.ref_name}}
-            --fail --github-actions --results=verified,unknown --log-level=4 --no-update
   ls_lint:
     name: ls-lint
     runs-on: ubuntu-latest
@@ -60,7 +61,7 @@ jobs:
   ruff_format:
     name: Ruff Format
     runs-on: ubuntu-latest
-    needs: ls_lint
+    needs: trufflehog
     environment:
       name: code_quality
     steps:
@@ -80,7 +81,7 @@ jobs:
   yamlfix:
     name: YamlFix
     runs-on: ubuntu-latest
-    needs: ls_lint
+    needs: trufflehog
     environment:
       name: code_quality
     steps:
@@ -106,9 +107,7 @@ jobs:
   syft:
     name: Syft
     runs-on: ubuntu-latest
-    needs:
-      - ruff_format
-      - yamlfix
+    needs: trufflehog
     environment:
       name: code_quality
     steps:
@@ -124,9 +123,7 @@ jobs:
   grype:
     name: Grype
     runs-on: ubuntu-latest
-    needs:
-      - ruff_format
-      - yamlfix
+    needs: trufflehog
     environment:
       name: code_quality
     steps:
@@ -155,9 +152,7 @@ jobs:
   trivy:
     name: Trivy
     runs-on: ubuntu-latest
-    needs:
-      - ruff_format
-      - yamlfix
+    needs: trufflehog
     environment:
       name: code_quality
     steps:
@@ -178,9 +173,7 @@ jobs:
   bandit:
     name: Bandit
     runs-on: ubuntu-latest
-    needs:
-      - ruff_format
-      - yamlfix
+    needs: trufflehog
     environment:
       name: code_quality
     steps:
@@ -193,9 +186,7 @@ jobs:
   dclint:
     name: DCLint
     runs-on: ubuntu-latest
-    needs:
-      - ruff_format
-      - yamlfix
+    needs: trufflehog
     environment:
       name: code_quality
     steps:
@@ -207,9 +198,7 @@ jobs:
   ty:
     name: Ty
     runs-on: ubuntu-latest
-    needs:
-      - ruff_format
-      - yamlfix
+    needs: trufflehog
     environment:
       name: code_quality
     steps:
@@ -230,9 +219,7 @@ jobs:
   ruff:
     name: Ruff
     runs-on: ubuntu-latest
-    needs:
-      - ruff_format
-      - yamlfix
+    needs: trufflehog
     environment:
       name: code_quality
     steps:
