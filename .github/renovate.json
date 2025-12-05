@@ -1,5 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "dependencyDashboardOSVVulnerabilitySummary": "all",
   "extends": [
     "config:best-practices"
   ],
@@ -11,20 +12,19 @@
     ]
   },
   "osvVulnerabilityAlerts": true,
-  "dependencyDashboardOSVVulnerabilitySummary": "all",
   "packageRules": [
     {
+      "labels": [
+        "PyProject",
+        "dependencies"
+      ],
       "matchManagers": [
         "pep621"
       ],
       "matchPackageNames": [
         "*"
       ],
-      "rangeStrategy": "bump",
-      "labels": [
-        "PyProject",
-        "dependencies"
-      ]
+      "rangeStrategy": "bump"
     }
   ]
 }
