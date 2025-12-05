@@ -25,6 +25,11 @@ repos:
       - id: pretty-format-json
         args:
           - --autofix
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0.9.15
+    hooks:
+      - id: uv-lock
+      - id: uv-sync
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.14.6
     hooks:
