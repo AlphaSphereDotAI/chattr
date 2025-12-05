@@ -164,10 +164,10 @@ jobs:
         include:
           - scan-type: repo
             format: sarif
-            output: trivy-results.sarif
+            output: trivy-results-repo.sarif
           - scan-type: config
             format: sarif
-            output: trivy-results.sarif
+            output: trivy-results-config.sarif
           - scan-type: fs
             format: github
             output: dependency-results.sbom.json
@@ -186,7 +186,7 @@ jobs:
         if: matrix.scan-type != 'fs' && (success() || failure())
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: trivy-results.sarif
+          sarif_file: ${{ matrix.output }}
           category: ${{ matrix.scan-type }}
   bandit:
     name: Bandit
