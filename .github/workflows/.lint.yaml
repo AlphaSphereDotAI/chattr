@@ -187,6 +187,7 @@ jobs:
           github-pat: ${{ secrets.GH_TOKEN }}
           exit-code: '1'
           scanners: vuln,secret,misconfig,license
+          scan-ref: ${{ github.workspace }} --skip-version-check --include-dev-deps
       - name: Upload Trivy scan results to GitHub Security tab
         if: matrix.scan-type != 'fs' && ( success() || failure() )
         uses: github/codeql-action/upload-sarif@v3
