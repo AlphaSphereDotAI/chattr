@@ -11,12 +11,6 @@
       "dependencies"
     ]
   },
-  "pre-commit": {
-    "enabled": true,
-    "labels": [
-      "pre-commit"
-    ]
-  },
   "osvVulnerabilityAlerts": true,
   "packageRules": [
     {
@@ -32,5 +26,11 @@
       ],
       "rangeStrategy": "bump"
     }
-  ]
+  ],
+  "pre-commit": {
+    "enabled": true,
+    "labels": [
+      "pre-commit"
+    ]
+  }
 }
