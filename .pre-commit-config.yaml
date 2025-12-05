@@ -30,6 +30,7 @@ repos:
     hooks:
       - id: ruff-check
         args:
+          - --fix
           - --config
           - .github/lint/.ruff.toml
       - id: ruff-format
