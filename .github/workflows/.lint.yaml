@@ -19,7 +19,7 @@ jobs:
       - name: Git Secret Scanning
         uses: trufflesecurity/trufflehog@v3.91.1
         with:
-          base: ""
+          base: ''
           head: ${{github.head_ref || github.ref_name}}
           extra_args: --results=verified,unknown --log-level=4
   pre-commit:
