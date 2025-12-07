@@ -20,8 +20,7 @@ jobs:
         uses: trufflesecurity/trufflehog@v3.91.1
         with:
           head: ${{github.head_ref || github.ref_name}}
-          extra_args: >
-            --fail --github-actions --results=verified,unknown --log-level=4 --no-update
+          extra_args: --results=verified,unknown --log-level=4
   pre-commit:
     name: pre-commit
     runs-on: ubuntu-latest
