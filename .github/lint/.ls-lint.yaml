@@ -1,7 +1,7 @@
 ls:
   .py: snake_case
-  .yaml: snake_case
-  .yml: snake_case
+  .yaml: snake_case | kebab-case
+  .yml: snake_case | kebab-case
   .toml: snake_case
   .md: SCREAMING_SNAKE_CASE
 ignore:
