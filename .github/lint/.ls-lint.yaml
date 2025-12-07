@@ -1,4 +1,8 @@
 ls:
-  .py: snakecase
+  .py: snake_case
+  .yaml: snake_case
+  .yml: snake_case
+  .toml: snake_case
+  .md: SCREAMING_SNAKE_CASE
 ignore:
   - .git
