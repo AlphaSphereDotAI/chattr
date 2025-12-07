@@ -49,6 +49,8 @@ jobs:
   uv_lock:
     name: UV Lock Check
     runs-on: ubuntu-latest
+    environment:
+      name: code_quality
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
