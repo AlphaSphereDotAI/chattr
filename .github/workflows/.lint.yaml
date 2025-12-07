@@ -301,7 +301,7 @@ jobs:
       name: code_quality
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4          
+        uses: actions/checkout@v4
       - uses: DavidAnson/markdownlint-cli2-action@v21
         with:
           globs: '**/*.md'
