@@ -98,7 +98,7 @@ jobs:
       - name: Format
         uses: astral-sh/ruff-action@v3.5.1
         with:
-          args: format . --config .github/lint/.ruff.toml
+          args: format --output-format github --config .github/lint/.ruff.toml
       - name: Commit and push applied linter fixes
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
@@ -298,4 +298,9 @@ jobs:
       - name: Check
         uses: astral-sh/ruff-action@v3.5.1
         with:
-          args: check --output-format github --config .github/lint/.ruff.toml
+          args: check --output-format sarif --output-file ruff.sarif --config .github/lint/.ruff.toml
+      - name: upload Ruff scan SARIF report
+        if: success() || failure()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: ruff.sarif
