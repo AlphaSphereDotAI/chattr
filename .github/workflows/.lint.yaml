@@ -293,3 +293,16 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: ruff.sarif
+  markdownlint:
+    name: MarkdownLint
+    runs-on: ubuntu-latest
+    environment:
+      name: code_quality
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - uses: DavidAnson/markdownlint-cli2-action@v21
+        with:
+          globs: '**/*.md'
+          config: .github/lint/.markdownlint.yaml
+          fix: true
