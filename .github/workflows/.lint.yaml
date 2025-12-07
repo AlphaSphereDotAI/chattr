@@ -14,14 +14,13 @@ jobs:
     environment:
       name: code_quality
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
       - name: Git Secret Scanning
-        uses: addnab/docker-run-action@v3
+        uses: trufflesecurity/trufflehog@v3.91.1
         with:
-          image: trufflesecurity/trufflehog:latest
-          options: --rm
-          shell: bash
-          run: >
-            trufflehog git ${{github.event.repository.html_url}} --branch=${{github.head_ref || github.ref_name}}
+          head: ${{github.head_ref || github.ref_name}}
+          extra_args: >
             --fail --github-actions --results=verified,unknown --log-level=4 --no-update
   pre-commit:
     name: pre-commit
