@@ -19,7 +19,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Git Secret Scanning
-        uses: trufflesecurity/trufflehog@v3.91.1
+        uses: trufflesecurity/trufflehog@v3.91.2
         with:
           head: ${{github.head_ref || github.ref_name}}
           extra_args: --results=verified,unknown --log-level=4
