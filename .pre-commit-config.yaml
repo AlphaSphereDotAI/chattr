@@ -3,7 +3,13 @@ repos:
     rev: v0.46.0
     hooks:
       - id: markdownlint
+        args:
+          - --config
+          - .github/lint/.markdownlint.yaml
       - id: markdownlint-fix
+        args:
+          - --config
+          - .github/lint/.markdownlint.yaml
   - repo: https://github.com/PyCQA/bandit
     rev: 1.9.2
     hooks:
