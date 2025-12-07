@@ -227,8 +227,8 @@ jobs:
       - name: Bandit Scan
         uses: shundor/python-bandit-scan@v1.0
         with:
-          exit_zero: true
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ini_path: .github/lint/.bandit.yaml
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
   dclint:
     name: DCLint
     runs-on: ubuntu-latest
