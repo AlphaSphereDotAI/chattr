@@ -1,3 +1,12 @@
+[[tools.pre-commit]]
+version = "4.5.0"
+backend = "aqua:pre-commit/pre-commit"
+"platforms.linux-arm64" = { checksum = "sha256:fbbfa47d19b98e03eb11963094ac3644a97cba105a8c660d8dab4c409c89cebe", url = "https://github.com/pre-commit/pre-commit/releases/download/v4.5.0/pre-commit-4.5.0.pyz"}
+"platforms.linux-x64" = { checksum = "sha256:fbbfa47d19b98e03eb11963094ac3644a97cba105a8c660d8dab4c409c89cebe", url = "https://github.com/pre-commit/pre-commit/releases/download/v4.5.0/pre-commit-4.5.0.pyz"}
+"platforms.macos-arm64" = { checksum = "sha256:fbbfa47d19b98e03eb11963094ac3644a97cba105a8c660d8dab4c409c89cebe", url = "https://github.com/pre-commit/pre-commit/releases/download/v4.5.0/pre-commit-4.5.0.pyz"}
+"platforms.macos-x64" = { checksum = "sha256:fbbfa47d19b98e03eb11963094ac3644a97cba105a8c660d8dab4c409c89cebe", url = "https://github.com/pre-commit/pre-commit/releases/download/v4.5.0/pre-commit-4.5.0.pyz"}
+"platforms.windows-x64" = { checksum = "sha256:fbbfa47d19b98e03eb11963094ac3644a97cba105a8c660d8dab4c409c89cebe", url = "https://github.com/pre-commit/pre-commit/releases/download/v4.5.0/pre-commit-4.5.0.pyz"}
+
 [[tools.trufflehog]]
 version = "3.91.2"
 backend = "aqua:trufflesecurity/trufflehog"
@@ -10,4 +19,8 @@ backend = "aqua:trufflesecurity/trufflehog"
 [[tools.uv]]
 version = "0.9.16"
 backend = "aqua:astral-sh/uv"
+"platforms.linux-arm64" = { checksum = "sha256:cb6730e083f17b38aea88c2bdfc3d4c834a832444087d30d7914bd460ae15b79", url = "https://github.com/astral-sh/uv/releases/download/0.9.16/uv-aarch64-unknown-linux-musl.tar.gz"}
 "platforms.linux-x64" = { checksum = "sha256:35a26bea6aad2c8eb468cdf69baccc7ab79b3d0971a76a6741a687535a2acfad", url = "https://github.com/astral-sh/uv/releases/download/0.9.16/uv-x86_64-unknown-linux-musl.tar.gz"}
+"platforms.macos-arm64" = { checksum = "sha256:db6d7fb299c35dc9bbbeb89cfa9aa55a9584f637d370c0a4c62a50df9c9294a7", url = "https://github.com/astral-sh/uv/releases/download/0.9.16/uv-aarch64-apple-darwin.tar.gz"}
+"platforms.macos-x64" = { checksum = "sha256:e1ba1992e163f8b9d54d1cd1501002f019f4b729dec2a197e79a56d354ec2773", url = "https://github.com/astral-sh/uv/releases/download/0.9.16/uv-x86_64-apple-darwin.tar.gz"}
+"platforms.windows-x64" = { checksum = "sha256:e498a1d5983da7727af96b63ddfcd52ee883173552664ad0b629b3d4c7a46e91", url = "https://github.com/astral-sh/uv/releases/download/0.9.16/uv-x86_64-pc-windows-msvc.zip"}
