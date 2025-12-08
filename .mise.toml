@@ -1,6 +1,8 @@
 [tools]
 trufflehog = "latest"
+uv = "latest"
 
 [settings]
 lockfile = true
-locked = true   
+locked = true
+experimental=true
