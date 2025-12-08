@@ -1,0 +1,6 @@
+[tools]
+trufflehog = "latest"
+
+[settings]
+lockfile = true
+locked = true   
