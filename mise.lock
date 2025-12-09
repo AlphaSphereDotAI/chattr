@@ -1,3 +1,12 @@
+[[tools.actionlint]]
+version = "1.7.9"
+backend = "aqua:rhysd/actionlint"
+"platforms.linux-x64" = { checksum = "sha256:233b280d05e100837f4af1433c7b40a5dcb306e3aa68fb4f17f8a7f45a7df7b4", url = "https://github.com/rhysd/actionlint/releases/download/v1.7.9/actionlint_1.7.9_linux_amd64.tar.gz"}
+
+[[tools."pipx:pyrefly"]]
+version = "0.45.1"
+backend = "pipx:pyrefly"
+
 [[tools."pipx:ty"]]
 version = "0.0.1a32"
 backend = "pipx:ty"
