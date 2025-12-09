@@ -12,4 +12,4 @@ yamllint = "latest"
 [settings]
 experimental = true
 lockfile = true
-locked = true
+#locked = true
