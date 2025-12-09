@@ -1,3 +1,7 @@
+[[tools."pipx:yamlfix"]]
+version = "1.19.0"
+backend = "pipx:yamlfix"
+
 [[tools.pre-commit]]
 version = "4.5.0"
 backend = "aqua:pre-commit/pre-commit"

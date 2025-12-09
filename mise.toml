@@ -5,6 +5,7 @@ pre-commit = "latest"
 taplo = "latest"
 ruff = "latest"
 yq = "latest"
+"pipx:yamlfix" = "latest"
 
 [settings]
 experimental = true
