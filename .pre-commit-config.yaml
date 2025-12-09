@@ -1,4 +1,9 @@
-repos:
+repos:  
+  - repo: https://github.com/ComPWA/taplo-pre-commit
+    rev: v0.9.3
+    hooks:
+      - id: taplo-format
+      - id: taplo-lint
   - repo: https://github.com/igorshubovych/markdownlint-cli
     rev: v0.46.0
     hooks:
