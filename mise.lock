@@ -42,3 +42,12 @@ backend = "aqua:astral-sh/uv"
 "platforms.macos-arm64" = { checksum = "sha256:db6d7fb299c35dc9bbbeb89cfa9aa55a9584f637d370c0a4c62a50df9c9294a7", url = "https://github.com/astral-sh/uv/releases/download/0.9.16/uv-aarch64-apple-darwin.tar.gz"}
 "platforms.macos-x64" = { checksum = "sha256:e1ba1992e163f8b9d54d1cd1501002f019f4b729dec2a197e79a56d354ec2773", url = "https://github.com/astral-sh/uv/releases/download/0.9.16/uv-x86_64-apple-darwin.tar.gz"}
 "platforms.windows-x64" = { checksum = "sha256:e498a1d5983da7727af96b63ddfcd52ee883173552664ad0b629b3d4c7a46e91", url = "https://github.com/astral-sh/uv/releases/download/0.9.16/uv-x86_64-pc-windows-msvc.zip"}
+
+[[tools.yq]]
+version = "4.49.2"
+backend = "aqua:mikefarah/yq"
+"platforms.linux-arm64" = { checksum = "sha256:783aa3c3beedcf2bf4aaf6262eca38b92a16d3ea31e2218ca80ba8ec7226b248", url = "https://github.com/mikefarah/yq/releases/download/v4.49.2/yq_linux_arm64"}
+"platforms.linux-x64" = { checksum = "sha256:be2c0ddcf426b6a231648610ec5d1666ae50e9f6473e82f6486f9f4cb6e3e2f7", url = "https://github.com/mikefarah/yq/releases/download/v4.49.2/yq_linux_amd64"}
+"platforms.macos-arm64" = { checksum = "sha256:b0b70ede2b392ba02091b8137b42db819a7968cf232d595dd7394ac5668b4a0b", url = "https://github.com/mikefarah/yq/releases/download/v4.49.2/yq_darwin_arm64"}
+"platforms.macos-x64" = { checksum = "sha256:c14cd4ae68d42074e58463f5ebdbc3c49ec27c6de6a23b4af58a483bc3f15aa0", url = "https://github.com/mikefarah/yq/releases/download/v4.49.2/yq_darwin_amd64"}
+"platforms.windows-x64" = { checksum = "sha256:bca1f7349cc063b8c7e38d96bef4804829db1362e5cd19f9ff0478760ce4deb9", url = "https://github.com/mikefarah/yq/releases/download/v4.49.2/yq_windows_amd64.exe"}

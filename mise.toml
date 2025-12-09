@@ -4,8 +4,9 @@ uv = "latest"
 pre-commit = "latest"
 taplo = "latest"
 ruff = "latest"
+yq = "latest"
 
 [settings]
-experimental=true
+experimental = true
 lockfile = true
 locked = true
