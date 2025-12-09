@@ -1,3 +1,7 @@
+[[tools."pipx:ty"]]
+version = "0.0.1a32"
+backend = "pipx:ty"
+
 [[tools."pipx:yamlfix"]]
 version = "1.19.0"
 backend = "pipx:yamlfix"
@@ -46,6 +50,10 @@ backend = "aqua:astral-sh/uv"
 "platforms.macos-arm64" = { checksum = "sha256:db6d7fb299c35dc9bbbeb89cfa9aa55a9584f637d370c0a4c62a50df9c9294a7", url = "https://github.com/astral-sh/uv/releases/download/0.9.16/uv-aarch64-apple-darwin.tar.gz"}
 "platforms.macos-x64" = { checksum = "sha256:e1ba1992e163f8b9d54d1cd1501002f019f4b729dec2a197e79a56d354ec2773", url = "https://github.com/astral-sh/uv/releases/download/0.9.16/uv-x86_64-apple-darwin.tar.gz"}
 "platforms.windows-x64" = { checksum = "sha256:e498a1d5983da7727af96b63ddfcd52ee883173552664ad0b629b3d4c7a46e91", url = "https://github.com/astral-sh/uv/releases/download/0.9.16/uv-x86_64-pc-windows-msvc.zip"}
+
+[[tools.yamllint]]
+version = "1.37.1"
+backend = "pipx:yamllint"
 
 [[tools.yq]]
 version = "4.49.2"

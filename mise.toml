@@ -6,6 +6,8 @@ taplo = "latest"
 ruff = "latest"
 yq = "latest"
 "pipx:yamlfix" = "latest"
+yamllint = "latest"
+"pipx:ty" = "latest"
 
 [settings]
 experimental = true
