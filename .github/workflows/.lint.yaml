@@ -37,8 +37,6 @@ jobs:
         uses: jdx/mise-action@v2
         with:
           github_token: ${{ secrets.GH_TOKEN }}
-      - name: Install the project
-        run: uv sync --frozen --only-dev
       - uses: actions/cache@v4
         with:
           path: ~/.cache/pre-commit
