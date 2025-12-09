@@ -2,8 +2,10 @@
 trufflehog = "latest"
 uv = "latest"
 pre-commit = "latest"
+taplo = "latest"
+ruff = "latest"
 
 [settings]
+experimental=true
 lockfile = true
 locked = true
-experimental=true
