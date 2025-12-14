@@ -121,10 +121,8 @@ jobs:
           enable-cache: true
           cache-dependency-glob: uv.lock
           activate-environment: true
-      - name: Install the project
-        run: uv sync --frozen --only-dev
       - name: Format
-        run: yamlfix --config-file .github/lint/.yamlfix.toml .
+        run: uvx yamlfix . --config-file .github/lint/.yamlfix.toml
       - name: Commit and push applied linter fixes
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
