@@ -273,10 +273,8 @@ jobs:
           enable-cache: true
           cache-dependency-glob: uv.lock
           activate-environment: true
-      - name: Install the project
-        run: uv sync --frozen
       - name: Check
-        run: ty check --output-format github
+        run: uvx ty check --output-format github
   ruff:
     name: Ruff
     runs-on: ubuntu-latest
