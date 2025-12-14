@@ -18,11 +18,15 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Git Secret Scanning
-        uses: trufflesecurity/trufflehog@v3.91.2
+      - name: Install trufflehog
+        uses: jaxxstorm/action-install-gh-release@v1.10.0
         with:
-          head: ${{github.head_ref || github.ref_name}}
-          extra_args: --results=verified,unknown --log-level=4
+          repo: trufflesecurity/trufflehog
+          cache: enable
+      - name: Git Secret Scanning
+        run: >
+          trufflehog git ${{github.event.repository.html_url}} --branch=${{github.head_ref || github.ref_name}}
+          --fail --github-actions --results=verified,unknown --log-level=4 --no-update
   pre-commit:
     name: pre-commit
     runs-on: ubuntu-latest
