@@ -296,3 +296,20 @@ jobs:
           globs: '**/*.md'
           config: .github/lint/.markdownlint.yaml
           fix: true
+  hadolint:
+    name: Hadolint
+    runs-on: ubuntu-latest
+    environment:
+      name: code_quality
+    steps:
+      - uses: actions/checkout@v4.0.0
+      - uses: hadolint/hadolint-action@v3.1.0
+        with:
+          config: .github/lint/.hadolint.yaml
+          format: sarif
+          output-file: hadolint.sarif
+      - name: upload Hadolint scan SARIF report
+        if: success() || failure()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: hadolint.sarif
