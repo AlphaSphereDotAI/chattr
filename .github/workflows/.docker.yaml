@@ -211,7 +211,7 @@ jobs:
           trivy-config: .github/lint/.trivy.yaml
           format: sarif
           output: trivy-results-image.sarif
-          exit-code: "1"
+          exit-code: '1'
           scanners: vuln,secret,misconfig,license
       - name: Upload Trivy scan results to GitHub Security tab
         if: success() || failure()
@@ -305,5 +305,5 @@ jobs:
           account: ${{ github.repository_owner }}
           token: ${{ secrets.GH_TOKEN }}
           image-names: ${{ github.event.repository.name }}
-          image-tags: "!latest !*.*.*"
+          image-tags: '!latest !*.*.*'
           cut-off: 1s
