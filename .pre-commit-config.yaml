@@ -90,7 +90,7 @@ repos:
     hooks:
       - id: pyrefly-typecheck-system
         name: Pyrefly (type checking)
-        pass_filenames: false  # Recomended to do full repo checks. However, you can change this to `true` to only check changed files
+        pass_filenames: false
   - repo: https://github.com/lyz-code/yamlfix
     rev: 1.19.0
     hooks:
