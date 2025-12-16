@@ -140,7 +140,8 @@ jobs:
         uses: astral-sh/ruff-action@v3.5.1
         with:
           args: >-
-            ${{ matrix.command }} --config .github/lint/.ruff.toml --output-format ${{matrix.output}} ${{matrix.output == 'sarif' && '--output-file ruff.sarif' || ''}}
+            ${{ matrix.command }} --config .github/lint/.ruff.toml --output-format
+            ${{matrix.output}} ${{matrix.output == 'sarif' && '--output-file ruff.sarif' || ''}}
       - name: upload Ruff scan SARIF report
         if: matrix.output == 'sarif' && ( success() || failure() )
         uses: github/codeql-action/upload-sarif@v3
