@@ -133,12 +133,6 @@ jobs:
     environment:
       name: container_health
     steps:
-      - name: Log in to ${{ inputs.registry }} Registry
-        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef  # v3
-        with:
-          registry: ${{ inputs.registry }}
-          username: mh0386
-          password: ${{ inputs.registry == 'ghcr.io' && secrets.GH_TOKEN || inputs.registry == 'docker.io' && secrets.TOKEN_KEY_DOCKER }}
       - name: Docker Scout
         uses: docker/scout-action@f8c776824083494ab0d56b8105ba2ca85c86e4de  # v1
         with:
