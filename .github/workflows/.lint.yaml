@@ -25,7 +25,7 @@ jobs:
         uses: jaxxstorm/action-install-gh-release@v1.10.0
         with:
           repo: tamasfe/taplo
-          extension: "\\.gz"
+          extension: \.gz
       - name: ${{ matrix.command }}
         run: >
           taplo ${{matrix.command}}  --config-file .github/lint/.taplo.toml  ${{matrix.command == 'lint' && '--default-schema-catalogs' || ''}}
