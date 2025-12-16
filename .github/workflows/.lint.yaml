@@ -8,6 +8,34 @@ permissions:
   security-events: write
   actions: read
 jobs:
+  taplo:
+    name: Taplo ${{ matrix.command }}
+    runs-on: ubuntu-latest
+    environment:
+      name: code_quality
+    strategy:
+      fail-fast: false
+      matrix:
+        command:
+          - format
+          - lint
+    steps:
+      - uses: actions/checkout@v4.0.0
+      - name: Install taplo
+        uses: jaxxstorm/action-install-gh-release@v1.10.0
+        with:
+          repo: tamasfe/taplo
+      - name: ${{ matrix.command }}
+        run: >
+          taplo ${{matrix.command}} 
+          --config-file .github/lint/.taplo.toml 
+          ${{matrix.command == 'lint' && '--default-schema-catalogs' || ''}}
+      - name: Commit and push applied formatter fixes
+        if: matrix.command == 'format'
+        uses: stefanzweifel/git-auto-commit-action@v7.0.0
+        with:
+          commit_message: '[Taplo] Apply formatter fixes'
+          commit_options: --no-verify
   trufflehog:
     name: TruffleHog
     runs-on: ubuntu-latest
