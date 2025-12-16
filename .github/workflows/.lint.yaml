@@ -153,7 +153,7 @@ jobs:
         if: matrix.output == 'github'
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
-          commit_message: "[Ruff] Apply format fixes"
+          commit_message: '[Ruff] Apply format fixes'
           commit_options: --no-verify
   yamlfix:
     name: YamlFix
@@ -327,7 +327,7 @@ jobs:
         uses: actions/checkout@v4
       - uses: DavidAnson/markdownlint-cli2-action@v21
         with:
-          globs: "**/*.md"
+          globs: '**/*.md'
           config: .github/lint/.markdownlint.yaml
           fix: true
   hadolint:
