@@ -191,7 +191,6 @@ jobs:
         with:
           image: ${{ needs.build_image.outputs.image_tag }}
           cache-db: true
-          fail-build: false
       - name: upload Anchore scan SARIF report
         if: success() || failure()
         uses: github/codeql-action/upload-sarif@v3
