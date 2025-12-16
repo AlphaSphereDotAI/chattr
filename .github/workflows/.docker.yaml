@@ -148,13 +148,13 @@ jobs:
     environment:
       name: container_health
     steps:
-      - name: Git Secret Scanning
-        uses: addnab/docker-run-action@v3
+      - name: Install trufflehog
+        uses: jaxxstorm/action-install-gh-release@v1.10.0
         with:
-          image: trufflesecurity/trufflehog:latest
-          options: --rm
-          shell: bash
-          run: >
+          repo: trufflesecurity/trufflehog
+          cache: enable
+      - name: Git Secret Scanning
+        run: >
             trufflehog docker --image ${{ needs.build_image.outputs.image_tag }}
             --fail --github-actions --results=verified,unknown --log-level=4 --no-update
             --exclude-paths=/home/nonroot/.local/share/uv/tools/chattr/lib,/home/nonroot/.local/share/uv/python
