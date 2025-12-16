@@ -115,24 +115,45 @@ jobs:
       - uses: ls-lint/action@v2
         with:
           config: .github/lint/.ls-lint.yaml
-  ruff_format:
-    name: Ruff Format
+  ruff:
+    name: Ruff ${{ matrix.command }}
     runs-on: ubuntu-latest
     environment:
       name: code_quality
+    strategy:
+      fail-fast: false
+      matrix:
+        command:
+          - check
+          - format
+        include:
+          - command: check
+            output: sarif
+          - command: format
+            output: github
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.0.0
         with:
           token: ${{ secrets.GH_TOKEN }}
-      - name: Format
+      - name: ${{ matrix.command }}
         uses: astral-sh/ruff-action@v3.5.1
         with:
-          args: format --output-format github --config .github/lint/.ruff.toml
-      - name: Commit and push applied linter fixes
+          args: >
+            ${{ matrix.command }}
+            --output-format ${{ matrix.output }}
+            ${{ matrix.output == 'sarif' && '--output-file ruff.sarif' || '' }}
+            --config .github/lint/.ruff.toml
+      - name: upload Ruff scan SARIF report
+        if: matrix.output == 'sarif' && ( success() || failure() )
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: ruff.sarif
+      - name: Commit and push applied Ruff fixes
+        if: matrix.output == 'github'
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
-          commit_message: '[Ruff] Apply linters fixes'
+          commit_message: "[Ruff] Apply format fixes"
           commit_options: --no-verify
   yamlfix:
     name: YamlFix
@@ -296,23 +317,6 @@ jobs:
           activate-environment: true
       - name: Check
         run: uvx ty check --output-format github
-  ruff:
-    name: Ruff
-    runs-on: ubuntu-latest
-    environment:
-      name: code_quality
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-      - name: Check
-        uses: astral-sh/ruff-action@v3.5.1
-        with:
-          args: check --output-format sarif --output-file ruff.sarif --config .github/lint/.ruff.toml
-      - name: upload Ruff scan SARIF report
-        if: success() || failure()
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: ruff.sarif
   markdownlint:
     name: MarkdownLint
     runs-on: ubuntu-latest
@@ -323,7 +327,7 @@ jobs:
         uses: actions/checkout@v4
       - uses: DavidAnson/markdownlint-cli2-action@v21
         with:
-          globs: '**/*.md'
+          globs: "**/*.md"
           config: .github/lint/.markdownlint.yaml
           fix: true
   hadolint:
