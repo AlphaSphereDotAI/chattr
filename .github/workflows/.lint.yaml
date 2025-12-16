@@ -25,7 +25,7 @@ jobs:
         uses: jaxxstorm/action-install-gh-release@v1.10.0
         with:
           repo: tamasfe/taplo
-          extension: "\\.gz"
+          extension: \.gz
           rename-to: taplo
           chmod: 0755
       - name: ${{ matrix.command }}
