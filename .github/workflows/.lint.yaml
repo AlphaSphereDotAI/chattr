@@ -25,6 +25,7 @@ jobs:
         uses: jaxxstorm/action-install-gh-release@v1.10.0
         with:
           repo: tamasfe/taplo
+          extension: "\\.gz"
       - name: ${{ matrix.command }}
         run: >
           taplo ${{matrix.command}} 
