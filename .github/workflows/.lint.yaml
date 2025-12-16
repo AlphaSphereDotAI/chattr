@@ -26,6 +26,8 @@ jobs:
         with:
           repo: tamasfe/taplo
           extension: "\\.gz"
+          rename-to: taplo
+          chmod: 0755
       - name: ${{ matrix.command }}
         run: >
           taplo ${{matrix.command}}  --config-file .github/lint/.taplo.toml  ${{matrix.command == 'lint' && '--default-schema-catalogs' || ''}}
