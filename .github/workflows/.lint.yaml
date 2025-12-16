@@ -139,7 +139,7 @@ jobs:
       - name: ${{ matrix.command }}
         uses: astral-sh/ruff-action@v3.5.1
         with:
-          args: >
+          args: >-
             ${{ matrix.command }}
             --output-format ${{ matrix.output }}
             ${{ matrix.output == 'sarif' && '--output-file ruff.sarif' || '' }}
