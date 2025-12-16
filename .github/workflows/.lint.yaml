@@ -27,9 +27,7 @@ jobs:
           repo: tamasfe/taplo
       - name: ${{ matrix.command }}
         run: >
-          taplo ${{matrix.command}} 
-          --config-file .github/lint/.taplo.toml 
-          ${{matrix.command == 'lint' && '--default-schema-catalogs' || ''}}
+          taplo ${{matrix.command}}  --config-file .github/lint/.taplo.toml  ${{matrix.command == 'lint' && '--default-schema-catalogs' || ''}}
       - name: Commit and push applied formatter fixes
         if: matrix.command == 'format'
         uses: stefanzweifel/git-auto-commit-action@v7.0.0
