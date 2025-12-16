@@ -156,8 +156,7 @@ jobs:
       - name: Git Secret Scanning
         run: >
           trufflehog docker --image ${{ needs.build_image.outputs.image_tag }}
-          --fail --github-actions --results=verified,unknown --log-level=4 --no-update
-          --exclude-paths='\/home\/nonroot\/\.local\/share\/uv\/.*'
+          --fail --github-actions --results=verified --log-level=4 --no-update
   syft:
     name: Syft
     runs-on: ubuntu-latest
