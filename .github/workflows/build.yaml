@@ -77,8 +77,6 @@ jobs:
           name: dist
           path: dist/
       - name: Create GitHub Release
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: >-
-          gh release create ${{ github.ref_name }} dist/* --title ${{ github.ref_name }}
-          --generate-notes
+        uses: softprops/action-gh-release@v2.5.0
+        with:
+          files: dist/*
