@@ -21,14 +21,15 @@ jobs:
           - lint
     steps:
       - uses: actions/checkout@v4.0.0
-      - name: Install taplo
-        uses: baptiste0928/cargo-install@v3.3.2
+      - uses: actions/setup-node@v6.1.0
         with:
-          crate: taplo-cli
-          locked: true
+          node-version: 24
+      - run: npx @taplo/cli --version
       - name: ${{ matrix.command }}
         run: >
-          taplo ${{matrix.command}}  --config-file .github/lint/.taplo.toml  ${{matrix.command == 'lint' && '--default-schema-catalogs' || ''}}
+          npx @taplo/cli ${{matrix.command}}
+          --config-file .github/lint/.taplo.toml
+          ${{matrix.command == 'lint' && '--default-schema-catalogs' || ''}}
       - name: Commit and push applied formatter fixes
         if: matrix.command == 'format'
         uses: stefanzweifel/git-auto-commit-action@v7.0.0
