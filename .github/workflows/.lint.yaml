@@ -364,5 +364,5 @@ jobs:
           -o .github/actionlint-matcher.json
       - name: Run actionlint
         run: |-
-          echo "::add-matcher::.github/actionlint-matcher.json"          
+          echo "::add-matcher::.github/actionlint-matcher.json"
           actionlint -color
