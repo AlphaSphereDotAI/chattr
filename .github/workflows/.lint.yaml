@@ -360,10 +360,9 @@ jobs:
           cache: enable
       - name: Download actionlint-matcher.json
         run: >-
-          curl -fsSL 
-          https://raw.githubusercontent.com/rhysd/actionlint/main/.github/actionlint-matcher.json
+          curl -fsSL  https://raw.githubusercontent.com/rhysd/actionlint/main/.github/actionlint-matcher.json
           -o .github/actionlint-matcher.json
       - name: Run actionlint
-        run: |
+        run: |-
           echo "::add-matcher::.github/actionlint-matcher.json"          
           actionlint -color
