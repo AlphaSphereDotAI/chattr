@@ -20,7 +20,8 @@ jobs:
           - format
           - lint
     steps:
-      - uses: actions/checkout@v4.0.0
+      - name: Checkout repository
+        uses: actions/checkout@v4.0.0
       - name: Install taplo
         uses: baptiste0928/cargo-install@v3.3.2
         with:
@@ -62,7 +63,8 @@ jobs:
     environment:
       name: code_quality
     steps:
-      - uses: actions/checkout@v5
+      - name: Checkout repository
+        uses: actions/checkout@v5
       - name: Install uv
         uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
         with:
@@ -111,7 +113,8 @@ jobs:
     environment:
       name: code_quality
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
       - uses: ls-lint/action@v2
         with:
           config: .github/lint/.ls-lint.yaml
@@ -132,7 +135,7 @@ jobs:
           - command: format
             output: github
     steps:
-      - name: Check out repository
+      - name: Checkout repository
         uses: actions/checkout@v4.0.0
         with:
           token: ${{ secrets.GH_TOKEN }}
@@ -160,7 +163,7 @@ jobs:
     environment:
       name: code_quality
     steps:
-      - name: Check out repository
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GH_TOKEN }}
@@ -183,7 +186,7 @@ jobs:
     environment:
       name: code_quality
     steps:
-      - name: Check out repository
+      - name: Checkout repository
         uses: actions/checkout@v4
       - name: Install uv
         uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
@@ -199,7 +202,7 @@ jobs:
     environment:
       name: code_quality
     steps:
-      - name: Check out repository
+      - name: Checkout repository
         uses: actions/checkout@v4
       - name: SBOM Generation
         uses: anchore/sbom-action@v0.20.10
@@ -214,7 +217,7 @@ jobs:
     environment:
       name: code_quality
     steps:
-      - name: Check out repository
+      - name: Checkout repository
         uses: actions/checkout@v4
       - name: Scan current project
         uses: anchore/scan-action@v7.2.1
@@ -293,7 +296,8 @@ jobs:
     environment:
       name: code_quality
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
       - uses: docker-compose-linter/dclint-github-action@v1.6.0
         with:
           fix: true
@@ -322,7 +326,7 @@ jobs:
     environment:
       name: code_quality
     steps:
-      - name: Check out repository
+      - name: Checkout repository
         uses: actions/checkout@v4
       - uses: DavidAnson/markdownlint-cli2-action@v21
         with:
@@ -335,7 +339,8 @@ jobs:
     environment:
       name: code_quality
     steps:
-      - uses: actions/checkout@v4.0.0
+      - name: Checkout repository
+        uses: actions/checkout@v4.0.0
       - uses: hadolint/hadolint-action@v3.1.0
         with:
           config: .github/lint/.hadolint.yaml
@@ -352,7 +357,8 @@ jobs:
     environment:
       name: code_quality
     steps:
-      - uses: actions/checkout@v4.0.0
+      - name: Checkout repository
+        uses: actions/checkout@v4.0.0
       - name: Install actionlint
         uses: jaxxstorm/action-install-gh-release@v1.10.0
         with:
@@ -360,7 +366,7 @@ jobs:
           cache: enable
       - name: Download actionlint-matcher.json
         run: >-
-          curl -fsSL  https://raw.githubusercontent.com/rhysd/actionlint/main/.github/actionlint-matcher.json
+          curl -fsSL https://raw.githubusercontent.com/rhysd/actionlint/main/.github/actionlint-matcher.json
           -o .github/actionlint-matcher.json
       - name: Run actionlint
         run: |-
