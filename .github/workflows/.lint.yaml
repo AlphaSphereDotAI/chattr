@@ -45,7 +45,7 @@ jobs:
       name: code_quality
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.0.0
         with:
           fetch-depth: 0
       - name: Install trufflehog
@@ -64,14 +64,14 @@ jobs:
       name: code_quality
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v5.0.0
       - name: Install uv
-        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        uses: astral-sh/setup-uv@v6.0.0
         with:
           enable-cache: true
           cache-dependency-glob: uv.lock
           activate-environment: true
-      - uses: actions/cache@v4
+      - uses: actions/cache@v4.0.0
         with:
           path: ~/.cache/pre-commit
           key: pre-commit-${{ hashFiles('**/.pre-commit-config.yaml') }}
@@ -86,9 +86,9 @@ jobs:
       name: code_quality
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.0.0
       - name: Install uv
-        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        uses: astral-sh/setup-uv@v6.0.0
         with:
           enable-cache: true
           cache-dependency-glob: uv.lock
@@ -114,8 +114,8 @@ jobs:
       name: code_quality
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
-      - uses: ls-lint/action@v2
+        uses: actions/checkout@v4.0.0
+      - uses: ls-lint/action@v2.3.1
         with:
           config: .github/lint/.ls-lint.yaml
   ruff:
@@ -153,7 +153,7 @@ jobs:
           sarif_file: ruff.sarif
       - name: Commit and push applied Ruff fixes
         if: matrix.output == 'github'
-        uses: stefanzweifel/git-auto-commit-action@v7
+        uses: stefanzweifel/git-auto-commit-action@v7.0.0
         with:
           commit_message: '[Ruff] Apply format fixes'
           commit_options: --no-verify
@@ -164,11 +164,11 @@ jobs:
       name: code_quality
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.0.0
         with:
           token: ${{ secrets.GH_TOKEN }}
       - name: Install uv
-        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        uses: astral-sh/setup-uv@v6.0.0
         with:
           enable-cache: true
           cache-dependency-glob: uv.lock
@@ -176,7 +176,7 @@ jobs:
       - name: Format
         run: uvx yamlfix . --config-file .github/lint/.yamlfix.toml
       - name: Commit and push applied linter fixes
-        uses: stefanzweifel/git-auto-commit-action@v7
+        uses: stefanzweifel/git-auto-commit-action@v7.0.0
         with:
           commit_message: '[YamlFix] Apply linters fixes'
           commit_options: --no-verify
@@ -187,9 +187,9 @@ jobs:
       name: code_quality
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.0.0
       - name: Install uv
-        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        uses: astral-sh/setup-uv@v6.0.0
         with:
           enable-cache: true
           cache-dependency-glob: uv.lock
@@ -203,7 +203,7 @@ jobs:
       name: code_quality
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.0.0
       - name: SBOM Generation
         uses: anchore/sbom-action@v0.20.10
         with:
@@ -218,7 +218,7 @@ jobs:
       name: code_quality
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.0.0
       - name: Scan current project
         uses: anchore/scan-action@v7.2.1
         id: scan
@@ -257,7 +257,7 @@ jobs:
             name: SBOM
     steps:
       - name: Checkout repository
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+        uses: actions/checkout@v5.0.0
       - name: Run Trivy vulnerability scanner in repo mode
         uses: aquasecurity/trivy-action@0.33.1
         with:
@@ -276,7 +276,7 @@ jobs:
           category: ${{ matrix.scan-type }}
       - name: Upload trivy report as a Github artifact
         if: matrix.scan-type == 'fs' && ( success() || failure() )
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6.0.0
         with:
           name: trivy-sbom-report
           path: ${{ matrix.output }}
@@ -297,7 +297,7 @@ jobs:
       name: code_quality
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.0.0
       - uses: docker-compose-linter/dclint-github-action@v1.6.0
         with:
           fix: true
@@ -309,11 +309,11 @@ jobs:
       name: code_quality
     steps:
       - name: Checkout repository
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+        uses: actions/checkout@v5.0.0
         with:
           token: ${{ secrets.GH_TOKEN }}
       - name: Install uv
-        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        uses: astral-sh/setup-uv@v6.0.0
         with:
           enable-cache: true
           cache-dependency-glob: uv.lock
@@ -327,8 +327,8 @@ jobs:
       name: code_quality
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
-      - uses: DavidAnson/markdownlint-cli2-action@v21
+        uses: actions/checkout@v4.0.0
+      - uses: DavidAnson/markdownlint-cli2-action@v22.0.0
         with:
           globs: '**/*.md'
           config: .github/lint/.markdownlint.yaml
