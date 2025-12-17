@@ -346,3 +346,17 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: hadolint.sarif
+  actionlint:
+    name: ActionLint
+    runs-on: ubuntu-latest
+    environment:
+      name: code_quality
+    steps:
+      - uses: actions/checkout@v4.0.0
+      - name: Install actionlint
+        uses: jaxxstorm/action-install-gh-release@v1.10.0
+        with:
+          repo: rhysd/actionlint
+          cache: enable
+      - name: Run actionlint
+        run: actionlint -color
