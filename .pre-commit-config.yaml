@@ -125,4 +125,3 @@ repos:
         args:
           - -c
           - .github/lint/.hadolint.yaml
-  
