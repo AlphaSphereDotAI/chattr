@@ -23,16 +23,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v5
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
         with:
           token: ${{ secrets.GH_TOKEN }}
       - name: Get Package version from pyproject.toml
         id: get_package_version
-        uses: mikefarah/yq@0ecdce24e83f0fa127940334be98c86b07b0c488  # v4.48.1
+        uses: mikefarah/yq@0ecdce24e83f0fa127940334be98c86b07b0c488 # v4.48.1
         with:
           cmd: yq -roy '.project.version' pyproject.toml
       - name: Install uv
-        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e  # v6
+        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
         with:
           enable-cache: true
           cache-dependency-glob: uv.lock
@@ -45,13 +45,13 @@ jobs:
       - name: Build source and wheel distribution
         run: uv build
       - name: Upload artifacts
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: dist
           path: dist/
       - name: Update the main branch to the updated version
         if: ${{ github.ref_name != steps.get_package_version.outputs.result }}
-        uses: stefanzweifel/git-auto-commit-action@778341af668090896ca464160c2def5d1d1a3eb0  # v6
+        uses: stefanzweifel/git-auto-commit-action@778341af668090896ca464160c2def5d1d1a3eb0 # v6
         with:
           commit_message: 'Version: ${{ github.ref_name }}'
           branch: main
@@ -68,17 +68,20 @@ jobs:
     environment:
       name: github
       url: ${{github.event.repository.html_url}}/releases/tag/${{github.ref_name}}
+    permissions:
+      contents: write
     steps:
       - name: Checkout Code
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v5
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
       - name: Download artifacts
-        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0  # v5
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
         with:
           name: dist
           path: dist/
       - name: Create GitHub Release
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: >-
-          gh release create ${{ github.ref_name }} dist/* --title ${{ github.ref_name }}
-          --generate-notes
+        uses: softprops/action-gh-release@v2.5.0
+        with:
+          files: dist/*
+          generate_release_notes: true
+          make_latest: true
+          fail_on_unmatched_files: true
