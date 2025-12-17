@@ -1,9 +1,5 @@
 name: CI Tools
 on:
-  push:
-    paths:
-      - uv.lock
-      - pyproject.toml
   issue_comment:
     types:
       - created
@@ -39,7 +35,6 @@ jobs:
           model: opencode/grok-code
   uv_lock_sync:
     if: |
-      github.event_name == 'push' ||
       github.event_name == 'workflow_dispatch' ||
       (
         github.event_name == 'issue_comment' &&
