@@ -8,5 +8,4 @@ results/
 qdrant_storage/
 assets/audio/
 assets/video/
-megalinter-reports/
 .vscode/settings.json

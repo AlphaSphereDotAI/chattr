@@ -8,6 +8,35 @@ permissions:
   security-events: write
   actions: read
 jobs:
+  taplo:
+    name: Taplo ${{ matrix.command }}
+    runs-on: ubuntu-latest
+    environment:
+      name: code_quality
+    strategy:
+      fail-fast: false
+      matrix:
+        command:
+          - format
+          - lint
+    steps:
+      - uses: actions/checkout@v4.0.0
+      - name: Install taplo
+        uses: baptiste0928/cargo-install@v3.3.2
+        with:
+          crate: taplo-cli
+          locked: true
+      - name: ${{ matrix.command }}
+        run: >
+          taplo ${{matrix.command}}
+          --config .github/lint/.taplo.toml
+          ${{matrix.command == 'lint' && '--default-schema-catalogs' || ''}}
+      - name: Commit and push applied formatter fixes
+        if: matrix.command == 'format'
+        uses: stefanzweifel/git-auto-commit-action@v7.0.0
+        with:
+          commit_message: '[Taplo] Apply formatter fixes'
+          commit_options: --no-verify
   trufflehog:
     name: TruffleHog
     runs-on: ubuntu-latest
@@ -16,12 +45,17 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Git Secret Scanning
-        uses: trufflesecurity/trufflehog@v3.91.1
         with:
-          head: ${{github.head_ref || github.ref_name}}
-          extra_args: >
-            --fail --github-actions --results=verified,unknown --log-level=4 --no-update
+          fetch-depth: 0
+      - name: Install trufflehog
+        uses: jaxxstorm/action-install-gh-release@v1.10.0
+        with:
+          repo: trufflesecurity/trufflehog
+          cache: enable
+      - name: Git Secret Scanning
+        run: >
+          trufflehog git ${{github.event.repository.html_url}} --branch=${{github.head_ref || github.ref_name}}
+          --fail --github-actions --results=verified,unknown --log-level=4 --no-update
   pre-commit:
     name: pre-commit
     runs-on: ubuntu-latest
@@ -30,19 +64,17 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Install uv
-        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e  # v6
+        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
         with:
           enable-cache: true
           cache-dependency-glob: uv.lock
           activate-environment: true
-      - name: Install the project
-        run: uv sync --frozen --only-dev
       - uses: actions/cache@v4
         with:
           path: ~/.cache/pre-commit
-          key: pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+          key: pre-commit-${{ hashFiles('**/.pre-commit-config.yaml') }}
           restore-keys: pre-commit-
-      - run: pre-commit run --show-diff-on-failure --color=always --all-files
+      - run: uvx pre-commit run --show-diff-on-failure --color=always --all-files
         continue-on-error: true
       - uses: pre-commit-ci/lite-action@v1.1.0
   uv_lock:
@@ -54,7 +86,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Install uv
-        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e  # v6
+        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
         with:
           enable-cache: true
           cache-dependency-glob: uv.lock
@@ -83,24 +115,44 @@ jobs:
       - uses: ls-lint/action@v2
         with:
           config: .github/lint/.ls-lint.yaml
-  ruff_format:
-    name: Ruff Format
+  ruff:
+    name: Ruff ${{ matrix.command }}
     runs-on: ubuntu-latest
     environment:
       name: code_quality
+    strategy:
+      fail-fast: false
+      matrix:
+        command:
+          - check
+          - format
+        include:
+          - command: check
+            output: sarif
+          - command: format
+            output: github
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.0.0
         with:
           token: ${{ secrets.GH_TOKEN }}
-      - name: Format
+      - name: ${{ matrix.command }}
         uses: astral-sh/ruff-action@v3.5.1
         with:
-          args: format --output-format github --config .github/lint/.ruff.toml
-      - name: Commit and push applied linter fixes
+          args: >-
+            ${{ matrix.command }} --config .github/lint/.ruff.toml
+            --output-format ${{matrix.output}}
+            ${{matrix.output == 'sarif' && '--output-file ruff.sarif' || ''}}
+      - name: upload Ruff scan SARIF report
+        if: matrix.output == 'sarif' && ( success() || failure() )
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: ruff.sarif
+      - name: Commit and push applied Ruff fixes
+        if: matrix.output == 'github'
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
-          commit_message: '[Ruff] Apply linters fixes'
+          commit_message: '[Ruff] Apply format fixes'
           commit_options: --no-verify
   yamlfix:
     name: YamlFix
@@ -113,15 +165,13 @@ jobs:
         with:
           token: ${{ secrets.GH_TOKEN }}
       - name: Install uv
-        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e  # v6
+        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
         with:
           enable-cache: true
           cache-dependency-glob: uv.lock
           activate-environment: true
-      - name: Install the project
-        run: uv sync --frozen --only-dev
       - name: Format
-        run: yamlfix --config-file .github/lint/.yamlfix.toml .
+        run: uvx yamlfix . --config-file .github/lint/.yamlfix.toml
       - name: Commit and push applied linter fixes
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
@@ -136,7 +186,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
       - name: Install uv
-        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e  # v6
+        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
         with:
           enable-cache: true
           cache-dependency-glob: uv.lock
@@ -166,15 +216,6 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-      - name: Install uv
-        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e  # v6
-        with:
-          enable-cache: true
-          cache-dependency-glob: uv.lock
-          activate-environment: true
-      - name: Export requirements to requirements.txt
-        run: >
-          uv export --quiet --no-hashes --format requirements.txt --output-file requirements.txt
       - name: Scan current project
         uses: anchore/scan-action@v7.2.1
         id: scan
@@ -213,11 +254,12 @@ jobs:
             name: SBOM
     steps:
       - name: Checkout repository
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v5
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
       - name: Run Trivy vulnerability scanner in repo mode
         uses: aquasecurity/trivy-action@0.33.1
         with:
           scan-type: ${{ matrix.scan-type }}
+          trivy-config: .github/lint/.trivy.yaml
           format: ${{ matrix.format }}
           output: ${{ matrix.output }}
           github-pat: ${{ secrets.GH_TOKEN }}
@@ -263,36 +305,17 @@ jobs:
       name: code_quality
     steps:
       - name: Checkout repository
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v5
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
         with:
           token: ${{ secrets.GH_TOKEN }}
       - name: Install uv
-        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e  # v6
+        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
         with:
           enable-cache: true
           cache-dependency-glob: uv.lock
           activate-environment: true
-      - name: Install the project
-        run: uv sync --frozen
       - name: Check
-        run: ty check --output-format github
-  ruff:
-    name: Ruff
-    runs-on: ubuntu-latest
-    environment:
-      name: code_quality
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-      - name: Check
-        uses: astral-sh/ruff-action@v3.5.1
-        with:
-          args: check --output-format sarif --output-file ruff.sarif --config .github/lint/.ruff.toml
-      - name: upload Ruff scan SARIF report
-        if: success() || failure()
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: ruff.sarif
+        run: uvx ty check --output-format github
   markdownlint:
     name: MarkdownLint
     runs-on: ubuntu-latest
@@ -306,3 +329,20 @@ jobs:
           globs: '**/*.md'
           config: .github/lint/.markdownlint.yaml
           fix: true
+  hadolint:
+    name: Hadolint
+    runs-on: ubuntu-latest
+    environment:
+      name: code_quality
+    steps:
+      - uses: actions/checkout@v4.0.0
+      - uses: hadolint/hadolint-action@v3.1.0
+        with:
+          config: .github/lint/.hadolint.yaml
+          format: sarif
+          output-file: hadolint.sarif
+      - name: upload Hadolint scan SARIF report
+        if: success() || failure()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: hadolint.sarif
