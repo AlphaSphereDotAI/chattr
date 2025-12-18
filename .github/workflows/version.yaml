@@ -29,7 +29,6 @@ jobs:
         uses: astral-sh/setup-uv@1e862dfacbd1d6d858c55d9b792c756523627244 # v7
         with:
           enable-cache: true
-          cache-dependency-glob: "uv.lock"
           activate-environment: true
       - name: Increase the patch version
         run: uv version --bump patch
@@ -41,5 +40,5 @@ jobs:
       - name: Commit updated count
         uses: stefanzweifel/git-auto-commit-action@28e16e81777b558cc906c8750092100bbb34c5e3 # v7
         with:
-          commit_message: "Tag: ${{ steps.get_package_version.outputs.result }}"
+          commit_message: 'Tag: ${{ steps.get_package_version.outputs.result }}'
           tagging_message: ${{ steps.get_package_version.outputs.result }}
