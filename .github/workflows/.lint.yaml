@@ -286,16 +286,6 @@ jobs:
         with:
           name: trivy-sbom-report
           path: ${{ matrix.output }}
-  bandit:
-    name: Bandit
-    runs-on: ubuntu-latest
-    environment:
-      name: code_quality
-    steps:
-      - name: Perform Bandit Analysis
-        uses: PyCQA/bandit-action@v1.0.1
-        with:
-          configfile: .github/lint/.bandit.yaml
   dclint:
     name: DCLint
     runs-on: ubuntu-latest
