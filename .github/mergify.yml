@@ -6,14 +6,6 @@ pull_request_rules:
       - head = mergify/MH0386/config-update
     actions:
       merge:
-  - name: Merge pull request when Trunk Updated
-    conditions:
-      - author = github-actions[bot]
-      - title = Upgrade trunk
-      - head = trunk-io/update-trunk
-      - files = .trunk/trunk.yaml
-    actions:
-      merge:
   - name: Comment when a pull request is merged
     conditions:
       - merged
@@ -76,7 +68,6 @@ queue_rules:
           - check-success = CodeFactor
           - check-success = GitGuardian Security Checks
           - check-success = SonarCloud
-          - check-success = Trunk Check
           - check-success = Test Image / API Test
           - check-success = CodeQL
           # - check-success = CodeRabbit
