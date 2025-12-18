@@ -21,6 +21,9 @@ pull_request_rules:
     actions:
       comment:
         message: Hi @{{author}}, Your PR is in conflict and cannot be merged.
+      label:
+        add:
+          - conflict
   - name: Automatic update of the pull requests
     conditions:
       - -merged
