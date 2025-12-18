@@ -165,7 +165,7 @@ jobs:
           cache: enable
       - name: Docker Secret Scanning
         run: >-
-          trufflehog docker --image ${{ needs.build_image.outputs.image_tag }}
+          trufflehog docker --image ${{needs.build_image.outputs.image_tag}}
           --fail --github-actions --results=verified --log-level=4 --no-update
   syft:
     name: Syft
