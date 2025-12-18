@@ -28,7 +28,7 @@ jobs:
           crate: taplo-cli
           locked: true
       - name: ${{ matrix.command }}
-        run: >
+        run: >-
           taplo ${{matrix.command}}
           --config .github/lint/.taplo.toml
           ${{matrix.command == 'lint' && '--default-schema-catalogs' || ''}}
@@ -54,7 +54,7 @@ jobs:
           repo: trufflesecurity/trufflehog
           cache: enable
       - name: Git Secret Scanning
-        run: >
+        run: >-
           trufflehog git ${{github.event.repository.html_url}} --branch=${{github.head_ref || github.ref_name}}
           --fail --github-actions --results=verified,unknown --log-level=4 --no-update
   pre-commit:
