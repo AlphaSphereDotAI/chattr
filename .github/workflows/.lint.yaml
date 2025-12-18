@@ -69,7 +69,6 @@ jobs:
         uses: astral-sh/setup-uv@v6.0.0
         with:
           enable-cache: true
-          cache-dependency-glob: uv.lock
           activate-environment: true
       - name: Restore pre-commit cache
         uses: actions/cache/restore@v5.0.1
@@ -101,7 +100,6 @@ jobs:
         uses: astral-sh/setup-uv@v6.0.0
         with:
           enable-cache: true
-          cache-dependency-glob: uv.lock
           activate-environment: true
       - name: Check if the lockfile is up-to-date
         run: uv lock --check
@@ -181,7 +179,6 @@ jobs:
         uses: astral-sh/setup-uv@v6.0.0
         with:
           enable-cache: true
-          cache-dependency-glob: uv.lock
           activate-environment: true
       - name: Format
         run: uvx yamlfix . --config-file .github/lint/.yamlfix.toml
@@ -202,7 +199,6 @@ jobs:
         uses: astral-sh/setup-uv@v6.0.0
         with:
           enable-cache: true
-          cache-dependency-glob: uv.lock
           activate-environment: true
       - name: Check
         run: uvx yamllint . --strict -c=.github/lint/.yamllint.yaml --format github
@@ -326,7 +322,6 @@ jobs:
         uses: astral-sh/setup-uv@v6.0.0
         with:
           enable-cache: true
-          cache-dependency-glob: uv.lock
           activate-environment: true
       - name: Check
         run: uvx ty check --output-format github
