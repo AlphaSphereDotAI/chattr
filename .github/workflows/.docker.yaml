@@ -163,7 +163,7 @@ jobs:
         with:
           repo: trufflesecurity/trufflehog
           cache: enable
-      - name: Git Secret Scanning
+      - name: Docker Secret Scanning
         run: >-
           trufflehog docker --image ${{ needs.build_image.outputs.image_tag }}
           --fail --github-actions --results=verified --log-level=4 --no-update
