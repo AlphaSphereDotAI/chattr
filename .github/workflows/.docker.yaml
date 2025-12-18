@@ -75,9 +75,8 @@ jobs:
           remove_packages_one_command: true
           rm_cmd: rmz
           remove_folders: >-
-            /usr/share/swift /usr/share/miniconda /usr/share/az* /usr/local/lib/node_modules  /usr/local/share/chromium
-            /usr/local/share/powershell
-            /usr/local/julia /usr/local/aws-cli /usr/local/aws-sam-cli /usr/share/gradle
+            /usr/share /usr/local/lib  /usr/local/share
+            /usr/local
       - name: Checkout repository
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
       - name: Get Python version from pyproject.toml
