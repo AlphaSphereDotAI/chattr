@@ -176,8 +176,6 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
       - name: SBOM Generation
         uses: anchore/sbom-action@v0.20.10
         with:
@@ -192,8 +190,6 @@ jobs:
     environment:
       name: container_health
     steps:
-      - name: Check out the code
-        uses: actions/checkout@v4
       - name: Scan image
         uses: anchore/scan-action@v6
         id: scan
