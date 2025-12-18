@@ -208,8 +208,8 @@ jobs:
     environment:
       name: container_health
     steps:
-      - name: Check out the code
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4.0.0
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@0.33.1
         with:
