@@ -39,17 +39,13 @@ jobs:
             ${{ 
             steps.dependency_check.outcome == 'success' && '
             - **Details**: See above for the dependency tree.
-            
             ---
-
             <details>
             <summary> Dependency Tree </summary>
             # Dependency Tree
-            
             ```
             $(uv tree --show-sizes)
             ```
-
             </details>
             ' || ''
             }}
