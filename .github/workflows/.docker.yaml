@@ -238,7 +238,7 @@ jobs:
           format: sarif
           output: dockle.sarif
           accept-file: settings.py
-          accept-key: --chown,GRADIO_SERVER_PORT
+          accept-key: --chmod,--chown,GRADIO_SERVER_PORT
       - name: upload Dockle scan SARIF report
         if: success() || failure()
         uses: github/codeql-action/upload-sarif@v3
