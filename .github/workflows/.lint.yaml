@@ -98,19 +98,15 @@ jobs:
           enable-cache: true
           activate-environment: true
       - name: Check if the lockfile is up-to-date
+        id: uv_lock_check
         run: uv lock --check
-      - name: Job Summary (Success)
-        if: ${{ success() }}
-        run: |
-          echo "# UV Lock Check" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "No issues found :heavy_check_mark:" >> $GITHUB_STEP_SUMMARY
-      - name: Job Summary (Failure)
-        if: ${{ failure() }}
-        run: |
-          echo "# UV Lock Check" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Check failed :x:" >> $GITHUB_STEP_SUMMARY
+      - name: job summary
+        uses: jazanne/job-summary-action@v1.0.0
+        if: success() || failure()
+        with:
+          summary: |
+            ## UV Lock Check
+            - **Status**: ${{ steps.uv_lock_check.outcome == 'success' && ':white_check_mark:' || ':x:' }}
   ls_lint:
     name: ls-lint
     runs-on: ubuntu-latest
@@ -160,7 +156,7 @@ jobs:
         if: matrix.output == 'github'
         uses: stefanzweifel/git-auto-commit-action@v7.0.0
         with:
-          commit_message: '[Ruff] Apply format fixes'
+          commit_message: "[Ruff] Apply format fixes"
           commit_options: --no-verify
   yamlfix:
     name: YamlFix
@@ -182,7 +178,7 @@ jobs:
       - name: Commit and push applied linter fixes
         uses: stefanzweifel/git-auto-commit-action@v7.0.0
         with:
-          commit_message: '[YamlFix] Apply linters fixes'
+          commit_message: "[YamlFix] Apply linters fixes"
           commit_options: --no-verify
   yamllint:
     name: YamlLint
@@ -269,7 +265,7 @@ jobs:
           format: ${{ matrix.format }}
           output: ${{ matrix.output }}
           github-pat: ${{ secrets.GH_TOKEN }}
-          exit-code: '1'
+          exit-code: "1"
           scanners: vuln,secret,misconfig,license
       - name: Upload Trivy scan results to GitHub Security tab
         if: matrix.scan-type != 'fs' && ( success() || failure() )
@@ -322,7 +318,7 @@ jobs:
       - name: Lint Markdown files
         uses: DavidAnson/markdownlint-cli2-action@v22.0.0
         with:
-          globs: '**/*.md'
+          globs: "**/*.md"
           config: .github/lint/.markdownlint.yaml
           fix: true
   hadolint:
