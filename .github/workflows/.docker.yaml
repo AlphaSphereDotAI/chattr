@@ -42,7 +42,7 @@ jobs:
         with:
           summary: |
             ## Dockerfile Check
-            - **Status**: ${{ steps.dockerfile_lint.outcome == 'success' && ':heavy_check_mark:' || ':x:' }}
+            - **Status**: ${{ steps.dockerfile_lint.outcome == 'success' && ':white_check_mark:' || ':x:' }}
   build_image:
     name: Build and push Docker image to ${{ inputs.registry }}
     needs: check_dockerfile
