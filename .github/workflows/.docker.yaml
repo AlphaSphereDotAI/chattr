@@ -14,11 +14,6 @@ on:
         type: string
         required: true
         description: Source to install from (e.g., PyPI Package or Git source)
-      app_name:
-        type: string
-        required: false
-        description: Application Name
-        default: ${{ github.event.repository.name }}
 permissions:
   contents: read
   packages: write
@@ -279,7 +274,7 @@ jobs:
           10s --health-start-period 20s --health-retries 15
     steps:
       - name: Echo URL
-        run: echo "${{ inputs.app_name }} available on localhost:${{ job.services.app.ports['7860'] }}"
+        run: echo "${{ github.event.repository.name }} available on localhost:${{ job.services.app.ports['7860'] }}"
       - name: Checkout repository
         uses: actions/checkout@v5.0.0
       - name: Install uv
