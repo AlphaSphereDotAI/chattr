@@ -35,6 +35,8 @@ jobs:
         uses: docker/build-push-action@v6.18.0
         with:
           call: check
+        env:
+          DOCKER_BUILD_CHECKS_ANNOTATIONS: true
       - name: Job Summary (Success)
         if: ${{ success() }}
         run: |
