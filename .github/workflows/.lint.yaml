@@ -156,7 +156,7 @@ jobs:
         if: matrix.output == 'github'
         uses: stefanzweifel/git-auto-commit-action@v7.0.0
         with:
-          commit_message: "[Ruff] Apply format fixes"
+          commit_message: '[Ruff] Apply format fixes'
           commit_options: --no-verify
   yamlfix:
     name: YamlFix
@@ -178,7 +178,7 @@ jobs:
       - name: Commit and push applied linter fixes
         uses: stefanzweifel/git-auto-commit-action@v7.0.0
         with:
-          commit_message: "[YamlFix] Apply linters fixes"
+          commit_message: '[YamlFix] Apply linters fixes'
           commit_options: --no-verify
   yamllint:
     name: YamlLint
@@ -265,7 +265,7 @@ jobs:
           format: ${{ matrix.format }}
           output: ${{ matrix.output }}
           github-pat: ${{ secrets.GH_TOKEN }}
-          exit-code: "1"
+          exit-code: '1'
           scanners: vuln,secret,misconfig,license
       - name: Upload Trivy scan results to GitHub Security tab
         if: matrix.scan-type != 'fs' && ( success() || failure() )
@@ -318,7 +318,7 @@ jobs:
       - name: Lint Markdown files
         uses: DavidAnson/markdownlint-cli2-action@v22.0.0
         with:
-          globs: "**/*.md"
+          globs: '**/*.md'
           config: .github/lint/.markdownlint.yaml
           fix: true
   hadolint:
