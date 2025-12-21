@@ -44,10 +44,6 @@ jobs:
     environment:
       name: code_quality
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4.0.0
-        with:
-          fetch-depth: 0
       - name: Install trufflehog
         uses: jaxxstorm/action-install-gh-release@v1.10.0
         with:
