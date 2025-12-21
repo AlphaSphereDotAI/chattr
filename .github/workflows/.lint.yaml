@@ -119,7 +119,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4.0.0
-      - uses: ls-lint/action@v2.3.1
+      - name: Lint file names
+        uses: ls-lint/action@v2.3.1
         with:
           config: .github/lint/.ls-lint.yaml
   ruff:
