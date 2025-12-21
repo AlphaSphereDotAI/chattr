@@ -306,7 +306,7 @@ jobs:
       - grype
       - syft
       - trufflehog
-    if: ${{ inputs.registry == 'ghcr.io' }}
+    if: ${{ inputs.registry == 'ghcr.io' && ( success() || failure() ) && !contains(github.event.head_commit.message, '[skip ghcr clean]') }}
     runs-on: ubuntu-latest
     environment:
       name: docker_image
