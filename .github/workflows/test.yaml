@@ -30,7 +30,7 @@ jobs:
         id: dependency_check
         run: uv sync --frozen --no-install-project
       - name: Job Summary
-        uses: jazanne/job-summary-action@v1.0.0
+        uses: johngeorgewright/summary-action@v1.0.0
         if: success() || failure()
         with:
           summary: |
@@ -42,7 +42,7 @@ jobs:
             <summary> Dependency Tree </summary>
             # Dependency Tree
             ```
-            $(uv tree --show-sizes -v)
+            $(uv tree --show-sizes)
             ```
             </details>
   lint:
