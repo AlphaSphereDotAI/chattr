@@ -23,7 +23,7 @@ permissions:
   security-events: write
 jobs:
   check_dockerfile:
-    name: Validate Dockerfile
+    name: Check Dockerfile
     runs-on: ubuntu-latest
     if: ${{ inputs.is_test }}
     environment:
@@ -31,17 +31,18 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5.0.0
-      - name: Validate build configuration
+      - name: Check Dockerfile
         uses: docker/build-push-action@v6.18.0
         id: dockerfile_lint
         with:
           call: check
       - name: Add job summary
         uses: jazanne/job-summary-action@v1.0.0
+        if: success() || failure()
         with:
           summary: |
-            # Dockerfile Check
-            - **Status**: ${{ steps.dockerfile_lint.outcome }}
+            ## Dockerfile Check
+            - **Status**: ${{ steps.dockerfile_lint.outcome == 'success' && ':heavy_check_mark:' || ':x:' }}
   build_image:
     name: Build and push Docker image to ${{ inputs.registry }}
     needs: check_dockerfile
