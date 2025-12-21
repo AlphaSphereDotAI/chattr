@@ -27,18 +27,32 @@ jobs:
           enable-cache: true
           activate-environment: true
       - name: Install the project
+        id: dependency_check
         run: uv sync --frozen --no-install-project
       - name: Job Summary
-        run: |
-          echo '<details>' >> $GITHUB_STEP_SUMMARY
-          echo '<summary> Click me </summary>' >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "# Dependency Tree" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo "$(uv tree --show-sizes)" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo '</details>' >> $GITHUB_STEP_SUMMARY
+        uses: jazanne/job-summary-action@v1.0.0
+        if: success() || failure()
+        with:
+          summary: |
+            ## Dependency Compatibility Check
+            - **Status**: ${{ steps.dependency_check.outcome == 'success' && ':white_check_mark:' || ':x:' }}
+            ${{ 
+            steps.dependency_check.outcome == 'success' && '
+            - **Details**: See above for the dependency tree.
+            
+            ---
+
+            <details>
+            <summary> Dependency Tree </summary>
+            # Dependency Tree
+            
+            ```
+            $(uv tree --show-sizes)
+            ```
+
+            </details>
+            ' || ''
+            }}
   lint:
     name: Lint
     permissions:
