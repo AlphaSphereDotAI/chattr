@@ -44,10 +44,6 @@ jobs:
     environment:
       name: code_quality
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4.0.0
-        with:
-          fetch-depth: 0
       - name: Install trufflehog
         uses: jaxxstorm/action-install-gh-release@v1.10.0
         with:
@@ -123,7 +119,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4.0.0
-      - uses: ls-lint/action@v2.3.1
+      - name: Lint file names
+        uses: ls-lint/action@v2.3.1
         with:
           config: .github/lint/.ls-lint.yaml
   ruff:
@@ -294,7 +291,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4.0.0
-      - uses: docker-compose-linter/dclint-github-action@v1.6.0
+      - name: Lint Docker Compose file
+        uses: docker-compose-linter/dclint-github-action@v1.6.0
         with:
           fix: true
           recursive: true
@@ -306,8 +304,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5.0.0
-        with:
-          token: ${{ secrets.GH_TOKEN }}
       - name: Install uv
         uses: astral-sh/setup-uv@v6.0.0
         with:
@@ -323,7 +319,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4.0.0
-      - uses: DavidAnson/markdownlint-cli2-action@v22.0.0
+      - name: Lint Markdown files
+        uses: DavidAnson/markdownlint-cli2-action@v22.0.0
         with:
           globs: '**/*.md'
           config: .github/lint/.markdownlint.yaml
@@ -336,7 +333,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4.0.0
-      - uses: hadolint/hadolint-action@v3.1.0
+      - name: Lint Dockerfile
+        uses: hadolint/hadolint-action@v3.1.0
         with:
           config: .github/lint/.hadolint.yaml
           format: sarif
