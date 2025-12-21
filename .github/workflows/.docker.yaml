@@ -36,7 +36,7 @@ jobs:
         id: dockerfile_lint
         with:
           call: check
-      - name: Add job summary
+      - name: Job Summary
         uses: jazanne/job-summary-action@v1.0.0
         if: success() || failure()
         with:
