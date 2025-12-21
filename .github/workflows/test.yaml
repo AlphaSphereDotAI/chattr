@@ -36,8 +36,7 @@ jobs:
           summary: |
             ## Dependency Compatibility Check
             - **Status**: ${{ steps.dependency_check.outcome == 'success' && ':white_check_mark:' || ':x:' }}
-            ${{
-            steps.dependency_check.outcome == 'success' && '
+
             - **Details**: See above for the dependency tree.
             ---
             <details>
@@ -47,8 +46,6 @@ jobs:
             $(uv tree --show-sizes)
             ```
             </details>
-            ' || ''
-            }}
   lint:
     name: Lint
     permissions:
