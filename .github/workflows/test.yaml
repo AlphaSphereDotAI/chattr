@@ -38,7 +38,6 @@ jobs:
             - **Status**: ${{ steps.dependency_check.outcome == 'success' && ':white_check_mark:' || ':x:' }}
             - **Details**: See above for the dependency tree.
             <details>
-            
               <summary> Dependency Tree </summary>
               
               # Dependency Tree
@@ -48,10 +47,7 @@ jobs:
               $(uv tree)            
               
               ```
-            
             </details>
-
-
   lint:
     name: Lint
     permissions:
