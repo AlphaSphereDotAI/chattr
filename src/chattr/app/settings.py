@@ -40,7 +40,7 @@ class VectorDatabaseSettings(BaseModel):
 class MCPSettings(BaseModel):
     path: FilePath = Field(default=None)
     schema_path: FilePath = Field(
-        default_factory=lambda: Path.cwd() / "assets" / "mcp-config.json"
+        default_factory=lambda: Path.cwd() / "assets" / "mcp-config.json",
     )
 
     @model_validator(mode="after")
@@ -120,7 +120,7 @@ class ModelSettings(BaseModel):
     api_key: SecretStr = Field(default=None)
     temperature: float = Field(default=0.0, ge=0.0, le=1.0)
     system_message: str = Field(
-        default="You are a helpful assistant that can answer questions about the time and generate audio files from text."
+        default="You are a helpful assistant that can answer questions about the time and generate audio files from text.",
     )
 
     @model_validator(mode="after")
@@ -138,7 +138,7 @@ class ModelSettings(BaseModel):
         if self.url:
             if not self.api_key or not self.api_key.get_secret_value():
                 raise ValueError(
-                    "You need to provide API Key for the Model provider via `MODEL__API_KEY`"
+                    "You need to provide API Key for the Model provider via `MODEL__API_KEY`",
                 )
             if not self.name:
                 raise ValueError("You need to provide Model name via `MODEL__NAME`")
