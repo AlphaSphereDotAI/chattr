@@ -34,9 +34,10 @@ jobs:
         if: success() || failure()
         with:
           summary: |
+            
             ## Dependency Compatibility Check
-            - **Status**: ${{ steps.dependency_check.outcome == 'success' && ':white_check_mark:' || ':x:' }}
-            - **Details**: See above for the dependency tree.
+              - **Status**: ${{ steps.dependency_check.outcome == 'success' && ':white_check_mark:' || ':x:' }}
+              - **Details**: See above for the dependency tree.
             <details>
               <summary> Dependency Tree </summary>
 
