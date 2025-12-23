@@ -40,11 +40,8 @@ jobs:
               - **Details**: See above for the dependency tree.
             <details>
               <summary> Dependency Tree </summary>
-
               # Dependency Tree
-              ```
               $(uv tree)
-              ```
             </details>
   lint:
     name: Lint
