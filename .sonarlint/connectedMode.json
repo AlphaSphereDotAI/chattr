@@ -1,5 +1,5 @@
 {
-  "sonarCloudOrganization": "alphaspheredotai",
   "projectKey": "AlphaSphereDotAI_chatacter_backend_app",
-  "region": "EU"
+  "region": "EU",
+  "sonarCloudOrganization": "alphaspheredotai"
 }

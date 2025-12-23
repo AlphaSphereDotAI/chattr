@@ -13,6 +13,7 @@ def test_app() -> None:
         None
     """
     response: Response = head(
-        getenv("CHATTR_URL", "http://localhost:7860/"), timeout=30
+        getenv("CHATTR_URL", "http://localhost:7860/"),
+        timeout=30,
     )
     assert response.status_code == 200

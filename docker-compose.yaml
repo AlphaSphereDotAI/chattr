@@ -2,43 +2,43 @@ name: Chattr
 services:
   chattr:
     image: ghcr.io/alphaspheredotai/chattr:latest@sha256:a5e93af402616faa006b0add9675e6101708aa94d90ddf35ff133631cfae78fd
-    ports:
-      - "7860:7860"
     volumes:
       - logs:/home/nonroot/logs
       - assets:/home/nonroot/assets
       - fastembed:/home/nonroot/fastembed
-    post_start:
-      - command: chown -R nonroot:nonroot /home/nonroot
-        user: root
     environment:
       MODEL__URL: https://api.groq.com/openai/v1
       MODEL__NAME: llama3-70b-8192
       MODEL__API_KEY: ${MODEL__API_KEY}
       VECTOR_DATABASE__URL: http://vector_database:6333
       VECTOR_DATABASE__NAME: test
+    ports:
+      - 7860:7860
     healthcheck:
       test:
-        - "CMD"
-        - "curl"
-        - "-o"
-        - "/dev/null"
-        - "-f"
-        - "-s"
-        - "-w"
+        - CMD
+        - curl
+        - -o
+        - /dev/null
+        - -f
+        - -s
+        - -w
         - "'Status: %{http_code},\tTime: %{time_total}s'"
-        - "http://localhost:7860/"
+        - http://localhost:7860/
       interval: 1m30s
       timeout: 10s
       retries: 5
       start_period: 40s
+    post_start:
+      - command: chown -R nonroot:nonroot /home/nonroot
+        user: root
   vector_database:
     image: qdrant/qdrant:latest@sha256:0fb8897412abc81d1c0430a899b9a81eb8328aa634e7242d1bc804c1fe8fe863
-    ports:
-      - "6333:6333"
-      - "6334:6334"
     volumes:
       - qdrant_storage:/qdrant/storage
+    ports:
+      - 6333:6333
+      - 6334:6334
 volumes:
   logs:
   assets:
