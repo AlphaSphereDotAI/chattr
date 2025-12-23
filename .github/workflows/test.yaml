@@ -44,7 +44,7 @@ jobs:
           echo "<summary> Dependency Tree </summary>" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          echo '$(uv tree --show-sizes)' >> $GITHUB_STEP_SUMMARY
+          echo "$(uv tree --show-sizes)" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           echo "</details>" >> $GITHUB_STEP_SUMMARY
   lint:
