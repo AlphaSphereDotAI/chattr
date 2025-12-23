@@ -16,7 +16,8 @@ from chattr.app.runner import app
 
 
 def app_block() -> Blocks:
-    """Creates and returns the main Gradio Blocks interface for the Chattr app.
+    """
+    Creates and returns the main Gradio Blocks interface for the Chattr app.
 
     This function sets up the user interface, including video, audio, chatbot, and input controls.
 
@@ -30,7 +31,9 @@ def app_block() -> Blocks:
                 audio = Audio(sources="upload", type="filepath", format="wav")
             with Column():
                 chatbot = Chatbot(
-                    type="messages", show_copy_button=True, show_share_button=True
+                    type="messages",
+                    show_copy_button=True,
+                    show_share_button=True,
                 )
                 msg = Textbox()
                 with Row():
