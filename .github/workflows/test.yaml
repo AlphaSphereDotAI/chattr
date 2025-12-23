@@ -36,13 +36,17 @@ jobs:
           summary: |-
             ## Dependency Compatibility Check
               - **Status**: ${{ steps.dependency_check.outcome == 'success' && ':white_check_mark:' || ':x:' }}
-              - **Details**: See above for the dependency tree.
-            <details>
-              <summary> Dependency Tree </summary>
-              
-              # Dependency Tree
-              `$(uv tree)`
-            </details>
+      - name: Show Dependency Tree
+        if: steps.dependency_check.outcome == 'success'
+        run: |
+          echo "## Dependency Tree" >> $GITHUB_STEP_SUMMARY
+          echo "<details>" >> $GITHUB_STEP_SUMMARY
+          echo "<summary> Dependency Tree </summary>" >> $GITHUB_STEP_SUMMARY
+          echo "# Dependency Tree" >> $GITHUB_STEP_SUMMARY  
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo '$(uv tree --show-sizes)' >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "</details>" >> $GITHUB_STEP_SUMMARY
   lint:
     name: Lint
     permissions:
