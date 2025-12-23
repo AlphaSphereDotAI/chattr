@@ -33,7 +33,7 @@ jobs:
         uses: jazanne/job-summary-action@v1.0.0
         if: success() || failure()
         with:
-          summary: |
+          summary: |4
 
             ## Dependency Compatibility Check
               - **Status**: ${{ steps.dependency_check.outcome == 'success' && ':white_check_mark:' || ':x:' }}
