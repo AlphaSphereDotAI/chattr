@@ -42,7 +42,7 @@ jobs:
 
             # Dependency Tree
             ```
-            $(uv tree --show-sizes)            
+            $(uv tree --show-sizes)
             ```
             </details>
   lint:
