@@ -41,7 +41,7 @@ jobs:
             <details>
               <summary> Dependency Tree </summary>
               # Dependency Tree
-              $(uv tree)
+              `$(uv tree)`
             </details>
   lint:
     name: Lint
