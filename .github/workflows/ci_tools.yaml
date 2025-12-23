@@ -4,42 +4,13 @@ on:
     types:
       - created
       - edited
-  schedule:
-    - cron: 0 6 * * *
-  push:
-    branches:
-      - main
-    paths:
-      - .trunk/trunk.yaml
   workflow_dispatch:
-permissions: read-all
+permissions:
+  id-token: write
+  contents: write
+  pull-requests: read
+  issues: read
 jobs:
-  trunk_upgrade:
-    name: Upgrade Trunk
-    runs-on: ubuntu-latest
-    if: github.event_name == 'schedule'
-    permissions:
-      contents: write
-      pull-requests: write
-      issues: write
-    steps:
-      - name: Checkout
-        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
-      - name: Trunk Upgrade
-        uses: trunk-io/trunk-action/upgrade@75699af9e26881e564e9d832ef7dc3af25ec031b # v1
-  cache_trunk:
-    name: Cache Trunk
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push'
-    permissions:
-      actions: write
-    steps:
-      - name: Checkout
-        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
-      - name: Trunk Cache
-        uses: trunk-io/trunk-action@75699af9e26881e564e9d832ef7dc3af25ec031b # v1
-        with:
-          check-mode: populate_cache_only
   opencode:
     if: |
       github.event_name == 'issue_comment' &&
@@ -51,17 +22,45 @@ jobs:
       )
     name: Opencode
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
-      pull-requests: read
-      issues: read
+    environment:
+      name: ai_agent
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5.0.0
       - name: Run opencode
-        uses: sst/opencode/github@latest
+        uses: sst/opencode/github@v1.0.122
         env:
           OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
         with:
           model: opencode/grok-code
+  uv_lock_sync:
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event_name == 'issue_comment' &&
+        (
+          contains(github.event.comment.body, ' /uv-lock-sync') ||
+          startsWith(github.event.comment.body, '/uv-lock-sync')
+        )
+      )
+    name: UV Lock Sync
+    runs-on: ubuntu-latest
+    environment:
+      name: lockfile
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.0.0
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6.0.0
+        with:
+          enable-cache: true
+          activate-environment: true
+      - name: Sync dependencies and uv.lock
+        run: uv lock
+      - name: Commit and push changes
+        uses: stefanzweifel/git-auto-commit-action@v7.0.0
+        with:
+          commit_message: Sync uv.lock
+          commit_options: --no-verify

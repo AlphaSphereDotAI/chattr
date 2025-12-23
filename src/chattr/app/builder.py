@@ -1,9 +1,10 @@
 """Main orchestration graph for the Chattr application."""
 
+from collections.abc import AsyncGenerator
 from json import dumps, loads
 from pathlib import Path
 from textwrap import dedent
-from typing import AsyncGenerator, Self
+from typing import Self
 
 from gradio import ChatMessage
 from gradio.components.chatbot import MetadataDict
@@ -44,8 +45,8 @@ class App:
         try:
             tools: list[BaseTool] = await cls._setup_tools(
                 MultiServerMCPClient(
-                    loads(cls.settings.mcp.path.read_text(encoding="utf-8"))
-                )
+                    loads(cls.settings.mcp.path.read_text(encoding="utf-8")),
+                ),
             )
         except Exception as e:
             logger.warning(f"Failed to setup tools: {e}")
@@ -81,13 +82,13 @@ class App:
             memories = self._memory.search(messages[-1].content, user_id=user_id)
             if memories:
                 memory_list = "\n".join(
-                    [f"- {memory.get('memory')}" for memory in memories]
+                    [f"- {memory.get('memory')}" for memory in memories],
                 )
                 context = dedent(
                     f"""
                     Relevant information from previous conversations:
                     {memory_list}
-                    """
+                    """,
                 )
             else:
                 context = "No previous conversation history available."
@@ -99,8 +100,8 @@ class App:
                     Use the provided context to personalize your responses and
                     remember user preferences and past interactions.
                     {context}
-                    """
-                )
+                    """,
+                ),
             )
             response = await self._model.ainvoke([system_message] + messages)
             self._memory.add(
@@ -171,7 +172,7 @@ class App:
                     "provider": "langchain",
                     "config": {"model": FastEmbedEmbeddings()},
                 },
-            }
+            },
         )
 
     @staticmethod
@@ -195,11 +196,13 @@ class App:
     def draw_graph(self) -> None:
         """Render the compiled state graph as a Mermaid PNG image and save it."""
         self._graph.get_graph().draw_mermaid_png(
-            output_file_path=self.settings.directory.assets / "graph.png"
+            output_file_path=self.settings.directory.assets / "graph.png",
         )
 
     async def generate_response(
-        self, message: str, history: list[ChatMessage]
+        self,
+        message: str,
+        history: list[ChatMessage],
     ) -> AsyncGenerator[tuple[str, list[ChatMessage], Path | None]]:
         """
         Generate a response to a user message and update the conversation history.
@@ -224,19 +227,21 @@ class App:
                         ChatMessage(
                             role="assistant",
                             content=dumps(
-                                last_agent_message.tool_calls[0]["args"], indent=4
+                                last_agent_message.tool_calls[0]["args"],
+                                indent=4,
                             ),
                             metadata=MetadataDict(
                                 title=last_agent_message.tool_calls[0]["name"],
                                 id=last_agent_message.tool_calls[0]["id"],
                             ),
-                        )
+                        ),
                     )
                 else:
                     history.append(
                         ChatMessage(
-                            role="assistant", content=last_agent_message.content
-                        )
+                            role="assistant",
+                            content=last_agent_message.content,
+                        ),
                     )
             else:
                 last_tool_message = response["tools"]["messages"][-1]
@@ -248,7 +253,7 @@ class App:
                             title=last_tool_message.name,
                             id=last_tool_message.id,
                         ),
-                    )
+                    ),
                 )
                 if is_url(last_tool_message.content):
                     logger.info(f"Downloading audio from {last_tool_message.content}")
@@ -256,11 +261,13 @@ class App:
                         self.settings.directory.audio / last_tool_message.id
                     )
                     download_file(
-                        last_tool_message.content, file_path.with_suffix(".aac")
+                        last_tool_message.content,
+                        file_path.with_suffix(".aac"),
                     )
                     logger.info(f"Audio downloaded to {file_path.with_suffix('.aac')}")
                     convert_audio_to_wav(
-                        file_path.with_suffix(".aac"), file_path.with_suffix(".wav")
+                        file_path.with_suffix(".aac"),
+                        file_path.with_suffix(".wav"),
                     )
                     yield "", history, file_path.with_suffix(".wav")
             yield "", history, None
