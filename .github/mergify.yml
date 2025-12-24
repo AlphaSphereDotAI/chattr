@@ -13,7 +13,7 @@ pull_request_rules:
   - name: Merge pull request when the configuration of Mergify is valid
     conditions:
       - author = MH0386
-      - "title = ci(Mergify): configuration update"
+      - 'title = ci(Mergify): configuration update'
       - head = mergify/MH0386/config-update
     actions:
       merge:
@@ -24,7 +24,8 @@ pull_request_rules:
       delete_head_branch:
       comment:
         message: >-
-          Thank you for your contribution @{{author}}! Your pull request has been merged.
+          Thank you for your contribution @{{author}}! Your pull request has been
+          merged.
   - name: Comment if there is a conflict
     conditions:
       - conflict
@@ -64,10 +65,10 @@ queue_rules:
     queue_branch_merge_method: fast-forward
     queue_conditions:
       - and:
-          - "check-success = DeepSource: Secrets"
-          - "check-success = DeepSource: Python"
-          - "check-success = DeepSource: pyproject.toml"
-          - "check-success = DeepSource: Docker"
+          - 'check-success = DeepSource: Secrets'
+          - 'check-success = DeepSource: Python'
+          - 'check-success = DeepSource: pyproject.toml'
+          - 'check-success = DeepSource: Docker'
           - check-success = CodeFactor
           - check-success = GitGuardian Security Checks
           - check-success = SonarCloud
