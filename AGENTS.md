@@ -29,8 +29,8 @@ Based on user request, you **MUST** follow these sequences of tool calls
 - Task: `byterover-update-plan-progress(plan_name="Feature X", task_name="Task 1", is_completed=true)`
 - All done: `byterover-update-plan-progress(plan_name="Feature X", is_completed=true)`
 
-6. Then, you might call **byterover-store-knowledge** to save knowledge and experience implemented throughout the plan or in important tasks.
-7. During the plan's implementation, you **MUST** frequently call **byterover-think-about-collected-information** and **byterover-assess-context-completeness** to make sure you're on the right track and gather sufficient context for the tasks.
+1. Then, you might call **byterover-store-knowledge** to save knowledge and experience implemented throughout the plan or in important tasks.
+2. During the plan's implementation, you **MUST** frequently call **byterover-think-about-collected-information** and **byterover-assess-context-completeness** to make sure you're on the right track and gather sufficient context for the tasks.
 
 ### Recommended Workflow Sequence
 
