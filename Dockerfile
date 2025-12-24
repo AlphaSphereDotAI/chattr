@@ -1,12 +1,15 @@
 FROM cgr.dev/chainguard/wolfi-base:latest@sha256:9608820b6ea4da8bcf16989dac37a280f8f1fa0022efc45b5ed4b1ac1f634a79 AS builder
 
-COPY --from=ghcr.io/astral-sh/uv:latest@sha256:9874eb7afe5ca16c363fe80b294fe700e460df29a55532bbfea234a0f12eddb1 \
-     /uv /uvx /usr/bin/
+ARG INSTALL_SOURCE
+ARG PYTHON_VERSION
+
+# skipcq: DOK-DL3018
+RUN apk add --no-cache build-base git uv
 
 USER nonroot
 
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv tool install chattr
+    uv tool install ${INSTALL_SOURCE} --python ${PYTHON_VERSION}
 
 FROM cgr.dev/chainguard/wolfi-base:latest@sha256:9608820b6ea4da8bcf16989dac37a280f8f1fa0022efc45b5ed4b1ac1f634a79 AS production
 
