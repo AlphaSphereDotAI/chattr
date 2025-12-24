@@ -72,7 +72,8 @@ class App:
 
     async def _setup_tools(self) -> list[Toolkit]:
         mcp_servers: list[dict] = loads(self.settings.mcp.path.read_text()).get(
-            "mcp_servers", []
+            "mcp_servers",
+            [],
         )
         url_servers = [m for m in mcp_servers if m.get("type") == "url"]
         self.mcp_tools = MultiMCPTools(
@@ -144,7 +145,9 @@ class App:
             Blocks: The constructed Gradio Blocks interface for the chat application.
         """
         return ChatInterface(
-            fn=self.generate_response, type="messages", save_history=True
+            fn=self.generate_response,
+            type="messages",
+            save_history=True,
         )
 
     async def generate_response(
