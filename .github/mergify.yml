@@ -22,7 +22,11 @@ pull_request_rules:
       - check-success = Check Dependency Compatibility
     actions:
       queue:
-  - name: Automatically queue Renovate PRs
+      label:
+        add:
+          - uv
+          - python
+  - name: Automatically queue Docker Compose Updates
     conditions:
       - author = renovate[bot]
     actions:
