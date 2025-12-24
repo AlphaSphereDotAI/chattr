@@ -1,7 +1,7 @@
 name: Chattr
 services:
   chattr:
-    image: alphaspheredotai/chattr:latest
+    image: alphaspheredotai/chattr:latest@sha256:094981de2f6cbad9b42bbde8147a1278af0e5a681b1d1903c497e1cd6e8dcb2c
     ports:
       - 7860:7860
     volumes:
@@ -36,7 +36,7 @@ services:
       retries: 5
       start_period: 40s
   vector_database:
-    image: qdrant/qdrant:latest
+    image: qdrant/qdrant:latest@sha256:0425e3e03e7fd9b3dc95c4214546afe19de2eb2e28ca621441a56663ac6e1f46
     ports:
       - 6333:6333
       - 6334:6334
@@ -44,7 +44,7 @@ services:
       - qdrant_storage:/qdrant/storage
     restart: on-failure:3
   voice_generator:
-    image: alphaspheredotai/vocalizr:latest
+    image: alphaspheredotai/vocalizr:latest@sha256:e508d563372b08766b9dd38f462c97ec831d5563922255baf911b2c821a77c8a
     ports:
       - 7861:7860
     post_start:
@@ -81,7 +81,7 @@ services:
               capabilities:
                 - gpu
   video_generator:
-    image: alphaspheredotai/visualizr:latest
+    image: alphaspheredotai/visualizr:latest@sha256:d1f5c97d9babdbdd45ca26b6ec42a128b612921295de13d77cb7e36fe638bb55
     ports:
       - 7862:7860
     volumes:
