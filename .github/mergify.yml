@@ -38,6 +38,7 @@ pull_request_rules:
         add:
           - uv
           - python
+          - dependencies
   - name: Automatically queue Docker Compose Updates
     conditions:
       - files ~= ^(docker-compose-dev.yaml|docker-compose.yaml)$
