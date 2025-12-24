@@ -5,6 +5,13 @@ pull_request_rules:
       - author = renovate[bot]
     actions:
       queue:
+  - name: Check for Python Dependency Updates
+    conditions:
+      - files ~= ^(uv.lock|pyproject.toml)$
+      - author = renovate[bot]
+      - check-success = Check Dependency Compatibility
+    actions:
+      queue:
   - name: Automatically queue Renovate PRs
     conditions:
       - author = renovate[bot]
