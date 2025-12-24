@@ -1,4 +1,13 @@
 pull_request_rules:
+  - name: Automatic queue pre-commit Updates
+    conditions:
+      - files ~= .pre-commit-config.yaml
+      - author = renovate[bot]
+    actions:
+      queue:
+      label:
+        add:
+          - pre-commit
   - name: Automatic queue Dockerfile Updates
     conditions:
       - files ~= Dockerfile
