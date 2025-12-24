@@ -1,4 +1,14 @@
 pull_request_rules:
+  - name: Automatic queue Dockerfile Updates
+    conditions:
+      - files ~= Dockerfile
+      - author = renovate[bot]
+      - check-success = Test Image / API Test
+    actions:
+      queue:
+      label:
+        add:
+          - docker
   - name: Automatic queue Github Actions Updates
     conditions:
       - files ~= ^.github/workflows/
