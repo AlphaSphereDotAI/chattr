@@ -15,6 +15,9 @@ pull_request_rules:
       - author = renovate[bot]
     actions:
       queue:
+      label:
+        add:
+          - github-actions
   - name: Check for Python Dependency Updates
     conditions:
       - files ~= ^(uv.lock|pyproject.toml)$
