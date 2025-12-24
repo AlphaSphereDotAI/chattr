@@ -34,7 +34,7 @@ jobs:
           ${{matrix.command == 'lint' && '--default-schema-catalogs' || ''}}
       - name: Commit and push applied formatter fixes
         if: matrix.command == 'format'
-        uses: stefanzweifel/git-auto-commit-action@28e16e81777b558cc906c8750092100bbb34c5e3 # v7.0.0
+        uses: stefanzweifel/git-auto-commit-action@04702edda442b2e678b25b537cec683a1493fcb9 # v7.1.0
         with:
           commit_message: '[Taplo] Apply formatter fixes'
           commit_options: --no-verify
@@ -154,7 +154,7 @@ jobs:
           sarif_file: ruff.sarif
       - name: Commit and push applied Ruff fixes
         if: matrix.output == 'github'
-        uses: stefanzweifel/git-auto-commit-action@28e16e81777b558cc906c8750092100bbb34c5e3 # v7.0.0
+        uses: stefanzweifel/git-auto-commit-action@04702edda442b2e678b25b537cec683a1493fcb9 # v7.1.0
         with:
           commit_message: '[Ruff] Apply format fixes'
           commit_options: --no-verify
@@ -176,7 +176,7 @@ jobs:
       - name: Format
         run: uvx yamlfix . --config-file .github/lint/.yamlfix.toml
       - name: Commit and push applied linter fixes
-        uses: stefanzweifel/git-auto-commit-action@28e16e81777b558cc906c8750092100bbb34c5e3 # v7.0.0
+        uses: stefanzweifel/git-auto-commit-action@04702edda442b2e678b25b537cec683a1493fcb9 # v7.1.0
         with:
           commit_message: '[YamlFix] Apply linters fixes'
           commit_options: --no-verify
