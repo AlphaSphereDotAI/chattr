@@ -264,7 +264,7 @@ dev = [
     { name = "doppler-env", specifier = ">=0.3.1" },
     { name = "pytest-emoji", specifier = ">=0.2.0" },
     { name = "pytest-md", specifier = ">=0.2.0" },
-    { name = "pytest-mergify", specifier = ">=2025.10.3.1" },
+    { name = "pytest-mergify", specifier = ">=2025.12.1.1" },
     { name = "ruff", specifier = ">=0.13.3" },
     { name = "ty", specifier = ">=0.0.1a20" },
     { name = "uv-build", specifier = ">=0.9.4" },
@@ -1551,17 +1551,30 @@ wheels = [
 
 [[package]]
 name = "pytest-mergify"
-version = "2025.10.3.1"
+version = "2025.12.1.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "opentelemetry-exporter-otlp-proto-http" },
     { name = "opentelemetry-sdk" },
     { name = "pytest" },
+    { name = "pytest-timeout" },
     { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/d7/0f/1e9984bb1c84437a82896d303b7de943b0694f9ec0b00daa9f8ec779a8b1/pytest_mergify-2025.10.3.1.tar.gz", hash = "sha256:68b9dba24476812477fff3e5d8e6439f19930e7071f7defd56eb0b7b0ffa3916", size = 22033, upload-time = "2025-10-03T07:49:30.884Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/03/fe/9f3758646d3862057632d4d91f4287026fca2bca926d35ccc1eb7c312c44/pytest_mergify-2025.12.1.1.tar.gz", hash = "sha256:1d65e2b4b07dc322e9c35e78c9b135374a22fb4e6354256a8627c74b012fddfc", size = 26029, upload-time = "2025-12-01T15:30:48.147Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/38/7d/94130fca0be1f42ffc20175ecaa520c8686d9ff7e80a218b506f350dc3f5/pytest_mergify-2025.10.3.1-py3-none-any.whl", hash = "sha256:e7ffb13450e70c9bbaaf300d0ca7729f2aa0593d1a51f68304deb2eb435c7adb", size = 27068, upload-time = "2025-10-03T07:49:29.471Z" },
+    { url = "https://files.pythonhosted.org/packages/6b/a9/d4b0827594f00288ca43cea6982299d6f490615e2f3d324a9febccd33533/pytest_mergify-2025.12.1.1-py3-none-any.whl", hash = "sha256:a8809b8d760656f2c8128ba3627716fbe24859bda26043e6f4b0fb828a7390c9", size = 31660, upload-time = "2025-12-01T15:30:46.707Z" },
+]
+
+[[package]]
+name = "pytest-timeout"
+version = "2.4.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pytest" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ac/82/4c9ecabab13363e72d880f2fb504c5f750433b2b6f16e99f4ec21ada284c/pytest_timeout-2.4.0.tar.gz", hash = "sha256:7e68e90b01f9eff71332b25001f85c75495fc4e3a836701876183c4bcfd0540a", size = 17973, upload-time = "2025-05-05T19:44:34.99Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/fa/b6/3127540ecdf1464a00e5a01ee60a1b09175f6913f0644ac748494d9c4b21/pytest_timeout-2.4.0-py3-none-any.whl", hash = "sha256:c42667e5cdadb151aeb5b26d114aff6bdf5a907f176a007a30b940d3d865b5c2", size = 14382, upload-time = "2025-05-05T19:44:33.502Z" },
 ]
 
 [[package]]
