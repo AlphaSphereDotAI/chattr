@@ -1,15 +1,23 @@
 [
   {
-    "label": "Run Chattr",
+    "args": [
+      "run",
+      "chattr"
+    ],
     "command": "uv",
-    "args": ["run", "chattr"],
+    "label": "Run Chattr",
     "reveal_target": "center",
     "shell": "system"
   },
   {
-    "label": "Run Docker Compose",
+    "args": [
+      "compose",
+      "-f",
+      "compose-dev.yaml",
+      "up"
+    ],
     "command": "docker",
-    "args": ["compose", "-f", "compose-dev.yaml", "up"],
+    "label": "Run Docker Compose",
     "reveal_target": "center",
     "shell": "system"
   }
