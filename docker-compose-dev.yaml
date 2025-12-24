@@ -1,0 +1,97 @@
+name: Chattr Dev
+services:
+  vector_database:
+    image: qdrant/qdrant:latest
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_storage:/qdrant/storage
+    restart: on-failure:3
+  voice_generator:
+    image: ghcr.io/alphaspheredotai/vocalizr:latest
+    ports:
+      - "7861:7860"
+    post_start:
+      - command: chown -R nonroot:nonroot /home/nonroot
+        user: root
+      - command: chmod -R 700 /home/nonroot
+        user: root
+    volumes:
+      - huggingface:/home/nonroot/hf
+      - results:/home/nonroot/results
+      - logs:/home/nonroot/logs
+    restart: on-failure:3
+    environment:
+      GRADIO_DEBUG: 1
+    healthcheck:
+      test:
+        - "CMD"
+        - "curl"
+        - "-o"
+        - "/dev/null"
+        - "-f"
+        - "-s"
+        - "-w"
+        - "'Status: %{http_code},\tTime: %{time_total}s'"
+        - "http://localhost:7860/"
+      interval: 1m30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities:
+                - gpu
+  video_generator:
+    image: ghcr.io/alphaspheredotai/visualizr:latest
+    ports:
+      - "7862:7860"
+    volumes:
+      - assets:/home/nonroot/assets
+      - checkpoint:/home/nonroot/ckpts
+      - gfpgan:/home/nonroot/gfpgan
+    post_start:
+      - command: chown -R nonroot:nonroot /home/nonroot
+        user: root
+      - command: chmod -R 700 /home/nonroot
+        user: root
+    restart: on-failure:3
+    environment:
+      GRADIO_DEBUG: 1
+    healthcheck:
+      test:
+        - "CMD"
+        - "curl"
+        - "-o"
+        - "/dev/null"
+        - "-f"
+        - "-s"
+        - "-w"
+        - "'Status: %{http_code},\tTime: %{time_total}s'"
+        - "http://localhost:7860/"
+      interval: 1m30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities:
+                - gpu
+volumes:
+  logs:
+  assets:
+  fastembed:
+  qdrant_storage:
+  checkpoint:
+  gfpgan:
+  huggingface:
+  results:

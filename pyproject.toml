@@ -1,36 +1,40 @@
 [project]
-name = "chattr"
-version = "0.0.39"
-description = "App part of the Chatacter Backend"
-readme = "README.md"
-authors = [
-    { name = "Mohamed Hisham Abdelzaher", email = "mohamed.hisham.abdelzaher@gmail.com" },
-]
-requires-python = ">=3.13.7, <3.14"
-dependencies = [
+  authors = [
+    { email = "mohamed.hisham.abdelzaher@gmail.com", name = "Mohamed Hisham Abdelzaher" },
+  ]
+  dependencies = [
+    "agno[google,qdrant]>=2.1.10",
+    "ddgs>=9.6.1",
     "fastembed>=0.7.3",
-    "gradio>=5.48.0",
-    "langchain-community>=0.3.30",
-    "langchain-mcp-adapters>=0.1.10",
-    "langchain-openai>=0.3.34",
-    "langgraph>=0.6.8",
-    "loguru>=0.7.3",
+    "gradio[mcp]>=5.48.0",
     "m3u8>=6.0.0",
     "mem0ai>=0.1.118",
-]
+    "poml>=0.0.8",
+    "rich>=14.1.0",
+  ]
+  description = "App part of the Chatacter Backend"
+  name = "chattr"
+  readme = "README.md"
+  requires-python = ">=3.13, <3.14"
+  version = "0.0.39"
 
-[project.scripts]
-chattr = "chattr.__main__:main"
+  [project.scripts]
+    chattr = "chattr.__main__:main"
 
 [build-system]
-requires = ["uv_build"]
-build-backend = "uv_build"
+  build-backend = "uv_build"
+  requires = ["uv_build"]
 
 [dependency-groups]
-dev = [
+  dev = [
+    "doppler-env>=0.3.1",
     "pytest-emoji>=0.2.0",
     "pytest-md>=0.2.0",
     "pytest-mergify>=2025.9.24.2",
     "ruff>=0.14.1",
     "ty>=0.0.1a20",
-]
+    "uv-build>=0.9.4",
+  ]
+
+[tool.ruff]
+  extend = ".github/lint/.ruff.toml"
