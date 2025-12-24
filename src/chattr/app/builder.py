@@ -3,30 +3,10 @@
 from collections.abc import AsyncGenerator
 from json import dumps, loads
 from pathlib import Path
+from textwrap import dedent
+from typing import AsyncGenerator, Self
 
-from agno.agent import (
-    Agent,
-    RunContentEvent,
-    ToolCallCompletedEvent,
-    ToolCallStartedEvent,
-)
-from agno.db import BaseDb
-from agno.db.json import JsonDb
-from agno.guardrails import PIIDetectionGuardrail, PromptInjectionGuardrail
-from agno.knowledge.knowledge import Knowledge
-from agno.models.message import Message
-from agno.models.openai.like import OpenAILike
-from agno.tools import Toolkit
-from agno.tools.mcp import MultiMCPTools
-from agno.vectordb.qdrant import Qdrant
-from gradio import (
-    Audio,
-    Blocks,
-    ChatInterface,
-    ChatMessage,
-    Error,
-    Video,
-)
+from gradio import ChatMessage
 from gradio.components.chatbot import MetadataDict
 from m3u8 import M3U8, load
 from poml import poml
@@ -40,59 +20,96 @@ from chattr.app.settings import Settings, logger
 class App:
     """Main application class for the Chattr Multi-agent system app."""
 
-    def __init__(self, settings: Settings) -> None:
-        self.settings = settings
+    settings: Settings
 
-    async def _setup_agent(self) -> Agent:
-        return Agent(
-            model=self._setup_model(),
-            tools=await self._setup_tools(),
-            description="You are a helpful assistant who can act and mimic Napoleon's character and answer questions about the era.",
-            instructions=[
-                "Understand the user's question and context.",
-                "Gather relevant information and resources.",
-                "Formulate a clear and concise response in Napoleon's voice.",
-                "ALWAYS generate audio from the formulated response using the appropriate Tool.",
-                "Generate video from the resulted audio using the appropriate Tool.",
-            ],
-            db=self._setup_database(),
-            knowledge=self._setup_knowledge(
-                self._setup_vector_database(),
-                self._setup_database(),
-            ),
-            markdown=True,
-            add_datetime_to_context=True,
-            timezone_identifier="Africa/Cairo",
-            pre_hooks=[PIIDetectionGuardrail(), PromptInjectionGuardrail()],
-            debug_mode=True,
-            save_response_to_file="agno/response.txt",
-            add_history_to_context=True,
-            add_memories_to_context=True,
-        )
+    def __init__(self, memory: Memory, tools: list[BaseTool]):
+        self._memory: Memory = memory
+        self._tools: list[BaseTool] = tools
+        self._llm: ChatOpenAI = self._initialize_llm()
+        self._model: Runnable = self._llm.bind_tools(self._tools)
+        self._graph: CompiledStateGraph = self._build_state_graph()
 
-    async def _setup_tools(self) -> list[Toolkit]:
-        mcp_servers: list[dict] = loads(self.settings.mcp.path.read_text()).get(
-            "mcp_servers", []
-        )
-        url_servers = [m for m in mcp_servers if m.get("type") == "url"]
-        self.mcp_tools = MultiMCPTools(
-            urls=[m.get("url") for m in url_servers],
-            urls_transports=[m.get("transport") for m in url_servers],
-        )
-        await self.mcp_tools.connect()
-        return [self.mcp_tools]
+    @classmethod
+    async def create(cls, settings: Settings) -> Self:
+        """Async factory method to create a Graph instance."""
+        cls.settings = settings
+        tools = []
+        memory = await cls._setup_memory()
+        try:
+            tools: list[BaseTool] = await cls._setup_tools(
+                MultiServerMCPClient(
+                    loads(cls.settings.mcp.path.read_text(encoding="utf-8"))
+                )
+            )
+        except Exception as e:
+            logger.warning(f"Failed to setup tools: {e}")
+        return cls(memory, tools)
 
-    def _setup_prompt(self) -> str:
-        prompt_template = poml(
-            self.settings.directory.prompts / "template.poml",
-            {"character": "Napoleon"},
-            chat=False,
-            format="dict",
-        )
-        if not isinstance(prompt_template, dict):
-            _msg = "Prompt template must be a string."
-            raise TypeError(_msg)
-        return prompt_template["messages"]
+    def _build_state_graph(self) -> CompiledStateGraph:
+        """
+        Construct and compile the state graph for the Chattr application.
+        This method defines the nodes and edges for the conversational agent
+        and tool interactions.
+
+        Returns:
+            CompiledStateGraph: The compiled state graph is ready for execution.
+        """
+
+        async def _call_model(state: State) -> State:
+            """
+            Generate a model response based on the current state and user memory.
+            This asynchronous function retrieves relevant memories,
+            constructs a system message, and invokes the language model.
+
+            Args:
+                state: The current State object containing messages and user ID.
+
+            Returns:
+                State: The updated State object with the model's response message.
+            """
+            messages = state.get("messages")
+            user_id = state.get("mem0_user_id")
+            if not user_id:
+                logger.warning("No user_id found in state")
+                user_id = "default"
+            memories = self._memory.search(messages[-1].content, user_id=user_id)
+            if memories:
+                memory_list = "\n".join(
+                    [f"- {memory.get('memory')}" for memory in memories]
+                )
+                context = dedent(
+                    f"""
+                    Relevant information from previous conversations:
+                    {memory_list}
+                    """
+                )
+            else:
+                context = "No previous conversation history available."
+            logger.debug(f"Memory context: {context}")
+            system_message: SystemMessage = SystemMessage(
+                content=dedent(
+                    f"""
+                    {self.settings.model.system_message}
+                    Use the provided context to personalize your responses and
+                    remember user preferences and past interactions.
+                    {context}
+                    """
+                )
+            )
+            response = await self._model.ainvoke([system_message] + messages)
+            self._memory.add(
+                f"User: {messages[-1].content}\nAssistant: {response.content}",
+                user_id=user_id,
+            )
+            return State(messages=[response], mem0_user_id=user_id)
+
+        graph_builder: StateGraph = StateGraph(State)
+        graph_builder.add_node("agent", _call_model)
+        graph_builder.add_node("tools", ToolNode(self._tools))
+        graph_builder.add_edge(START, "agent")
+        graph_builder.add_conditional_edges("agent", tools_condition)
+        graph_builder.add_edge("tools", "agent")
+        return graph_builder.compile(debug=True)
 
     def _setup_model(self) -> OpenAILike:
         """
@@ -115,43 +132,67 @@ class App:
                 temperature=self.settings.model.temperature,
             )
         except Exception as e:
-            _msg: str = f"Failed to initialize ChatOpenAI model: {e}"
-            logger.error(_msg)
-            raise Error(_msg) from e
+            logger.error(f"Failed to initialize ChatOpenAI model: {e}")
+            raise
 
-    def _setup_vector_database(self) -> Qdrant:
-        return Qdrant(
-            collection=self.settings.vector_database.name,
-            url=self.settings.vector_database.url.host,
+    @classmethod
+    async def _setup_memory(cls) -> Memory:
+        """
+        Initialize and set up the store and checkpointer for state persistence.
+
+        Returns:
+            Memory: Configured memory instances.
+        """
+        return Memory.from_config(
+            {
+                "vector_store": {
+                    "provider": "qdrant",
+                    "config": {
+                        "host": cls.settings.vector_database.url.host,
+                        "port": cls.settings.vector_database.url.port,
+                        "collection_name": cls.settings.memory.collection_name,
+                        "embedding_model_dims": cls.settings.memory.embedding_dims,
+                    },
+                },
+                "llm": {
+                    "provider": "openai",
+                    "config": {
+                        "model": cls.settings.model.name,
+                        "openai_base_url": str(cls.settings.model.url),
+                        "api_key": cls.settings.model.api_key,
+                    },
+                },
+                "embedder": {
+                    "provider": "langchain",
+                    "config": {"model": FastEmbedEmbeddings()},
+                },
+            }
         )
 
-    def _setup_knowledge(self, vector_db: Qdrant, db: BaseDb) -> Knowledge:
-        return Knowledge(
-            vector_db=vector_db,
-            contents_db=db,
-        )
-
-    def _setup_database(self) -> JsonDb:
-        return JsonDb(
-            db_path="agno",
-        )
-
-    def gui(self) -> Blocks:
+    @staticmethod
+    async def _setup_tools(_mcp_client: MultiServerMCPClient) -> list[BaseTool]:
         """
         Create and return the main Gradio Blocks interface for the Chattr app.
 
         Returns:
             Blocks: The constructed Gradio Blocks interface for the chat application.
         """
-        return ChatInterface(
-            fn=self.generate_response, type="messages", save_history=True
+        try:
+            return await _mcp_client.get_tools()
+        except Exception as e:
+            logger.warning(f"Failed to setup tools: {e}")
+            logger.warning("Using empty tool list")
+            return []
+
+    def draw_graph(self) -> None:
+        """Render the compiled state graph as a Mermaid PNG image and save it."""
+        self._graph.get_graph().draw_mermaid_png(
+            output_file_path=self.settings.directory.assets / "graph.png"
         )
 
     async def generate_response(
-        self,
-        message: str,
-        history: list[ChatMessage],
-    ) -> AsyncGenerator[tuple[str, list[ChatMessage], Path | None, Path | None]]:
+        self, message: str, history: list[ChatMessage]
+    ) -> AsyncGenerator[tuple[str, list[ChatMessage], Path | None]]:
         """
         Generate a response to a user message and update the conversation history.
 
@@ -178,14 +219,9 @@ class App:
                     history.append(
                         ChatMessage(
                             role="assistant",
-                            content=response.content,
-                        ),
-                    )
-                elif isinstance(response, ToolCallStartedEvent):
-                    history.append(
-                        ChatMessage(
-                            role="assistant",
-                            content=dumps(response.tool.tool_args, indent=4),
+                            content=dumps(
+                                last_agent_message.tool_calls[0]["args"], indent=4
+                            ),
                             metadata=MetadataDict(
                                 title=response.tool.tool_name,
                                 id=response.tool.tool_call_id,
@@ -193,134 +229,35 @@ class App:
                             ),
                         ),
                     )
-                elif isinstance(response, ToolCallCompletedEvent):
-                    if response.tool.tool_call_error:
-                        history.append(
-                            ChatMessage(
-                                role="assistant",
-                                content=dumps(response.tool.tool_args, indent=4),
-                                metadata=MetadataDict(
-                                    title=response.tool.tool_name,
-                                    id=response.tool.tool_call_id,
-                                    log="Tool Call Failed",
-                                    duration=response.tool.metrics.duration,
-                                ),
-                            ),
+                else:
+                    history.append(
+                        ChatMessage(
+                            role="assistant", content=last_agent_message.content
                         )
-                    else:
-                        history.append(
-                            ChatMessage(
-                                role="assistant",
-                                content=dumps(response.tool.tool_args, indent=4),
-                                metadata=MetadataDict(
-                                    title=response.tool.tool_name,
-                                    id=response.tool.tool_call_id,
-                                    log="Tool Call Succeeded",
-                                    duration=response.tool.metrics.duration,
-                                ),
-                            ),
-                        )
-                        if response.tool.tool_name == "generate_audio_for_text":
-                            history.append(
-                                Audio(
-                                    response.tool.result,
-                                    autoplay=True,
-                                    show_download_button=True,
-                                    show_share_button=True,
-                                ),
-                            )
-                        elif response.tool.tool_name == "generate_video_mcp":
-                            history.append(
-                                Video(
-                                    response.tool.result,
-                                    autoplay=True,
-                                    show_download_button=True,
-                                    show_share_button=True,
-                                ),
-                            )
-                        else:
-                            msg = f"Unknown tool name: {response.tool.tool_name}"
-                            raise Error(msg)
-                yield history
-        except Exception as e:
-            _msg: str = f"Error generating response: {e}"
-            logger.error(_msg)
-            raise Error(_msg) from e
-        finally:
-            await self._close()
-
-    def _is_url(self, value: str | None) -> bool:
-        """
-        Check if a string is a valid URL.
-
-        Args:
-            value: The string to check. Can be None.
-
-        Returns:
-            bool: True if the string is a valid URL, False otherwise.
-        """
-        if value is None:
-            return False
-
-        try:
-            _ = HttpUrl(value)
-        except ValidationError:
-            return False
-        return True
-
-    def _download_file(self, url: HttpUrl, path: Path) -> None:
-        """
-        Download a file from a URL and save it to a local path.
-
-        Args:
-            url: The URL to download the file from.
-            path: The local file path where the downloaded file will be saved.
-
-        Returns:
-            None
-
-        Raises:
-            requests.RequestException: If the HTTP request fails.
-            IOError: If file writing fails.
-        """
-        if str(url).endswith(".m3u8"):
-            _playlist: M3U8 = load(url)
-            url: str = str(url).replace("playlist.m3u8", _playlist.segments[0].uri)
-        logger.info(f"Downloading {url} to {path}")
-        session = Session()
-        response = session.get(url, stream=True, timeout=30)
-        response.raise_for_status()
-        with path.open("wb") as f:
-            for chunk in response.iter_content(chunk_size=8192):
-                if chunk:
-                    f.write(chunk)
-        logger.info(f"File downloaded to {path}")
-
-    async def _close(self) -> None:
-        try:
-            logger.info("Closing MCP tools...")
-            await self.mcp_tools.close()
-        except Exception as e:
-            msg: str = (
-                f"Error closing MCP tools: {e}, Check if the Tool services are running."
-            )
-            logger.error(msg)
-            raise Error(msg) from e
-
-
-async def test() -> None:
-    from chattr.app.settings import Settings
-
-    settings: Settings = Settings()
-    app: App = App(settings)
-    agent: Agent = await app._setup_agent()
-    try:
-        await agent.aprint_response("Hello!", debug_mode=True)
-    finally:
-        await app._close()
-
-
-if __name__ == "__main__":
-    import asyncio
-
-    asyncio.run(test())
+                    )
+            else:
+                last_tool_message = response["tools"]["messages"][-1]
+                history.append(
+                    ChatMessage(
+                        role="assistant",
+                        content=last_tool_message.content,
+                        metadata=MetadataDict(
+                            title=last_tool_message.name,
+                            id=last_tool_message.id,
+                        ),
+                    )
+                )
+                if is_url(last_tool_message.content):
+                    logger.info(f"Downloading audio from {last_tool_message.content}")
+                    file_path: Path = (
+                        self.settings.directory.audio / last_tool_message.id
+                    )
+                    download_file(
+                        last_tool_message.content, file_path.with_suffix(".aac")
+                    )
+                    logger.info(f"Audio downloaded to {file_path.with_suffix('.aac')}")
+                    convert_audio_to_wav(
+                        file_path.with_suffix(".aac"), file_path.with_suffix(".wav")
+                    )
+                    yield "", history, file_path.with_suffix(".wav")
+            yield "", history, None
