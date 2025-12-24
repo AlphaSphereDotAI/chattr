@@ -30,14 +30,14 @@ jobs:
       name: code_quality
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5.0.0
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       - name: Check Dockerfile
-        uses: docker/build-push-action@v6.18.0
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
         id: dockerfile_lint
         with:
           call: check
       - name: Job Summary
-        uses: jazanne/job-summary-action@v1.0.0
+        uses: jazanne/job-summary-action@690eb386a0b86fe4da7c6f0e543e61330ff09f06 # v1.0.0
         if: success() || failure()
         with:
           summary: |
@@ -55,7 +55,7 @@ jobs:
       url: ${{inputs.registry}}/${{github.repository}}
     steps:
       - name: Free Disk Space
-        uses: endersonmenezes/free-disk-space@v3.1.0
+        uses: endersonmenezes/free-disk-space@e6ed9b02e683a3b55ed0252f1ee469ce3b39a885 # v3.1.0
         with:
           remove_android: true
           remove_dotnet: true
@@ -68,25 +68,25 @@ jobs:
             /usr/share /usr/local/lib  /usr/local/share
             /usr/local
       - name: Checkout repository
-        uses: actions/checkout@v5.0.0
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       - name: Get Python version from pyproject.toml
         id: get_python_version
-        uses: mikefarah/yq@v4.48.1
+        uses: mikefarah/yq@0ecdce24e83f0fa127940334be98c86b07b0c488 # v4.48.1
         with:
           cmd: yq -roy '.project.requires-python' pyproject.toml
       - name: Log in to ${{ inputs.registry }} Registry
-        uses: docker/login-action@v3.6.0
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
         with:
           registry: ${{ inputs.registry }}
           username: mh0386
           password: ${{ inputs.registry == 'ghcr.io' && secrets.GH_TOKEN || inputs.registry == 'docker.io' && secrets.TOKEN_KEY_DOCKER }}
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3.7.0
+        uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3.7.0
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3.12.0
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
       - name: Docker meta
         id: meta
-        uses: docker/metadata-action@v5.10.0
+        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5.10.0
         with:
           images: ${{ inputs.registry }}/${{ github.repository }}
           tags: |
@@ -95,7 +95,7 @@ jobs:
             type=ref,event=tag
             type=ref,event=branch
       - name: Build and Push to ${{ inputs.registry }}
-        uses: docker/build-push-action@v6.18.0
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
         id: push
         with:
           push: true
@@ -109,7 +109,7 @@ jobs:
         env:
           DOCKER_CONTENT_TRUST: '1'
       - name: Generate artifact attestation
-        uses: actions/attest-build-provenance@v3.1.0
+        uses: actions/attest-build-provenance@00014ed6ed5efc5b1ab7f7f34a39eb55d41aa4f8 # v3.1.0
         if: ${{ inputs.is_test == false }}
         with:
           subject-name: ${{ inputs.registry == 'docker.io' && 'index.docker.io' || inputs.registry }}/${{github.repository}}
@@ -117,7 +117,7 @@ jobs:
           push-to-registry: true
       - name: Update Docker Hub Description
         if: ${{ inputs.registry == 'docker.io' }}
-        uses: peter-evans/dockerhub-description@v5.0.0
+        uses: peter-evans/dockerhub-description@1b9a80c056b620d92cedb9d9b5a223409c68ddfa # v5.0.0
         with:
           username: mh0386
           password: ${{ secrets.TOKEN_KEY_DOCKER }}
@@ -135,7 +135,7 @@ jobs:
       name: container_health
     steps:
       - name: Docker Scout
-        uses: docker/scout-action@v1.18.2
+        uses: docker/scout-action@f8c776824083494ab0d56b8105ba2ca85c86e4de # v1.18.2
         with:
           command: cves
           dockerhub-user: mh0386
@@ -150,7 +150,7 @@ jobs:
       name: container_health
     steps:
       - name: Install trufflehog
-        uses: jaxxstorm/action-install-gh-release@v1.10.0
+        uses: jaxxstorm/action-install-gh-release@c5ead9a448b4660cf1e7866ee22e4dc56538031a # v1.10.0
         with:
           repo: trufflesecurity/trufflehog
           cache: enable
@@ -168,7 +168,7 @@ jobs:
       contents: write
     steps:
       - name: SBOM Generation
-        uses: anchore/sbom-action@v0.20.10
+        uses: anchore/sbom-action@fbfd9c6c189226748411491745178e0c2017392d # v0.20.10
         with:
           image: ${{ needs.build_image.outputs.image_tag }}
           dependency-snapshot: true
@@ -182,14 +182,14 @@ jobs:
       name: container_health
     steps:
       - name: Scan image
-        uses: anchore/scan-action@v7.2.2
+        uses: anchore/scan-action@3c9a191a0fbab285ca6b8530b5de5a642cba332f # v7.2.2
         id: scan
         with:
           image: ${{ needs.build_image.outputs.image_tag }}
           cache-db: true
       - name: upload Anchore scan SARIF report
         if: success() || failure()
-        uses: github/codeql-action/upload-sarif@v4.31.7
+        uses: github/codeql-action/upload-sarif@cf1bb45a277cb3c205638b2cd5c984db1c46a412 # v4.31.7
         with:
           sarif_file: ${{ steps.scan.outputs.sarif }}
   trivy:
@@ -200,9 +200,9 @@ jobs:
       name: container_health
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4.0.0
+        uses: actions/checkout@1e31de5234b9f8995739874a8ce0492dc87873e2 # v4.0.0
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@0.33.1
+        uses: aquasecurity/trivy-action@b6643a29fecd7f34b3597bc6acb0a98b03d33ff8 # 0.33.1
         with:
           image-ref: ${{ needs.build_image.outputs.image_tag }}
           trivy-config: .github/lint/.trivy.yaml
@@ -212,7 +212,7 @@ jobs:
           scanners: vuln,secret,misconfig,license
       - name: Upload Trivy scan results to GitHub Security tab
         if: success() || failure()
-        uses: github/codeql-action/upload-sarif@v4.31.7
+        uses: github/codeql-action/upload-sarif@cf1bb45a277cb3c205638b2cd5c984db1c46a412 # v4.31.7
         with:
           sarif_file: trivy-results-image.sarif
   dockle:
@@ -223,7 +223,7 @@ jobs:
       name: container_health
     steps:
       - name: Lint the Container Image
-        uses: goodwithtech/dockle-action@v0.4.15
+        uses: goodwithtech/dockle-action@e30e6af832aad6ea7dca2a248d31a85eab6dbd68 # v0.4.15
         with:
           image: ${{ needs.build_image.outputs.image_tag }}
           format: sarif
@@ -233,7 +233,7 @@ jobs:
           ignore: CIS-DI-0006
       - name: upload Dockle scan SARIF report
         if: success() || failure()
-        uses: github/codeql-action/upload-sarif@v4.31.7
+        uses: github/codeql-action/upload-sarif@cf1bb45a277cb3c205638b2cd5c984db1c46a412 # v4.31.7
         with:
           sarif_file: dockle.sarif
   api_test:
@@ -245,7 +245,7 @@ jobs:
       name: container_health
     services:
       vector_database:
-        image: qdrant/qdrant:latest
+        image: qdrant/qdrant:latest@sha256:0425e3e03e7fd9b3dc95c4214546afe19de2eb2e28ca621441a56663ac6e1f46
         ports:
           - 6333:6333
       app:
@@ -266,16 +266,16 @@ jobs:
       - name: Echo URL
         run: echo "${{ github.event.repository.name }} available on localhost:${{ job.services.app.ports['7860'] }}"
       - name: Checkout repository
-        uses: actions/checkout@v5.0.0
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       - name: Install uv
-        uses: astral-sh/setup-uv@v6.0.0
+        uses: astral-sh/setup-uv@c7f87aa956e4c323abf06d5dec078e358f6b4d04 # v6.0.0
         with:
           enable-cache: true
           activate-environment: true
       - name: Install deps
         run: uv sync --only-dev
       - name: Test
-        uses: pavelzw/pytest-action@v2.2.0
+        uses: pavelzw/pytest-action@510c5e90c360a185039bea56ce8b3e7e51a16507 # v2.2.0
         with:
           click-to-expand: false
           custom-arguments: tests/test_app.py::test_app -p no:warnings
@@ -297,7 +297,7 @@ jobs:
       name: docker_image
     steps:
       - name: GHCR Cleaning
-        uses: snok/container-retention-policy@v3.0.1
+        uses: snok/container-retention-policy@3b0972b2276b171b212f8c4efbca59ebba26eceb # v3.0.1
         with:
           account: ${{ github.repository_owner }}
           token: ${{ secrets.GH_TOKEN }}
