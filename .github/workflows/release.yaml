@@ -19,11 +19,11 @@ jobs:
       url: https://pypi.org/project/${{github.event.repository.name}}/${{github.event.release.tag_name}}
     steps:
       - name: Retrieve release distributions
-        uses: robinraju/release-downloader@daf26c55d821e836577a15f77d86ddc078948b05 # v1
+        uses: robinraju/release-downloader@v1.12
         with:
           tag: ${{ github.event.release.tag_name }}
           out-file-path: dist/
-          fileName: "*"
+          fileName: '*'
       - name: Publish release distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
@@ -45,5 +45,5 @@ jobs:
     with:
       is_test: false
       registry: ${{ matrix.registry }}
-      install_source: ${{ github.event.repository.name }}==${{ github.event.release.tag_name }}
+      install_source: ${{github.event.repository.name}}==${{github.event.release.tag_name}}
     secrets: inherit
