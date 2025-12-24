@@ -31,7 +31,9 @@ pull_request_rules:
     conditions:
       - files ~= ^(uv.lock|pyproject.toml)$
       - author = renovate[bot]
-      - check-success = Check Dependency Compatibility
+      - and:
+          - check-success = Check Dependency Compatibility
+          - check-success = Test Image / API Test
     actions:
       queue:
       label:
