@@ -35,7 +35,7 @@ jobs:
         run: uv version --bump patch
       - name: Get Package version from pyproject.toml
         id: get_package_version
-        uses: mikefarah/yq@45be35c06387d692bb6bf689919919e0e32e796f # v4.49.1
+        uses: mikefarah/yq@065b200af9851db0d5132f50bc10b1406ea5c0a8 # v4.50.1
         with:
           cmd: yq -roy '.project.version' pyproject.toml
       - name: Commit updated count
