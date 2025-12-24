@@ -1,5 +1,5 @@
 pull_request_rules:
-  - name: Automatic queue pre-commit Updates
+  - name: Automatically queue pre-commit Updates
     conditions:
       - files ~= .pre-commit-config.yaml
       - author = renovate[bot]
@@ -8,7 +8,7 @@ pull_request_rules:
       label:
         add:
           - pre-commit
-  - name: Automatic queue Dockerfile Updates
+  - name: Automatically queue Dockerfile Updates
     conditions:
       - files ~= Dockerfile
       - author = renovate[bot]
@@ -18,7 +18,7 @@ pull_request_rules:
       label:
         add:
           - docker
-  - name: Automatic queue Github Actions Updates
+  - name: Automatically queue Github Actions Updates
     conditions:
       - files ~= ^.github/workflows/
       - author = renovate[bot]
@@ -27,7 +27,7 @@ pull_request_rules:
       label:
         add:
           - github-actions
-  - name: Check for Python Dependency Updates
+  - name: Automatically queue valid Python Dependency Updates
     conditions:
       - files ~= ^(uv.lock|pyproject.toml)$
       - author = renovate[bot]
