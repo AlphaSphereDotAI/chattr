@@ -1,5 +1,5 @@
 pull_request_rules:
-  - name: Automatic merge Github Actions Updates
+  - name: Automatic queue Github Actions Updates
     conditions:
       - files ~= ^.github/workflows/
       - author = renovate[bot]
