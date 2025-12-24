@@ -1,40 +1,22 @@
 {
-    "mcp_servers": [
-        {
-            "name": "time",
-            "type": "command",
-            "command": "docker",
-            "args": [
-                "run",
-                "-i",
-                "--rm",
-                "mcp/time"
-            ],
-            "transport": "stdio"
-        },
-        {
-            "name": "sequential_thinking",
-            "type": "command",
-            "command": "docker",
-            "args": [
-                "run",
-                "-i",
-                "--rm",
-                "mcp/sequentialthinking"
-            ],
-            "transport": "stdio"
-        },
-        {
-            "name": "voice_generator",
-            "type": "url",
-            "url": "http://localhost:7861/gradio_api/mcp",
-            "transport": "streamable-http"
-        },
-        {
-            "name": "video_generator",
-            "type": "url",
-            "url": "http://localhost:7862/gradio_api/mcp/?tools=generate_video_mcp",
-            "transport": "streamable-http"
-        }
-    ]
+  "mcpServers": {
+    "time": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "mcp/time"
+      ]
+    },
+    "sequential_thinking": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "mcp/sequentialthinking"
+      ]
+    }
+  }
 }
