@@ -26,7 +26,7 @@ jobs:
       name: ai_agent
     steps:
       - name: Checkout repository
-        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       - name: Run opencode
         uses: sst/opencode/github@ff3b68bd361b05e6ec131f752d209e6845ffeeb4 # v1.0.198
         env:
@@ -49,7 +49,7 @@ jobs:
       name: lockfile
     steps:
       - name: Checkout repository
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           token: ${{ secrets.GH_TOKEN }}
       - name: Install uv
@@ -60,7 +60,7 @@ jobs:
       - name: Sync dependencies and uv.lock
         run: uv lock
       - name: Commit and push changes
-        uses: stefanzweifel/git-auto-commit-action@28e16e81777b558cc906c8750092100bbb34c5e3 # v7.0.0
+        uses: stefanzweifel/git-auto-commit-action@04702edda442b2e678b25b537cec683a1493fcb9 # v7.1.0
         with:
           commit_message: Sync uv.lock
           commit_options: --no-verify
