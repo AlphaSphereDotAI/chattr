@@ -1,4 +1,10 @@
 pull_request_rules:
+  - name: Automatic merge Github Actions Updates
+    conditions:
+      - files ~= ^.github/workflows/
+      - author = renovate[bot]
+    actions:
+      queue:
   - name: Automatically queue Renovate PRs
     conditions:
       - author = renovate[bot]
@@ -7,7 +13,7 @@ pull_request_rules:
   - name: Merge pull request when the configuration of Mergify is valid
     conditions:
       - author = MH0386
-      - "title = ci(Mergify): configuration update"
+      - 'title = ci(Mergify): configuration update'
       - head = mergify/MH0386/config-update
     actions:
       merge:
@@ -35,7 +41,6 @@ pull_request_rules:
     actions:
       update:
   - name: Add a queue label when PR is queued
-    description: Toggle the queue label when a pull request is (un)queued.
     conditions:
       - queue-position > 0
     actions:
@@ -43,8 +48,6 @@ pull_request_rules:
         toggle:
           - merge-queued
   - name: Notify when a PR is removed from the queue
-    description: >-
-      Notify the PR author when its pull request is removed from the merge queue.
     conditions:
       - queue-dequeue-reason != none
       - queue-dequeue-reason != pr-merged
@@ -62,10 +65,10 @@ queue_rules:
     queue_branch_merge_method: fast-forward
     queue_conditions:
       - and:
-          - "check-success = DeepSource: Secrets"
-          - "check-success = DeepSource: Python"
-          - "check-success = DeepSource: pyproject.toml"
-          - "check-success = DeepSource: Docker"
+          - 'check-success = DeepSource: Secrets'
+          - 'check-success = DeepSource: Python'
+          - 'check-success = DeepSource: pyproject.toml'
+          - 'check-success = DeepSource: Docker'
           - check-success = CodeFactor
           - check-success = GitGuardian Security Checks
           - check-success = SonarCloud
