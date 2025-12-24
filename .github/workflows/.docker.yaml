@@ -150,7 +150,7 @@ jobs:
       name: container_health
     steps:
       - name: Install trufflehog
-        uses: jaxxstorm/action-install-gh-release@c5ead9a448b4660cf1e7866ee22e4dc56538031a # v1.10.0
+        uses: jaxxstorm/action-install-gh-release@cd6b2b78ad38bdd294341cda064ec0692b06215b # v1.14.0
         with:
           repo: trufflesecurity/trufflehog
           cache: enable
