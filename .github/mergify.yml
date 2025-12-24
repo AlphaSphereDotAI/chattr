@@ -31,9 +31,13 @@ pull_request_rules:
           - python
   - name: Automatically queue Docker Compose Updates
     conditions:
+      - files ~= ^(docker-compose-dev.yaml|docker-compose.yaml)$
       - author = renovate[bot]
     actions:
       queue:
+      label:
+        add:
+          - docker-compose
   - name: Merge pull request when the configuration of Mergify is valid
     conditions:
       - author = MH0386
