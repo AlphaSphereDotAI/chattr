@@ -264,7 +264,7 @@ dev = [
     { name = "doppler-env", specifier = ">=0.3.1" },
     { name = "pytest-emoji", specifier = ">=0.2.0" },
     { name = "pytest-md", specifier = ">=0.2.0" },
-    { name = "pytest-mergify", specifier = ">=2025.9.24.2" },
+    { name = "pytest-mergify", specifier = ">=2025.10.3.1" },
     { name = "ruff", specifier = ">=0.13.3" },
     { name = "ty", specifier = ">=0.0.1a20" },
     { name = "uv-build", specifier = ">=0.9.4" },
@@ -1551,7 +1551,7 @@ wheels = [
 
 [[package]]
 name = "pytest-mergify"
-version = "2025.9.24.2"
+version = "2025.10.3.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "opentelemetry-exporter-otlp-proto-http" },
@@ -1559,9 +1559,9 @@ dependencies = [
     { name = "pytest" },
     { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/fb/26/b5e1963f271e5a241e23216eebd2e7f2e25c85174bcaa66603ad961cbc46/pytest_mergify-2025.9.24.2.tar.gz", hash = "sha256:c2960ccce997f131dcc43806f814927a4d9392a548c3f9a28a4dfead4d2ee774", size = 21760, upload-time = "2025-09-24T09:31:13.581Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/d7/0f/1e9984bb1c84437a82896d303b7de943b0694f9ec0b00daa9f8ec779a8b1/pytest_mergify-2025.10.3.1.tar.gz", hash = "sha256:68b9dba24476812477fff3e5d8e6439f19930e7071f7defd56eb0b7b0ffa3916", size = 22033, upload-time = "2025-10-03T07:49:30.884Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/6e/f1/0ec1b9123acab7bdb9f64228b73c5851cba79ae33006192db448352485c0/pytest_mergify-2025.9.24.2-py3-none-any.whl", hash = "sha256:e9cd3e0fd51e780bfb2e889fafdd7eab80954655bf6518b616c21746c5565ce5", size = 26653, upload-time = "2025-09-24T09:31:12.455Z" },
+    { url = "https://files.pythonhosted.org/packages/38/7d/94130fca0be1f42ffc20175ecaa520c8686d9ff7e80a218b506f350dc3f5/pytest_mergify-2025.10.3.1-py3-none-any.whl", hash = "sha256:e7ffb13450e70c9bbaaf300d0ca7729f2aa0593d1a51f68304deb2eb435c7adb", size = 27068, upload-time = "2025-10-03T07:49:29.471Z" },
 ]
 
 [[package]]
