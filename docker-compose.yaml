@@ -35,9 +35,6 @@ services:
       timeout: 10s
       retries: 5
       start_period: 40s
-    post_start:
-      - command: chown -R nonroot:nonroot /home/nonroot
-        user: root
   vector_database:
     image: qdrant/qdrant:latest
     ports:
