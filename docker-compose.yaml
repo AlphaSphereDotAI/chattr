@@ -22,19 +22,22 @@ services:
       VECTOR_DATABASE__NAME: main
     healthcheck:
       test:
-        - "CMD"
-        - "curl"
-        - "-o"
-        - "/dev/null"
-        - "-f"
-        - "-s"
-        - "-w"
+        - CMD
+        - curl
+        - -o
+        - /dev/null
+        - -f
+        - -s
+        - -w
         - "'Status: %{http_code},\tTime: %{time_total}s'"
-        - "http://localhost:7860/"
+        - http://localhost:7860/
       interval: 1m30s
       timeout: 10s
       retries: 5
       start_period: 40s
+    post_start:
+      - command: chown -R nonroot:nonroot /home/nonroot
+        user: root
   vector_database:
     image: qdrant/qdrant:latest
     ports:
