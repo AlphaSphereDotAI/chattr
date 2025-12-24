@@ -5,19 +5,11 @@
     "config:best-practices"
   ],
   "lockFileMaintenance": {
-    "enabled": true,
-    "labels": [
-      "Lockfile",
-      "dependencies"
-    ]
+    "enabled": true
   },
   "osvVulnerabilityAlerts": true,
   "packageRules": [
     {
-      "labels": [
-        "PyProject",
-        "dependencies"
-      ],
       "matchManagers": [
         "pep621"
       ],
@@ -28,9 +20,6 @@
     }
   ],
   "pre-commit": {
-    "enabled": true,
-    "labels": [
-      "pre-commit"
-    ]
+    "enabled": true
   }
 }
