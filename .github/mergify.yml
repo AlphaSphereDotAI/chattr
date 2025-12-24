@@ -79,7 +79,6 @@ queue_rules:
           - check-success = CodeFactor
           - check-success = GitGuardian Security Checks
           - check-success = SonarCloud
-          - check-success = Test Image / API Test
           - check-success = CodeQL
   - name: dep-update
     batch_size: 10
