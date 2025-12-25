@@ -2,24 +2,19 @@ name: Chattr
 services:
   chattr:
     image: alphaspheredotai/chattr:latest@sha256:094981de2f6cbad9b42bbde8147a1278af0e5a681b1d1903c497e1cd6e8dcb2c
-    ports:
-      - 7860:7860
     volumes:
       - logs:/home/nonroot/logs
       - assets:/home/nonroot/assets
       - fastembed:/home/nonroot/fastembed
-    restart: on-failure:3
-    post_start:
-      - command: chown -R nonroot:nonroot /home/nonroot
-        user: root
-      - command: chmod -R 700 /home/nonroot
-        user: root
     environment:
       MODEL__URL: ${MODEL__URL:-https://generativelanguage.googleapis.com/v1beta/openai}
       MODEL__NAME: ${MODEL__NAME:-gemini-2.5-flash}
       MODEL__API_KEY: ${MODEL__API_KEY}
       VECTOR_DATABASE__URL: http://vector_database:6333
       VECTOR_DATABASE__NAME: main
+    ports:
+      - 7860:7860
+    restart: on-failure:3
     healthcheck:
       test:
         - CMD
@@ -35,64 +30,27 @@ services:
       timeout: 10s
       retries: 5
       start_period: 40s
-  vector_database:
-    image: qdrant/qdrant:latest@sha256:0425e3e03e7fd9b3dc95c4214546afe19de2eb2e28ca621441a56663ac6e1f46
-    ports:
-      - 6333:6333
-      - 6334:6334
-    volumes:
-      - qdrant_storage:/qdrant/storage
-    restart: on-failure:3
-  voice_generator:
-    image: alphaspheredotai/vocalizr:latest@sha256:e508d563372b08766b9dd38f462c97ec831d5563922255baf911b2c821a77c8a
-    ports:
-      - 7861:7860
     post_start:
       - command: chown -R nonroot:nonroot /home/nonroot
         user: root
       - command: chmod -R 700 /home/nonroot
         user: root
+  vector_database:
+    image: qdrant/qdrant:latest@sha256:0425e3e03e7fd9b3dc95c4214546afe19de2eb2e28ca621441a56663ac6e1f46
     volumes:
-      - huggingface:/home/nonroot/hf
-      - results:/home/nonroot/results
-      - logs:/home/nonroot/logs
+      - qdrant_storage:/qdrant/storage
+    ports:
+      - 6333:6333
+      - 6334:6334
     restart: on-failure:3
-    healthcheck:
-      test:
-        - CMD
-        - curl
-        - -o
-        - /dev/null
-        - -f
-        - -s
-        - -w
-        - "'Status: %{http_code},\tTime: %{time_total}s'"
-        - http://localhost:7860/
-      interval: 1m30s
-      timeout: 10s
-      retries: 5
-      start_period: 40s
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities:
-                - gpu
   video_generator:
     image: alphaspheredotai/visualizr:latest@sha256:d1f5c97d9babdbdd45ca26b6ec42a128b612921295de13d77cb7e36fe638bb55
-    ports:
-      - 7862:7860
     volumes:
       - assets:/home/nonroot/assets
       - checkpoint:/home/nonroot/ckpts
       - gfpgan:/home/nonroot/gfpgan
-    post_start:
-      - command: chown -R nonroot:nonroot /home/nonroot
-        user: root
-      - command: chmod -R 700 /home/nonroot
-        user: root
+    ports:
+      - 7862:7860
     restart: on-failure:3
     healthcheck:
       test:
@@ -117,6 +75,48 @@ services:
               count: all
               capabilities:
                 - gpu
+    post_start:
+      - command: chown -R nonroot:nonroot /home/nonroot
+        user: root
+      - command: chmod -R 700 /home/nonroot
+        user: root
+  voice_generator:
+    image: alphaspheredotai/vocalizr:latest@sha256:e508d563372b08766b9dd38f462c97ec831d5563922255baf911b2c821a77c8a
+    volumes:
+      - huggingface:/home/nonroot/hf
+      - results:/home/nonroot/results
+      - logs:/home/nonroot/logs
+    ports:
+      - 7861:7860
+    restart: on-failure:3
+    healthcheck:
+      test:
+        - CMD
+        - curl
+        - -o
+        - /dev/null
+        - -f
+        - -s
+        - -w
+        - "'Status: %{http_code},\tTime: %{time_total}s'"
+        - http://localhost:7860/
+      interval: 1m30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities:
+                - gpu
+    post_start:
+      - command: chown -R nonroot:nonroot /home/nonroot
+        user: root
+      - command: chmod -R 700 /home/nonroot
+        user: root
 volumes:
   logs:
   assets:
