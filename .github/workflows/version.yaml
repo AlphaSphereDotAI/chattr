@@ -15,7 +15,7 @@ jobs:
   version:
     name: Versioning
     runs-on: ubuntu-latest
-    if: github.actor == 'renovate[bot]'
+    if: github.actor == 'renovate[bot]' || github.actor == 'mergify[bot]'
     permissions:
       contents: write
     environment:
