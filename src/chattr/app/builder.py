@@ -144,11 +144,7 @@ class App:
         Returns:
             Blocks: The constructed Gradio Blocks interface for the chat application.
         """
-        return ChatInterface(
-            fn=self.generate_response,
-            type="messages",
-            save_history=True,
-        )
+        return ChatInterface(fn=self.generate_response, save_history=True)
 
     async def generate_response(
         self,
@@ -312,8 +308,6 @@ class App:
 
 
 async def test() -> None:
-    from chattr.app.settings import Settings
-
     settings: Settings = Settings()
     app: App = App(settings)
     agent: Agent = await app._setup_agent()
