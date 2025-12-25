@@ -15,12 +15,17 @@ pull_request_rules:
       - check-success = Test Image / API Test
     actions:
       queue:
+  - name: Automatically label Dockerfile Updates
+    conditions:
+      - files ~= Dockerfile
+      - author = renovate[bot]
+    actions:
       label:
         add:
           - docker
   - name: Automatically queue Github Actions Updates
     conditions:
-      - files ~= ^.github/workflows/
+      - files ~= ^.github/workflows
       - author = renovate[bot]
     actions:
       queue:
@@ -36,6 +41,11 @@ pull_request_rules:
           - check-success = Test Image / API Test
     actions:
       queue:
+  - name: Automatically label Python Dependency Updates
+    conditions:
+      - files ~= ^(uv.lock|pyproject.toml)$
+      - author = renovate[bot]
+    actions:
       label:
         add:
           - uv
