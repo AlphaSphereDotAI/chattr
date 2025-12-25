@@ -93,9 +93,7 @@ repos:
   - repo: https://github.com/facebook/pyrefly-pre-commit
     rev: 0.46.1
     hooks:
-      - id: pyrefly-typecheck-system
-        name: Pyrefly (type checking)
-        pass_filenames: false
+      - id: pyrefly-check
   - repo: https://github.com/lyz-code/yamlfix
     rev: 1.19.1
     hooks:
