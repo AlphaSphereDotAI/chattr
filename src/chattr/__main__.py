@@ -12,7 +12,6 @@ def main() -> None:
     application.queue(api_open=True)
     application.launch(
         debug=True,
-        show_api=True,
         enable_monitoring=True,
         show_error=True,
         pwa=True,
