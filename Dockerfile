@@ -23,7 +23,7 @@ RUN apk add --no-cache curl libstdc++
 
 WORKDIR /home/nonroot
 
-RUN chown -R nonroot:nonroot /home/nonroot
+RUN chown -R nonroot:nonroot /home/nonroot/
 
 USER nonroot
 
