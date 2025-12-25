@@ -16,7 +16,6 @@ from pydantic import (
 )
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from chattr import APP_NAME
 from chattr.app.logger import logger
 from chattr.app.scheme import MCPScheme
 
@@ -72,12 +71,6 @@ class DirectorySettings(BaseModel):
 
     @computed_field
     @property
-    def log(self) -> DirectoryPath:
-        """Path to the log directory."""
-        return self.base / "logs" / APP_NAME
-
-    @computed_field
-    @property
     def assets(self) -> DirectoryPath:
         """Path to the assets directory."""
         return self.base / "assets"
@@ -110,14 +103,7 @@ class DirectorySettings(BaseModel):
         Returns:
             Self: The validated DirectorySettings instance.
         """
-        for directory in [
-            self.base,
-            self.assets,
-            self.log,
-            self.audio,
-            self.video,
-            self.prompts,
-        ]:
+        for directory in [self.base, self.assets, self.audio, self.video, self.prompts]:
             if not directory.exists():
                 try:
                     directory.mkdir(parents=True, exist_ok=True)
