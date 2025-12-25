@@ -6,8 +6,6 @@ ARG PYTHON_VERSION
 # skipcq: DOK-DL3018
 RUN apk add --no-cache build-base git uv
 
-USER nonroot
-
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv tool install ${INSTALL_SOURCE} --python ${PYTHON_VERSION}
 
@@ -21,11 +19,13 @@ ENV GRADIO_SERVER_PORT=7860 \
 # skipcq: DOK-DL3018
 RUN apk add --no-cache curl libstdc++
 
-USER nonroot
-
 WORKDIR /home/nonroot
 
-COPY --from=builder --chown=nonroot:nonroot --chmod=555 /home/nonroot/.local/ /home/nonroot/.local/
+RUN chown -R nonroot:nonroot /home/nonroot
+
+USER nonroot
+
+COPY --from=builder --chown=nonroot:nonroot --chmod=555 /root/.local/ /home/nonroot/.local/
 
 EXPOSE ${GRADIO_SERVER_PORT}
 
