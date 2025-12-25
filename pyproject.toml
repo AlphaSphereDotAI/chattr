@@ -32,7 +32,7 @@
     "pytest-emoji>=0.2.0",
     "pytest-md>=0.2.0",
     "pytest-mergify>=2025.10.3.1",
-    "ruff>=0.13.3",
+    "ruff>=0.14.10",
     "ty>=0.0.1a20",
     "uv-build>=0.9.4",
   ]
