@@ -270,7 +270,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "agno", extras = ["google", "qdrant"], specifier = ">=2.3.21" },
-    { name = "ddgs", specifier = ">=9.6.1" },
+    { name = "ddgs", specifier = ">=9.10.0" },
     { name = "fastembed", specifier = ">=0.7.3" },
     { name = "gradio", extras = ["mcp"], specifier = ">=5.50.0" },
     { name = "m3u8", specifier = ">=6.0.0" },
