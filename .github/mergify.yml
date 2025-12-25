@@ -15,12 +15,17 @@ pull_request_rules:
       - check-success = Test Image / API Test
     actions:
       queue:
+  - name: Automatically label Dockerfile Updates
+    conditions:
+      - files ~= Dockerfile
+      - author = renovate[bot]
+    actions:
       label:
         add:
           - docker
   - name: Automatically queue Github Actions Updates
     conditions:
-      - files ~= ^.github/workflows/
+      - files ~= ^.github/workflows
       - author = renovate[bot]
     actions:
       queue:
@@ -36,6 +41,11 @@ pull_request_rules:
           - check-success = Test Image / API Test
     actions:
       queue:
+  - name: Automatically label Python Dependency Updates
+    conditions:
+      - files ~= ^(uv.lock|pyproject.toml)$
+      - author = renovate[bot]
+    actions:
       label:
         add:
           - uv
@@ -100,6 +110,7 @@ pull_request_rules:
           if you think this was a mistake.
 queue_rules:
   - name: default
+    batch_size: 10
     update_method: merge
     allow_queue_branch_edit: true
     queue_branch_merge_method: fast-forward
@@ -113,8 +124,3 @@ queue_rules:
           - check-success = GitGuardian Security Checks
           - check-success = SonarCloud
           - check-success = CodeQL
-  - name: dep-update
-    batch_size: 10
-    batch_max_wait_time: 30 min
-    queue_conditions:
-      - author = renovate[bot]
