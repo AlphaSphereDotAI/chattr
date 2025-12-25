@@ -276,7 +276,7 @@ requires-dist = [
     { name = "m3u8", specifier = ">=6.0.0" },
     { name = "mem0ai", specifier = ">=1.0.1" },
     { name = "poml", specifier = ">=0.0.8" },
-    { name = "rich", specifier = ">=14.1.0" },
+    { name = "rich", specifier = ">=14.2.0" },
 ]
 
 [package.metadata.requires-dev]
