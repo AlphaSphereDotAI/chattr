@@ -274,7 +274,7 @@ requires-dist = [
     { name = "fastembed", specifier = ">=0.7.3" },
     { name = "gradio", extras = ["mcp"], specifier = ">=6.2.0" },
     { name = "m3u8", specifier = ">=6.0.0" },
-    { name = "mem0ai", specifier = ">=0.1.118" },
+    { name = "mem0ai", specifier = ">=1.0.1" },
     { name = "poml", specifier = ">=0.0.8" },
     { name = "rich", specifier = ">=14.1.0" },
 ]
