@@ -308,8 +308,6 @@ class App:
 
 
 async def test() -> None:
-    from chattr.app.settings import Settings
-
     settings: Settings = Settings()
     app: App = App(settings)
     agent: Agent = await app._setup_agent()
