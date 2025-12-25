@@ -123,3 +123,5 @@ queue_rules:
           - check-success = GitGuardian Security Checks
           - check-success = SonarCloud
           - check-success = CodeQL
+          - check-success = Lint / UV Lock Check
+          - check-success = Lint / TruffleHog
