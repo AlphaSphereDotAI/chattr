@@ -1,3 +1,4 @@
+"""Module defining MCP connection scheme configurations."""
 from typing import Annotated, Literal
 
 from pydantic import (
@@ -66,7 +67,7 @@ if __name__ == "__main__":
     )
     pprint(ok1)
 
-    # This will fail: missing required key for the selected type
+    # This will fail: missing the required key for the selected type
     try:
         MCPScheme.model_validate(
             {"mcp_servers": [{"type": "url", "command": "ls"}]},
