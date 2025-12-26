@@ -162,7 +162,7 @@ class CharacterSettings(BaseModel):
 class Settings(BaseSettings):
     """Configuration for the Chattr app."""
 
-    model_config: SettingsConfigDict = SettingsConfigDict(
+    model_config = SettingsConfigDict(
         env_nested_delimiter="__",
         env_parse_none_str="None",
         env_file=".env",
