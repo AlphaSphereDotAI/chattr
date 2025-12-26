@@ -1,3 +1,4 @@
+"""A module handles the configuration of logging for the application."""
 from logging import INFO, WARNING, Logger, basicConfig, getLogger
 
 from rich.logging import RichHandler
