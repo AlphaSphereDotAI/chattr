@@ -133,20 +133,8 @@ class ModelSettings(BaseModel):
     temperature: float = Field(0.0, ge=0.0, le=1.0)
 
     @model_validator(mode="after")
-    def check_api_key_exist(self) -> Self:
-        """
-        Ensure that an API key and model name are provided if a model URL is set.
-
-        This method validates the presence of required
-        credentials for the model provider.
-
-        Returns:
-            Self: The validated ModelSettings instance.
-
-        Raises:
-            ValueError: If the API key or model name is missing
-                        when a model URL is provided.
-        """
+    def check_param_exist(self) -> Self:
+        """Validate the existence of required credentials for the model provider."""
         if self.url:
             if not self.api_key or not self.api_key.get_secret_value():
                 _msg: str = (
