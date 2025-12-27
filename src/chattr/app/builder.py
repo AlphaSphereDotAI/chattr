@@ -78,7 +78,7 @@ class App:
         except ValueError as e:
             _msg: str = f"Failed to initialize Agent: {e}"
             logger.error(_msg)
-            raise Error(_msg) from e
+            raise Error(_msg, print_exception=self.settings.debug) from e
 
     async def _setup_tools(self) -> list[Toolkit]:
         mcp_servers: list[dict] = loads(self.settings.mcp.path.read_text()).get(
@@ -312,7 +312,7 @@ class App:
         except Exception as e:
             msg: str = f"Error closing MCP tools: {e}, Check if the Tool services are running."
             logger.error(msg)
-            raise Error(msg) from e
+            raise Error(msg, print_exception=self.settings.debug) from e
 
 
 async def test() -> None:
