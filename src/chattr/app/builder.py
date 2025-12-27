@@ -118,16 +118,17 @@ class App:
             ChatOpenAI: The initialized ChatOpenAI language model instance.
         """
         if not self.settings.model.url:
-            _msg = "Model URL is missing."
+            _msg = "Model URL is missing. Set it with `MODEL__URL`"
             raise ValueError(_msg)
         if not self._is_url(str(self.settings.model.url)):
             _msg = "Model URL is invalid."
+            _msg = "Model URL is invalid. Set it with `MODEL__URL`"
             raise ValueError(_msg)
         if not self.settings.model.name:
-            _msg = "Model name is missing."
+            _msg = "Model name is missing. Set it with `MODEL__NAME`"
             raise ValueError(_msg)
         if not self.settings.model.api_key:
-            _msg = "API key is missing."
+            _msg = "API key is missing. Set it with `MODEL__API_KEY`"
             raise ValueError(_msg)
         return OpenAILike(
             base_url=str(self.settings.model.url),
