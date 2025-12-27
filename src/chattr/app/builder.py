@@ -120,8 +120,7 @@ class App:
         if not self.settings.model.url:
             _msg = "Model URL is missing. Set it with `MODEL__URL`"
             raise ValueError(_msg)
-        if not self._is_url(str(self.settings.model.url)):
-            _msg = "Model URL is invalid."
+        if not is_url(str(self.settings.model.url)):
             _msg = "Model URL is invalid. Set it with `MODEL__URL`"
             raise ValueError(_msg)
         if not self.settings.model.name:
