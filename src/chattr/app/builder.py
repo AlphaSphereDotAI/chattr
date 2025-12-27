@@ -44,31 +44,36 @@ class App:
         self.settings = settings
 
     async def _setup_agent(self) -> Agent:
-        return Agent(
-            model=self._setup_model(),
-            tools=await self._setup_tools(),
-            description="You are a helpful assistant who can act and mimic Napoleon's character and answer questions about the era.",
-            instructions=[
-                "Understand the user's question and context.",
-                "Gather relevant information and resources.",
-                "Formulate a clear and concise response in Napoleon's voice.",
-                "ALWAYS generate audio from the formulated response using the appropriate Tool.",
-                "Generate video from the resulted audio using the appropriate Tool.",
-            ],
-            db=self._setup_database(),
-            knowledge=self._setup_knowledge(
-                self._setup_vector_database(),
-                self._setup_database(),
-            ),
-            markdown=True,
-            add_datetime_to_context=True,
-            timezone_identifier="Africa/Cairo",
-            pre_hooks=[PIIDetectionGuardrail(), PromptInjectionGuardrail()],
-            debug_mode=True,
-            save_response_to_file="agno/response.txt",
-            add_history_to_context=True,
-            add_memories_to_context=True,
-        )
+        try:
+            return Agent(
+                model=self._setup_model(),
+                tools=await self._setup_tools(),
+                description="You are a helpful assistant who can act and mimic Napoleon's character and answer questions about the era.",
+                instructions=[
+                    "Understand the user's question and context.",
+                    "Gather relevant information and resources.",
+                    "Formulate a clear and concise response in Napoleon's voice.",
+                    "ALWAYS generate audio from the formulated response using the appropriate Tool.",
+                    "Generate video from the resulted audio using the appropriate Tool.",
+                ],
+                db=self._setup_database(),
+                knowledge=self._setup_knowledge(
+                    self._setup_vector_database(),
+                    self._setup_database(),
+                ),
+                markdown=True,
+                add_datetime_to_context=True,
+                timezone_identifier="Africa/Cairo",
+                pre_hooks=[PIIDetectionGuardrail(), PromptInjectionGuardrail()],
+                debug_mode=True,
+                save_response_to_file="agno/response.txt",
+                add_history_to_context=True,
+                add_memories_to_context=True,
+            )
+        except Exception as e:
+            _msg: str = f"Failed to initialize Agent: {e}"
+            logger.error(_msg)
+            raise Error(_msg) from e
 
     async def _setup_tools(self) -> list[Toolkit]:
         mcp_servers: list[dict] = loads(self.settings.mcp.path.read_text()).get(
