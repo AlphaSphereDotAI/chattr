@@ -304,9 +304,7 @@ class App:
             logger.info("Closing MCP tools...")
             await self.mcp_tools.close()
         except Exception as e:
-            msg: str = (
-                f"Error closing MCP tools: {e}, Check if the Tool services are running."
-            )
+            msg: str = f"Error closing MCP tools: {e}, Check if the Tool services are running."
             logger.error(msg)
             raise Error(msg) from e
 
