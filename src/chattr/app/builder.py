@@ -86,6 +86,8 @@ class App:
             [],
         )
         url_servers = [m for m in mcp_servers if m.get("type") == "url"]
+        if not url_servers:
+            return []
         self.mcp_tools = MultiMCPTools(
             urls=[m["url"] for m in url_servers],
             urls_transports=[m["transport"] for m in url_servers],
