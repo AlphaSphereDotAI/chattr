@@ -180,21 +180,33 @@ class App:
                             empty string, the updated history, and
                             a Path to an audio file if generated.
         """
-        try:
-            agent: Agent = await self._setup_agent()
-            async for response in agent.arun(
-                Message(content=message, role="user"),
-                stream=True,
-            ):
-                pprint(response)
-                if isinstance(response, RunContentEvent):
-                    history.append(
-                        ChatMessage(
-                            role="assistant",
-                            content=response.content,
+        agent: Agent = await self._setup_agent()
+        async for response in agent.arun(
+            Message(content=message, role="user"),
+            stream=True,
+        ):
+            pprint(response)
+            if isinstance(response, RunContentEvent):
+                history.append(
+                    ChatMessage(
+                        role="assistant",
+                        content=response.content,
+                    ),
+                )
+            elif isinstance(response, ToolCallStartedEvent):
+                history.append(
+                    ChatMessage(
+                        role="assistant",
+                        content=dumps(response.tool.tool_args, indent=4),
+                        metadata=MetadataDict(
+                            title=response.tool.tool_name,
+                            id=response.tool.tool_call_id,
+                            duration=response.tool.created_at,
                         ),
-                    )
-                elif isinstance(response, ToolCallStartedEvent):
+                    ),
+                )
+            elif isinstance(response, ToolCallCompletedEvent):
+                if response.tool.tool_call_error:
                     history.append(
                         ChatMessage(
                             role="assistant",
@@ -202,64 +214,48 @@ class App:
                             metadata=MetadataDict(
                                 title=response.tool.tool_name,
                                 id=response.tool.tool_call_id,
-                                duration=response.tool.created_at,
+                                log="Tool Call Failed",
+                                duration=response.tool.metrics.duration,
                             ),
                         ),
                     )
-                elif isinstance(response, ToolCallCompletedEvent):
-                    if response.tool.tool_call_error:
+                else:
+                    history.append(
+                        ChatMessage(
+                            role="assistant",
+                            content=dumps(response.tool.tool_args, indent=4),
+                            metadata=MetadataDict(
+                                title=response.tool.tool_name,
+                                id=response.tool.tool_call_id,
+                                log="Tool Call Succeeded",
+                                duration=response.tool.metrics.duration,
+                            ),
+                        ),
+                    )
+                    if response.tool.tool_name == "generate_audio_for_text":
                         history.append(
-                            ChatMessage(
-                                role="assistant",
-                                content=dumps(response.tool.tool_args, indent=4),
-                                metadata=MetadataDict(
-                                    title=response.tool.tool_name,
-                                    id=response.tool.tool_call_id,
-                                    log="Tool Call Failed",
-                                    duration=response.tool.metrics.duration,
-                                ),
+                            Audio(
+                                response.tool.result,
+                                autoplay=True,
+                                show_download_button=True,
+                                show_share_button=True,
+                            ),
+                        )
+                    elif response.tool.tool_name == "generate_video_mcp":
+                        history.append(
+                            Video(
+                                response.tool.result,
+                                autoplay=True,
+                                show_download_button=True,
+                                show_share_button=True,
                             ),
                         )
                     else:
-                        history.append(
-                            ChatMessage(
-                                role="assistant",
-                                content=dumps(response.tool.tool_args, indent=4),
-                                metadata=MetadataDict(
-                                    title=response.tool.tool_name,
-                                    id=response.tool.tool_call_id,
-                                    log="Tool Call Succeeded",
-                                    duration=response.tool.metrics.duration,
-                                ),
-                            ),
-                        )
-                        if response.tool.tool_name == "generate_audio_for_text":
-                            history.append(
-                                Audio(
-                                    response.tool.result,
-                                    autoplay=True,
-                                    show_download_button=True,
-                                    show_share_button=True,
-                                ),
-                            )
-                        elif response.tool.tool_name == "generate_video_mcp":
-                            history.append(
-                                Video(
-                                    response.tool.result,
-                                    autoplay=True,
-                                    show_download_button=True,
-                                    show_share_button=True,
-                                ),
-                            )
-                        else:
-                            msg = f"Unknown tool name: {response.tool.tool_name}"
-                            raise Error(msg)
-                yield history
-        except Exception as e:
-            _msg: str = f"Error generating response: {e}"
-            logger.error(_msg)
-            raise Error(_msg) from e
-        finally:
+                        _msg = f"Unknown tool name: {response.tool.tool_name}"
+                        logger.error(_msg)
+                        raise Error(_msg, print_exception=self.settings.debug)
+            yield history
+        if self.mcp_tools:
             await self._close()
 
     def _is_url(self, value: str | None) -> bool:
