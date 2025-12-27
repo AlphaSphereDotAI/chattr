@@ -104,9 +104,6 @@ class App:
 
         Returns:
             ChatOpenAI: The initialized ChatOpenAI language model instance.
-
-        Raises:
-            Exception: If the model initialization fails.
         """
         try:
             return OpenAILike(
