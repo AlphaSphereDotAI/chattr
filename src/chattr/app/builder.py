@@ -48,7 +48,13 @@ class App:
             return Agent(
                 model=self._setup_model(),
                 tools=await self._setup_tools(),
-                description="You are a helpful assistant who can act and mimic Napoleon's character and answer questions about the era.",
+                description="".join(
+                    [
+                        "You are a helpful assistant ",
+                        f"who can act and mimic {self.settings.character.name}'s character ",
+                        "and answer questions about the era.",
+                    ]
+                ),
                 instructions=[
                     "Understand the user's question and context.",
                     "Gather relevant information and resources.",
