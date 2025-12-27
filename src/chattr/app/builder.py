@@ -105,17 +105,24 @@ class App:
         Returns:
             ChatOpenAI: The initialized ChatOpenAI language model instance.
         """
-        try:
-            return OpenAILike(
-                base_url=str(self.settings.model.url),
-                id=self.settings.model.name,
-                api_key=self.settings.model.api_key.get_secret_value(),
-                temperature=self.settings.model.temperature,
-            )
-        except Exception as e:
-            _msg: str = f"Failed to initialize ChatOpenAI model: {e}"
-            logger.error(_msg)
-            raise Error(_msg) from e
+        if not self.settings.model.url:
+            _msg = "Model URL is missing."
+            raise ValueError(_msg)
+        if not self._is_url(str(self.settings.model.url)):
+            _msg = "Model URL is invalid."
+            raise ValueError(_msg)
+        if not self.settings.model.name:
+            _msg = "Model name is missing."
+            raise ValueError(_msg)
+        if not self.settings.model.api_key:
+            _msg = "API key is missing."
+            raise ValueError(_msg)
+        return OpenAILike(
+            base_url=str(self.settings.model.url),
+            id=self.settings.model.name,
+            api_key=self.settings.model.api_key.get_secret_value(),
+            temperature=self.settings.model.temperature,
+        )
 
     def _setup_vector_database(self) -> Qdrant:
         return Qdrant(
