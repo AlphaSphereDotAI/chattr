@@ -127,10 +127,10 @@ class DirectorySettings(BaseModel):
 class ModelSettings(BaseModel):
     """Settings related to model execution."""
 
-    url: HttpUrl | None = Field(default=None)
-    name: str | None = Field(default=None)
-    api_key: SecretStr | None = Field(default=None)
-    temperature: float = Field(default=0.0, ge=0.0, le=1.0)
+    url: HttpUrl | None = Field(None)
+    name: str | None = Field(None)
+    api_key: SecretStr | None = Field(None)
+    temperature: float = Field(0.0, ge=0.0, le=1.0)
 
     @model_validator(mode="after")
     def check_api_key_exist(self) -> Self:
