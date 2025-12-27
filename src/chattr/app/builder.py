@@ -75,7 +75,7 @@ class App:
                 add_history_to_context=True,
                 add_memories_to_context=True,
             )
-        except Exception as e:
+        except ValueError as e:
             _msg: str = f"Failed to initialize Agent: {e}"
             logger.error(_msg)
             raise Error(_msg) from e
