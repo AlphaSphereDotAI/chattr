@@ -260,53 +260,6 @@ class App:
         if self.mcp_tools:
             await self._close()
 
-    def _is_url(self, value: str | None) -> bool:
-        """
-        Check if a string is a valid URL.
-
-        Args:
-            value: The string to check. Can be None.
-
-        Returns:
-            bool: True if the string is a valid URL, False otherwise.
-        """
-        if value is None:
-            return False
-
-        try:
-            _ = HttpUrl(value)
-        except ValidationError:
-            return False
-        return True
-
-    def _download_file(self, url: HttpUrl, path: Path) -> None:
-        """
-        Download a file from a URL and save it to a local path.
-
-        Args:
-            url: The URL to download the file from.
-            path: The local file path where the downloaded file will be saved.
-
-        Returns:
-            None
-
-        Raises:
-            requests.RequestException: If the HTTP request fails.
-            IOError: If file writing fails.
-        """
-        if str(url).endswith(".m3u8"):
-            _playlist: M3U8 = load(url)
-            url: str = str(url).replace("playlist.m3u8", _playlist.segments[0].uri)
-        logger.info(f"Downloading {url} to {path}")
-        session = Session()
-        response = session.get(url, stream=True, timeout=30)
-        response.raise_for_status()
-        with path.open("wb") as f:
-            for chunk in response.iter_content(chunk_size=8192):
-                if chunk:
-                    f.write(chunk)
-        logger.info(f"File downloaded to {path}")
-
     async def _close(self) -> None:
         try:
             logger.info("Closing MCP tools...")
