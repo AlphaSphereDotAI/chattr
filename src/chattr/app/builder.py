@@ -63,7 +63,7 @@ class App:
                 ),
                 markdown=True,
                 add_datetime_to_context=True,
-                timezone_identifier="Africa/Cairo",
+                timezone_identifier=self.settings.timezone,
                 pre_hooks=[PIIDetectionGuardrail(), PromptInjectionGuardrail()],
                 debug_mode=True,
                 save_response_to_file="agno/response.txt",

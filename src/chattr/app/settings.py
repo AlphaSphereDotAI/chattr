@@ -140,14 +140,12 @@ class ModelSettings(BaseModel):
         if self.url:
             if not self.api_key or not self.api_key.get_secret_value():
                 _msg: str = (
-                    "You need to provide API Key for the Model provider:"
-                    " Set via `MODEL__API_KEY`"
+                    "You need to provide API Key for the Model provider: Set via `MODEL__API_KEY`"
                 )
                 raise ValueError(_msg)
             if not self.name:
                 _msg: str = (
-                    "You need to provide Model name for the Model provider:"
-                    " Set via `MODEL__NAME`"
+                    "You need to provide Model name for the Model provider: Set via `MODEL__NAME`"
                 )
                 raise ValueError(_msg)
         return self
@@ -178,6 +176,7 @@ class Settings(BaseSettings):
     mcp: MCPSettings = Field(default_factory=MCPSettings)
     character: CharacterSettings = Field(default_factory=CharacterSettings)
     debug: bool = Field(default=False)
+    timezone: str = Field(default="Africa/Cairo")
 
 
 if __name__ == "__main__":
