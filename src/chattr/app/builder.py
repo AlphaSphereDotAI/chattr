@@ -87,8 +87,8 @@ class App:
         )
         url_servers = [m for m in mcp_servers if m.get("type") == "url"]
         self.mcp_tools = MultiMCPTools(
-            urls=[m.get("url") for m in url_servers],
-            urls_transports=[m.get("transport") for m in url_servers],
+            urls=[m["url"] for m in url_servers],
+            urls_transports=[m["transport"] for m in url_servers],
         )
         await self.mcp_tools.connect()
         return [self.mcp_tools]
