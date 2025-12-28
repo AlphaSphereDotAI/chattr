@@ -1,0 +1,107 @@
+from collections.abc import AsyncGenerator
+from json import dumps
+from pathlib import Path
+
+from agno.agent import Agent, RunContentEvent, ToolCallCompletedEvent, ToolCallStartedEvent
+from agno.models.message import Message
+from agno.models.response import ToolExecution
+from gradio import Audio, Blocks, ChatInterface, ChatMessage, Error, Video
+from gradio.components.chatbot import MetadataDict
+from rich.pretty import pprint
+
+from chattr.app.logger import logger
+from chattr.app.settings import Settings
+
+
+class App:
+    """Main application class for the Chattr Multi-agent system app."""
+
+    def __init__(self, agent: Agent, settings: Settings) -> None:
+        """Initialize the Chattr app."""
+        self.agent = agent
+        self.settings = settings
+
+    def gradio_app(self) -> Blocks:
+        """Create and return the main Gradio Blocks interface for the Chattr app."""
+        return ChatInterface(fn=self.generate_response, save_history=True)
+
+    async def generate_response(
+        self,
+        message: str,
+        history: list[ChatMessage | Audio | Video],
+    ) -> AsyncGenerator[tuple[str, list[ChatMessage], Path | None, Path | None]]:
+        """
+        Generate a response to a user message and update the conversation history.
+
+        This asynchronous method streams responses from the state graph and
+        yields updated history and audio file paths as needed.
+
+        Args:
+            message: The user's input message as a string.
+            history: The conversation history as a list of ChatMessage objects.
+
+        Returns:
+            AsyncGenerator: Yields a tuple containing an
+                            empty string, the updated history, and
+                            a Path to an audio file if generated.
+        """
+        async for response in self.agent.arun(Message(content=message, role="user"), stream=True):
+            pprint(response)
+            if isinstance(response, RunContentEvent):
+                history.append(ChatMessage(role="assistant", content=str(response.content)))
+            elif isinstance(response, ToolCallStartedEvent):
+                if not isinstance(response.tool, ToolExecution):
+                    _msg = "ToolExecution expected"
+                    logger.error(_msg)
+                    raise TypeError(_msg)
+                history.append(
+                    ChatMessage(
+                        role="assistant",
+                        content=dumps(response.tool.tool_args, indent=4),
+                        metadata=MetadataDict(
+                            title=str(response.tool.tool_name),
+                            id=str(response.tool.tool_call_id),
+                            duration=response.tool.created_at,
+                        ),
+                    ),
+                )
+            elif isinstance(response, ToolCallCompletedEvent):
+                if not isinstance(response.tool, ToolExecution):
+                    _msg = "ToolExecution expected"
+                    logger.error(_msg)
+                    raise TypeError(_msg)
+                if response.tool.tool_call_error:
+                    history.append(
+                        ChatMessage(
+                            role="assistant",
+                            content=dumps(response.tool.tool_args, indent=4),
+                            metadata=MetadataDict(
+                                title=str(response.tool.tool_name),
+                                id=str(response.tool.tool_call_id),
+                                log="Tool Call Failed",
+                                duration=float(response.tool.metrics.duration),
+                            ),
+                        ),
+                    )
+                else:
+                    history.append(
+                        ChatMessage(
+                            role="assistant",
+                            content=dumps(response.tool.tool_args, indent=4),
+                            metadata=MetadataDict(
+                                title=str(response.tool.tool_name),
+                                id=str(response.tool.tool_call_id),
+                                log="Tool Call Succeeded",
+                                duration=float(response.tool.metrics.duration),
+                            ),
+                        ),
+                    )
+                    if response.tool.tool_name == "generate_audio_for_text":
+                        history.append(Audio(response.tool.result, autoplay=True))
+                    elif response.tool.tool_name == "generate_video_mcp":
+                        history.append(Video(response.tool.result, autoplay=True))
+                    else:
+                        _msg = f"Unknown tool name: {response.tool.tool_name}"
+                        logger.error(_msg)
+                        raise Error(_msg, print_exception=self.settings.debug)
+            yield history
