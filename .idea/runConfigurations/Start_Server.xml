@@ -6,6 +6,7 @@
     <option name="checkSync" value="false" />
     <option name="env">
       <map>
+        <entry key="DOPPLER_ENV" value="1" />
         <entry key="UV_LINK_MODE" value="copy" />
       </map>
     </option>
@@ -15,6 +16,8 @@
       <list />
     </option>
     <option name="uvSdkKey" value="uv (chattr)" />
-    <method v="2" />
+    <method v="2">
+      <option name="RunConfigurationTask" enabled="true" run_configuration_name="Qdrant" run_configuration_type="docker-deploy" />
+    </method>
   </configuration>
 </component>
