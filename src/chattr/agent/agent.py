@@ -36,8 +36,8 @@ from chattr.app.settings import Settings
 from chattr.app.utils import is_url
 
 
-class App:
-    """Main application class for the Chattr Multi-agent system app."""
+class ChattrAgent:
+    """Chattr Agent."""
 
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
