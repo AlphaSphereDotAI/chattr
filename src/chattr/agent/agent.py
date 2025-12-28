@@ -1,35 +1,18 @@
 """Main orchestration graph for the Chattr application."""
 
-from collections.abc import AsyncGenerator
-from json import dumps, loads
-from pathlib import Path
+from json import loads
 
-from agno.agent import (
-    Agent,
-    RunContentEvent,
-    ToolCallCompletedEvent,
-    ToolCallStartedEvent,
-)
+from agno.agent import Agent
 from agno.db import BaseDb
 from agno.db.json import JsonDb
 from agno.guardrails import PIIDetectionGuardrail, PromptInjectionGuardrail
 from agno.knowledge.knowledge import Knowledge
-from agno.models.message import Message
 from agno.models.openai.like import OpenAILike
 from agno.tools import Toolkit
 from agno.tools.mcp import MultiMCPTools
 from agno.vectordb.qdrant import Qdrant
-from gradio import (
-    Audio,
-    Blocks,
-    ChatInterface,
-    ChatMessage,
-    Error,
-    Video,
-)
-from gradio.components.chatbot import MetadataDict
+from gradio import Error
 from poml import poml
-from rich.pretty import pprint
 
 from chattr.app.logger import logger
 from chattr.app.settings import Settings
