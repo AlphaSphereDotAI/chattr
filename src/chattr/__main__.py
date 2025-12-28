@@ -10,7 +10,7 @@ async def main() -> None:
     settings = Settings()
     chattr_agent = Agent(settings)
     agent = await chattr_agent.setup_agent()
-    application = App(agent)
+    application = App(agent, settings)
     gradio_application = application.gradio_app()
     gradio_application.queue(api_open=True)
     gradio_application.launch(debug=True, enable_monitoring=True, show_error=True, pwa=True)
