@@ -161,19 +161,3 @@ class App:
             msg: str = f"Error closing MCP tools: {e}, Check if the Tool services are running."
             logger.error(msg)
             raise Error(msg, print_exception=self.settings.debug) from e
-
-
-async def test() -> None:
-    settings: Settings = Settings()
-    app: App = App(settings)
-    agent: Agent = await app._setup_agent()
-    try:
-        await agent.aprint_response("Hello!", debug_mode=True)
-    finally:
-        await app._close()
-
-
-if __name__ == "__main__":
-    import asyncio
-
-    asyncio.run(test())
