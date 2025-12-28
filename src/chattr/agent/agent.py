@@ -42,7 +42,8 @@ class App:
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
 
-    async def _setup_agent(self) -> Agent:
+    async def setup_agent(self) -> Agent:
+        """Initialize the Chattr agent."""
         try:
             return Agent(
                 model=self._setup_model(),
