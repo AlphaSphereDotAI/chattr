@@ -120,6 +120,7 @@ class ChattrAgent:
             id=self.settings.model.name,
             api_key=self.settings.model.api_key.get_secret_value(),
             temperature=self.settings.model.temperature,
+            cache_response=True,
         )
 
     def _setup_vector_database(self) -> Qdrant:
