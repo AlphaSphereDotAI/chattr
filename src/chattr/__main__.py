@@ -1,4 +1,4 @@
-from anyio import run
+from asyncio import run
 
 from chattr.agent import Agent
 from chattr.app.app import App
@@ -17,4 +17,4 @@ async def main() -> None:
 
 
 if __name__ == "__main__":
-    run(main)
+    run(main())
