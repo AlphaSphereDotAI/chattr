@@ -65,6 +65,8 @@ class ChattrAgent:
             raise Error(_msg, print_exception=self.settings.debug) from e
 
     async def _setup_tools(self) -> list[Toolkit]:
+        if not self.settings.mcp.path.exists():
+            return []
         mcp_servers: list[dict] = loads(self.settings.mcp.path.read_text()).get(
             "mcp_servers",
             [],
