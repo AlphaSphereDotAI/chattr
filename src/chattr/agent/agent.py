@@ -105,15 +105,19 @@ class ChattrAgent:
         """
         if not self.settings.model.url:
             _msg = "Model URL is missing. Set it with `MODEL__URL`"
+            logger.error(_msg)
             raise ValueError(_msg)
         if not is_url(str(self.settings.model.url)):
             _msg = "Model URL is invalid. Set it with `MODEL__URL`"
+            logger.error(_msg)
             raise ValueError(_msg)
         if not self.settings.model.name:
             _msg = "Model name is missing. Set it with `MODEL__NAME`"
+            logger.error(_msg)
             raise ValueError(_msg)
         if not self.settings.model.api_key:
             _msg = "API key is missing. Set it with `MODEL__API_KEY`"
+            logger.error(_msg)
             raise ValueError(_msg)
         return OpenAILike(
             base_url=str(self.settings.model.url),
