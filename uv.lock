@@ -285,7 +285,7 @@ dev = [
     { name = "pre-commit", specifier = ">=4.5.1" },
     { name = "pytest-emoji", specifier = ">=0.2.0" },
     { name = "pytest-md", specifier = ">=0.2.0" },
-    { name = "pytest-mergify", specifier = ">=2025.12.1.1" },
+    { name = "pytest-mergify", specifier = ">=2025.12.29.1" },
     { name = "ruff", specifier = ">=0.14.10" },
     { name = "ty", specifier = ">=0.0.8" },
     { name = "uv-build", specifier = ">=0.9.18" },
@@ -1696,7 +1696,7 @@ wheels = [
 
 [[package]]
 name = "pytest-mergify"
-version = "2025.12.1.1"
+version = "2025.12.29.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "opentelemetry-exporter-otlp-proto-http" },
@@ -1705,9 +1705,9 @@ dependencies = [
     { name = "pytest-timeout" },
     { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/03/fe/9f3758646d3862057632d4d91f4287026fca2bca926d35ccc1eb7c312c44/pytest_mergify-2025.12.1.1.tar.gz", hash = "sha256:1d65e2b4b07dc322e9c35e78c9b135374a22fb4e6354256a8627c74b012fddfc", size = 26029, upload-time = "2025-12-01T15:30:48.147Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/cf/f4/8c0158978e01a14bcfd6c25ea1b0d42ad526979dd9421a07ce1489512df2/pytest_mergify-2025.12.29.1.tar.gz", hash = "sha256:1bcc192d9f4d57cd356a4c20dd38bf0151678da8c437e534442f57fe81c49c33", size = 77768, upload-time = "2025-12-29T14:38:18.036Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/6b/a9/d4b0827594f00288ca43cea6982299d6f490615e2f3d324a9febccd33533/pytest_mergify-2025.12.1.1-py3-none-any.whl", hash = "sha256:a8809b8d760656f2c8128ba3627716fbe24859bda26043e6f4b0fb828a7390c9", size = 31660, upload-time = "2025-12-01T15:30:46.707Z" },
+    { url = "https://files.pythonhosted.org/packages/c1/d8/c0978f2fa1f6c7e6df3ec5dc646353d6c81907b1b428257062c7d15e1d6d/pytest_mergify-2025.12.29.1-py3-none-any.whl", hash = "sha256:25f67b0c2104a89330b3eb2be036b5769da6f440a3e71e244cdef9306ac181f5", size = 31674, upload-time = "2025-12-29T14:38:16.712Z" },
 ]
 
 [[package]]
