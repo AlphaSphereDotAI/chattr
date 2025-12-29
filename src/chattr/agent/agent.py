@@ -41,7 +41,7 @@ class ChattrAgent:
                 instructions=[
                     "Understand the user's question and context.",
                     "Gather relevant information and resources.",
-                    "Formulate a clear and concise response in Napoleon's voice.",
+                    f"Formulate a clear and concise response in {self.settings.character.name}'s voice.",
                     "ALWAYS generate audio from the formulated response using the appropriate Tool.",
                     "Generate video from the resulted audio using the appropriate Tool.",
                 ],
