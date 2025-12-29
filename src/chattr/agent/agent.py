@@ -5,7 +5,7 @@ from json import loads
 from agno.agent import Agent
 from agno.db import BaseDb
 from agno.db.json import JsonDb
-from agno.guardrails import PIIDetectionGuardrail, PromptInjectionGuardrail
+from agno.guardrails import PromptInjectionGuardrail
 from agno.knowledge.knowledge import Knowledge
 from agno.models.openai.like import OpenAILike
 from agno.tools import Toolkit
@@ -53,7 +53,7 @@ class ChattrAgent:
                 markdown=True,
                 add_datetime_to_context=True,
                 timezone_identifier=self.settings.timezone,
-                pre_hooks=[PIIDetectionGuardrail(), PromptInjectionGuardrail()],
+                pre_hooks=[PromptInjectionGuardrail()],
                 debug_mode=True,
                 save_response_to_file="agno/response.txt",
                 add_history_to_context=True,
