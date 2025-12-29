@@ -133,15 +133,6 @@ class ModelSettings(BaseModel):
     temperature: float = Field(0.0, ge=0.0, le=1.0)
 
     @model_validator(mode="after")
-    def check_url(self) -> Self:
-        """Check if the model URL is valid."""
-        if self.url and not is_alive(self.url):
-            _msg = f"Model URL {self.url} is not reachable."
-            logger.error(_msg)
-            raise ConnectionError(_msg)
-        return self
-
-    @model_validator(mode="after")
     def check_param_exist(self) -> Self:
         """Validate the existence of required credentials for the model provider."""
         if self.url:
