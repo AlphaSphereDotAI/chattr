@@ -1,0 +1,33 @@
+from json import loads
+
+from agno.tools import Toolkit
+from agno.tools.mcp import MultiMCPTools
+from rich.pretty import pprint
+
+from chattr.app.logger import logger
+from chattr.app.settings import Settings
+
+
+async def setup_mcp_tools(settings: Settings) -> list[Toolkit]:
+    if not settings.mcp.path.exists():
+        return []
+    mcp_servers: list[dict] = loads(settings.mcp.path.read_text()).get("mcp_servers", [])
+    url_servers: list[dict] = [m for m in mcp_servers if m.get("type") == "url"]
+    logger.info(f"MCP servers: {len(mcp_servers)}")
+    pprint(url_servers)
+    if not url_servers:
+        return []
+    mcp_tools = MultiMCPTools(
+        urls=[m["url"] for m in url_servers],
+        urls_transports=[m["transport"] for m in url_servers],
+        allow_partial_failure=True,
+    )
+    await mcp_tools.connect()
+    return [mcp_tools]
+
+
+async def close_mcp_tools(mcp_tools: MultiMCPTools) -> None:
+    logger.info("Closing MCP tools...")
+    if not mcp_tools:
+        return
+    await mcp_tools.close()
