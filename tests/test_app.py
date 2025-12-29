@@ -1,4 +1,4 @@
-"""This module contains tests for the application's HTTP endpoints."""
+"""Contain tests for the application's HTTP endpoints."""
 
 from os import getenv
 
