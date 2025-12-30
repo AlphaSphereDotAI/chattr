@@ -51,8 +51,8 @@ def download_file(url: URL, path: Path) -> None:
     Download a file from a URL and save it to a local path.
 
     Args:
-        url: The URL to download the file from.
-        path: The local file path where the downloaded file will be saved.
+        url (URL): The URL to download the file from.
+        path (Path): The local file path where the downloaded file will be saved.
 
     Returns:
         None
