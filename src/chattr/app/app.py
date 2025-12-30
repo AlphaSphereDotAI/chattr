@@ -157,5 +157,46 @@ class App:
                         _msg = f"Unknown tool name: {response.tool.tool_name}"
                         logger.error(_msg)
                         raise Error(_msg, print_exception=self.settings.debug)
+            elif isinstance(response, RunStartedEvent):
+                history.append(
+                    ChatMessage(
+                        role="assistant",
+                        content=f"Using {response.model} model",
+                        metadata=MetadataDict(
+                            title=response.model,
+                            id=str(response.run_id),
+                            log=response.model_provider,
+                        ),
+                    ),
+                )
+            elif isinstance(response, RunCompletedEvent):
+                if not isinstance(response.metrics, Metrics):
+                    _msg = "Metrics expected"
+                    logger.error(_msg)
+                    raise TypeError(_msg)
+                history.append(
+                    Dataframe(
+                        [
+                            response.metrics.input_tokens,
+                            response.metrics.output_tokens,
+                            response.metrics.total_tokens,
+                            response.metrics.cache_read_tokens,
+                            response.metrics.cache_write_tokens,
+                            response.metrics.reasoning_tokens,
+                            response.metrics.time_to_first_token,
+                            response.metrics.duration,
+                        ],
+                        headers=[
+                            "input_tokens",
+                            "output_tokens",
+                            "total_tokens",
+                            "cache_read_tokens",
+                            "cache_write_tokens",
+                            "reasoning_tokens",
+                            "time_to_first_token",
+                            "duration",
+                        ],
+                    ),
+                )
             yield history
         await close_mcp_tools(tools)
