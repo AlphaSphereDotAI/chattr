@@ -1,6 +1,5 @@
 from collections.abc import AsyncGenerator
 from json import dumps
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from agno.agent import Agent, RunContentEvent, ToolCallCompletedEvent, ToolCallStartedEvent
