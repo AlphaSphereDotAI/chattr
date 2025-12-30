@@ -63,31 +63,3 @@ def download_file(url: URL, path: Path) -> None:
         response.raise_for_status()
         path.write_bytes(response.content)
     logger.info(f"Downloaded {url} to {path}")
-
-
-# def _download_audio(url: URL) -> Path:
-#     """
-#     Download an audio file from a given URL and save it as a temporary WAV file.
-#
-#     Args:
-#         url (URL): The URL to download the audio from.
-#
-#     Returns:
-#         Path: The path to the downloaded temporary audio file.
-#
-#     Raises:
-#         Error: If the download fails due to network or file errors.
-#     """
-#     try:
-#         with Client() as client:
-#             response = client.get(url)
-#             response.raise_for_status()
-#             with NamedTemporaryFile(delete=False, suffix=".wav") as f:
-#                 f.write(response.content)
-#                 audio_path = Path(f.name)
-#             logger.info(f"Downloaded audio to {audio_path}")
-#     except (RequestError, HTTPStatusError, OSError) as e:
-#         msg = f"Failed to download audio from {url}: {e}"
-#         logger.error(msg)
-#         raise Error(msg) from e
-#     return audio_path
