@@ -13,5 +13,5 @@ def setup_description(character: str | None) -> str:
         You are a helpful assistant
         who can act and mimic {character}'s character
         and answer questions about the era.
-        """
+        """,
     )
