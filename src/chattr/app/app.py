@@ -44,7 +44,7 @@ class App:
         self,
         message: str,
         history: list[ChatMessage | Audio | Video],
-    ) -> AsyncGenerator[list[Audio | ChatMessage | Video]]:
+    ) -> AsyncGenerator[list[ChatMessage | Audio | Video]]:
         """
         Generate a response to a user message and update the conversation history.
 
