@@ -81,7 +81,11 @@ class App:
             knowledge,
             self.settings.timezone,
         )
-        async for response in agent.arun(Message(content=message, role="user"), stream=True):
+        async for response in agent.arun(
+            Message(content=message, role="user"),
+            stream=True,
+            stream_events=True,
+        ):
             pprint(response)
             if isinstance(response, RunContentEvent):
                 history.append(ChatMessage(role="assistant", content=str(response.content)))
