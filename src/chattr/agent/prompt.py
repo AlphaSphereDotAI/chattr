@@ -3,7 +3,7 @@ from poml import poml
 from chattr.app.settings import Settings
 
 
-def _setup_prompt(settings: Settings) -> str:
+def setup_prompt(settings: Settings) -> str:
     prompt_template = poml(
         settings.directory.prompts / "template.poml",
         {"character": "Napoleon"},
