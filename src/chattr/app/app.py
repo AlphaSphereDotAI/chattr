@@ -109,6 +109,10 @@ class App:
                     logger.error(_msg)
                     raise TypeError(_msg)
                 if response.tool.tool_call_error:
+                    if not isinstance(response.tool.metrics, Metrics):
+                        _msg = "Metrics expected"
+                        logger.error(_msg)
+                        raise TypeError(_msg)
                     history.append(
                         ChatMessage(
                             role="assistant",
@@ -122,6 +126,10 @@ class App:
                         ),
                     )
                 else:
+                    if not isinstance(response.tool.metrics, Metrics):
+                        _msg = "Metrics expected"
+                        logger.error(_msg)
+                        raise TypeError(_msg)
                     history.append(
                         ChatMessage(
                             role="assistant",
