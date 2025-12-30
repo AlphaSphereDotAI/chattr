@@ -1,16 +1,33 @@
 from collections.abc import AsyncGenerator
 from json import dumps
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from agno.agent import Agent, RunContentEvent, ToolCallCompletedEvent, ToolCallStartedEvent
 from agno.models.message import Message
+from agno.models.metrics import Metrics
 from agno.models.response import ToolExecution
 from gradio import Audio, Blocks, ChatInterface, ChatMessage, Error, Video
 from gradio.components.chatbot import MetadataDict
 from rich.pretty import pprint
 
+from chattr.agent.agent import setup_agent
+from chattr.agent.database import setup_database
+from chattr.agent.description import setup_description
+from chattr.agent.instructions import setup_instructions
+from chattr.agent.knowledge import setup_knowledge
+from chattr.agent.model import setup_model
+from chattr.agent.tools import close_mcp_tools, setup_mcp_tools
+from chattr.agent.vector_database import setup_vector_database
 from chattr.app.logger import logger
 from chattr.app.settings import Settings
+
+if TYPE_CHECKING:
+    from agno.db.json import JsonDb
+    from agno.knowledge import Knowledge
+    from agno.models.openai import OpenAILike
+    from agno.tools.mcp import MultiMCPTools
+    from agno.vectordb.qdrant import Qdrant
 
 
 class App:
