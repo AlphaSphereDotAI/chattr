@@ -13,7 +13,6 @@ async def setup_mcp_tools(settings: Settings) -> MultiMCPTools | None:
         return None
     mcp_servers: list[dict] = loads(settings.mcp.path.read_text()).get("mcp_servers", [])
     url_servers: list[dict] = [m for m in mcp_servers if m.get("type") == "url"]
-    logger.info(f"MCP servers: {len(mcp_servers)}")
     pprint(url_servers)
     if not url_servers:
         return None
@@ -22,6 +21,7 @@ async def setup_mcp_tools(settings: Settings) -> MultiMCPTools | None:
         urls_transports=[m["transport"] for m in url_servers],
         allow_partial_failure=True,
     )
+    logger.info(f"MCP servers: {len(mcp_tools.tools)}")
     await mcp_tools.connect()
     return mcp_tools
 
