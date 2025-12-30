@@ -38,7 +38,7 @@ class App:
 
     def gradio_app(self) -> Blocks:
         """Create and return the main Gradio Blocks interface for the Chattr app."""
-        return ChatInterface(fn=self.generate_response, save_history=True)
+        return ChatInterface(fn=self.generate_response, save_history=True, title="Chattr")
 
     async def generate_response(
         self,
