@@ -1,4 +1,5 @@
 """Module defining MCP connection scheme configurations."""
+
 from typing import Annotated, Literal
 
 from pydantic import (
@@ -37,9 +38,9 @@ class MCPScheme(BaseModel):
     """Model representing the MCP scheme configuration."""
 
     model_config = ConfigDict(extra="forbid")
-    mcp_servers: list[
-        Annotated[CommandConnection | URLConnection, Field(discriminator="type")]
-    ] = Field(default_factory=list)
+    mcp_servers: list[Annotated[CommandConnection | URLConnection, Field(discriminator="type")]] = (
+        Field(default_factory=list)
+    )
 
 
 if __name__ == "__main__":
