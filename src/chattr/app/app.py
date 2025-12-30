@@ -16,9 +16,8 @@ from chattr.app.settings import Settings
 class App:
     """Main application class for the Chattr Multi-agent system app."""
 
-    def __init__(self, agent: Agent, settings: Settings) -> None:
+    def __init__(self, settings: Settings) -> None:
         """Initialize the Chattr app."""
-        self.agent = agent
         self.settings = settings
 
     def gradio_app(self) -> Blocks:
@@ -45,7 +44,29 @@ class App:
                             empty string, the updated history, and
                             a Path to an audio file if generated.
         """
-        async for response in self.agent.arun(Message(content=message, role="user"), stream=True):
+        _tools: list[MultiMCPTools] | None = None
+        tools: MultiMCPTools | None = await setup_mcp_tools(self.settings)
+        model: OpenAILike = setup_model(self.settings)
+        db: JsonDb = setup_database()
+        vectordb: Qdrant = setup_vector_database(self.settings)
+        knowledge: Knowledge = setup_knowledge(vectordb, db)
+        description: str = setup_description(self.settings.character.name)
+        instructions: list[str] = setup_instructions(self.settings.character.name, [tools])
+        if not tools:
+            _msg = "No tools found"
+            logger.warning(_msg)
+        else:
+            _tools = [tools]
+        agent: Agent = await setup_agent(
+            model,
+            _tools,
+            description,
+            instructions,
+            db,
+            knowledge,
+            self.settings.timezone,
+        )
+        async for response in agent.arun(Message(content=message, role="user"), stream=True):
             pprint(response)
             if isinstance(response, RunContentEvent):
                 history.append(ChatMessage(role="assistant", content=str(response.content)))
