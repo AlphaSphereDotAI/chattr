@@ -6,7 +6,8 @@ from agno.agent import Agent, RunContentEvent, ToolCallCompletedEvent, ToolCallS
 from agno.models.message import Message
 from agno.models.metrics import Metrics
 from agno.models.response import ToolExecution
-from gradio import Audio, Blocks, ChatInterface, ChatMessage, Error, Video
+from agno.run.agent import RunCompletedEvent, RunStartedEvent
+from gradio import Audio, Blocks, ChatInterface, ChatMessage, Dataframe, Error, Video
 from gradio.components.chatbot import MetadataDict
 from rich.pretty import pprint
 
@@ -48,8 +49,8 @@ class App:
     async def generate_response(
         self,
         message: str,
-        history: list[ChatMessage | Audio | Video],
-    ) -> AsyncGenerator[list[ChatMessage | Audio | Video]]:
+        history: list[ChatMessage | Audio | Video | Dataframe],
+    ) -> AsyncGenerator[list[ChatMessage | Audio | Video | Dataframe]]:
         """
         Generate a response to a user message and update the conversation history.
 
