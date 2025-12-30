@@ -121,7 +121,7 @@ class App:
                                 title=str(response.tool.tool_name),
                                 id=str(response.tool.tool_call_id),
                                 log="Tool Call Failed",
-                                duration=float(response.tool.metrics.duration),
+                                duration=float(str(response.tool.metrics.duration)),
                             ),
                         ),
                     )
@@ -138,7 +138,7 @@ class App:
                                 title=str(response.tool.tool_name),
                                 id=str(response.tool.tool_call_id),
                                 log="Tool Call Succeeded",
-                                duration=float(response.tool.metrics.duration),
+                                duration=float(str(response.tool.metrics.duration)),
                             ),
                         ),
                     )
