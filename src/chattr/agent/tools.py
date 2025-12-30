@@ -26,7 +26,8 @@ async def setup_mcp_tools(settings: Settings) -> MultiMCPTools | None:
     return mcp_tools
 
 
-async def close_mcp_tools(mcp_tools: MultiMCPTools) -> None:
+async def close_mcp_tools(mcp_tools: MultiMCPTools | None) -> None:
+    """Close the MCP tools connection."""
     logger.info("Closing MCP tools...")
     if not mcp_tools:
         return
