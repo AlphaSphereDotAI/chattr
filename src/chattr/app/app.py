@@ -45,7 +45,7 @@ class App:
         self,
         message: str,
         history: list[ChatMessage | Audio | Video],
-    ) -> AsyncGenerator[tuple[str, list[ChatMessage], Path | None, Path | None]]:
+    ) -> AsyncGenerator[list[Audio | ChatMessage | Video]]:
         """
         Generate a response to a user message and update the conversation history.
 
@@ -57,9 +57,8 @@ class App:
             history: The conversation history as a list of ChatMessage objects.
 
         Returns:
-            AsyncGenerator: Yields a tuple containing an
-                            empty string, the updated history, and
-                            a Path to an audio file if generated.
+            AsyncGenerator: Yields a list of the updated history containing
+                            ChatMessage, Audio, and Video objects if it existed.
         """
         _tools: list[MultiMCPTools] | None = None
         tools: MultiMCPTools | None = await setup_mcp_tools(self.settings)
