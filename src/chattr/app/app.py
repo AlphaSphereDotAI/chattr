@@ -151,3 +151,4 @@ class App:
                         logger.error(_msg)
                         raise Error(_msg, print_exception=self.settings.debug)
             yield history
+        await close_mcp_tools(tools)
