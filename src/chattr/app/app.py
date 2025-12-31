@@ -73,7 +73,7 @@ class App:
         knowledge: Knowledge = setup_knowledge(vectordb, db)
         description: str = setup_description(self.settings.character.name)
         instructions: list[str] = setup_instructions(self.settings.character.name, [tools])
-        if not tools:
+        if not tools or len(tools.tools) == 0:
             _msg = "No tools found"
             logger.warning(_msg)
         else:
