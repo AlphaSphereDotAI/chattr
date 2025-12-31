@@ -166,7 +166,7 @@ class App:
                         metadata=MetadataDict(
                             title=response.model,
                             id=str(response.run_id),
-                            log=response.model_provider,
+                            log=f"({response.model_provider} client)",
                         ),
                     ),
                 )
