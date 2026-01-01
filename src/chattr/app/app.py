@@ -11,7 +11,7 @@ from gradio import Audio, Blocks, ChatInterface, ChatMessage, Dataframe, Error, 
 from gradio.components.chatbot import MetadataDict
 from rich.pretty import pprint
 
-from chattr.agent.agent import setup_agent
+from chattr.agent.agent import AgentConfiguration, setup_agent
 from chattr.agent.database import setup_database
 from chattr.agent.description import setup_description
 from chattr.agent.instructions import setup_instructions
@@ -80,13 +80,16 @@ class App:
             _tools = [tools]
         configure_agno_logging(custom_default_logger=logger)
         agent: Agent = await setup_agent(
-            model,
-            _tools,
-            description,
-            instructions,
-            db,
-            knowledge,
-            self.settings.timezone,
+            AgentConfiguration(
+                model=model,
+                tools=_tools,
+                description=description,
+                instructions=instructions,
+                db=db,
+                knowledge=knowledge,
+                timezone=self.settings.timezone,
+                debug_mode=self.settings.debug,
+            ),
         )
         async for response in agent.arun(
             Message(content=message, role="user"),
