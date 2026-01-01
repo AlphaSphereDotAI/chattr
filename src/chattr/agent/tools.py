@@ -4,10 +4,10 @@ from agno.tools.mcp import MultiMCPTools
 from rich.pretty import pprint
 
 from chattr.app.logger import logger
-from chattr.app.settings import Settings
+from chattr.app.settings import MCPSettings
 
 
-async def setup_mcp_tools(settings: Settings) -> MultiMCPTools | None:
+async def setup_mcp_tools(mcp: MCPSettings) -> MultiMCPTools | None:
     """Return and setup MCP tools connection."""
     if not settings.mcp.path.exists():
         return None
