@@ -6,7 +6,7 @@ from agno.agent import Agent, RunContentEvent, ToolCallCompletedEvent, ToolCallS
 from agno.models.message import Message
 from agno.models.metrics import Metrics
 from agno.models.response import ToolExecution
-from agno.utils.log import configure_agno_logging
+from agno.utils.log import log_error, log_warning
 from gradio import Audio, Blocks, ChatInterface, ChatMessage, Error, Video
 from gradio.components.chatbot import MetadataDict
 from qdrant_client.http.exceptions import ResponseHandlingException
@@ -19,7 +19,6 @@ from chattr.agent.knowledge import setup_knowledge
 from chattr.agent.model import setup_model
 from chattr.agent.tools import close_mcp_tools, setup_mcp_tools
 from chattr.agent.vector_database import setup_vector_database
-from chattr.app.logger import logger
 from chattr.app.settings import Settings
 
 if TYPE_CHECKING:
