@@ -1,8 +1,11 @@
 """A module for configuring and initializing."""
 
+from logging import Logger
 from warnings import filterwarnings
 
-from rich.console import Console
+from agno.utils.log import configure_agno_logging
+
+from chattr.app.logger import setup_logger
 
 filterwarnings("ignore", category=DeprecationWarning)
 logger: Logger = setup_logger(__package__)
