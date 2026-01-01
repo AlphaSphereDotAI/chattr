@@ -6,7 +6,7 @@ from agno.agent import Agent, RunContentEvent, ToolCallCompletedEvent, ToolCallS
 from agno.models.message import Message
 from agno.models.metrics import Metrics
 from agno.models.response import ToolExecution
-from agno.run.agent import RunCompletedEvent, RunStartedEvent
+from agno.utils.log import configure_agno_logging
 from gradio import Audio, Blocks, ChatInterface, ChatMessage, Dataframe, Error, Video
 from gradio.components.chatbot import MetadataDict
 from rich.pretty import pprint
