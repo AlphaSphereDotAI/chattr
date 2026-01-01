@@ -68,7 +68,7 @@ repos:
         args:
           - --autofix
   - repo: https://github.com/renovatebot/pre-commit-hooks
-    rev: 42.68.4
+    rev: 42.69.2
     hooks:
       - id: renovate-config-validator
         args:
@@ -91,7 +91,7 @@ repos:
           - --config
           - .github/lint/.ruff.toml
   - repo: https://github.com/facebook/pyrefly-pre-commit
-    rev: 0.46.2
+    rev: 0.46.3
     hooks:
       - id: pyrefly-check
   - repo: https://github.com/lyz-code/yamlfix
