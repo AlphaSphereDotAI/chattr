@@ -9,7 +9,7 @@ from agno.models.response import ToolExecution
 from agno.utils.log import configure_agno_logging
 from gradio import Audio, Blocks, ChatInterface, ChatMessage, Error, Video
 from gradio.components.chatbot import MetadataDict
-from rich.pretty import pprint
+from qdrant_client.http.exceptions import ResponseHandlingException
 
 from chattr.agent.agent import AgentConfiguration, setup_agent
 from chattr.agent.database import setup_database
@@ -65,65 +65,44 @@ class App:
             AsyncGenerator: Yields a list of the updated history containing
                             ChatMessage, Audio, and Video objects if it existed.
         """
-        _tools: list[MultiMCPTools] | None = None
-        tools: MultiMCPTools | None = await setup_mcp_tools(self.settings.mcp)
-        model: OpenAILike = setup_model(self.settings.model)
-        db: JsonDb = setup_database()
-        vectordb: Qdrant = setup_vector_database(self.settings.vector_database)
-        knowledge: Knowledge = setup_knowledge(vectordb, db)
-        description: str = setup_description(self.settings.character.name)
-        instructions: list[str] = setup_instructions(self.settings.character.name, [tools])
-        if not tools or len(tools.tools) == 0:
-            _msg = "No tools found"
-            logger.warning(_msg)
-        else:
-            _tools = [tools]
-        configure_agno_logging(custom_default_logger=logger)
-        agent: Agent = await setup_agent(
-            AgentConfiguration(
-                model=model,
-                tools=_tools,
-                description=description,
-                instructions=instructions,
-                db=db,
-                knowledge=knowledge,
-                timezone=self.settings.timezone,
-                debug_mode=self.settings.debug,
-            ),
-        )
-        async for response in agent.arun(
-            Message(content=message, role="user"),
-            stream=True,
-            stream_events=True,
-        ):
-            pprint(response)
-            if isinstance(response, RunContentEvent):
-                history.append(ChatMessage(role="assistant", content=str(response.content)))
-            elif isinstance(response, ToolCallStartedEvent):
-                if not isinstance(response.tool, ToolExecution):
-                    _msg = "ToolExecution expected"
-                    logger.error(_msg)
-                    raise TypeError(_msg)
-                history.append(
-                    ChatMessage(
-                        role="assistant",
-                        content=dumps(response.tool.tool_args, indent=4),
-                        metadata=MetadataDict(
-                            title=str(response.tool.tool_name),
-                            id=str(response.tool.tool_call_id),
-                            duration=response.tool.created_at,
-                        ),
-                    ),
-                )
-            elif isinstance(response, ToolCallCompletedEvent):
-                if not isinstance(response.tool, ToolExecution):
-                    _msg = "ToolExecution expected"
-                    logger.error(_msg)
-                    raise TypeError(_msg)
-                if response.tool.tool_call_error:
-                    if not isinstance(response.tool.metrics, Metrics):
-                        _msg = "Metrics expected"
-                        logger.error(_msg)
+        try:
+            _tools: list[MultiMCPTools] | None = None
+            tools: MultiMCPTools | None = await setup_mcp_tools(self.settings.mcp)
+            model: OpenAILike = setup_model(self.settings.model)
+            db: JsonDb = setup_database()
+            vectordb: Qdrant = setup_vector_database(self.settings.vector_database)
+            knowledge: Knowledge = setup_knowledge(vectordb, db)
+            description: str = setup_description(self.settings.character.name)
+            instructions: list[str] = setup_instructions(self.settings.character.name, [tools])
+            if not tools or len(tools.tools) == 0:
+                _msg = "No tools found"
+                log_warning(_msg)
+            else:
+                _tools = [tools]
+            agent: Agent = await setup_agent(
+                AgentConfiguration(
+                    model=model,
+                    tools=_tools,
+                    description=description,
+                    instructions=instructions,
+                    db=db,
+                    knowledge=knowledge,
+                    timezone=self.settings.timezone,
+                    debug_mode=self.settings.debug,
+                ),
+            )
+            async for response in agent.arun(
+                Message(content=message, role="user"),
+                stream=True,
+                stream_events=True,
+            ):
+                # pprint(response)
+                if isinstance(response, RunContentEvent):
+                    history.append(ChatMessage(role="assistant", content=str(response.content)))
+                elif isinstance(response, ToolCallStartedEvent):
+                    if not isinstance(response.tool, ToolExecution):
+                        _msg = "ToolExecution expected"
+                        log_error(_msg)
                         raise TypeError(_msg)
                     history.append(
                         ChatMessage(
@@ -132,35 +111,67 @@ class App:
                             metadata=MetadataDict(
                                 title=str(response.tool.tool_name),
                                 id=str(response.tool.tool_call_id),
-                                log="Tool Call Failed",
-                                duration=float(str(response.tool.metrics.duration)),
+                                duration=response.tool.created_at,
                             ),
                         ),
                     )
-                else:
-                    if not isinstance(response.tool.metrics, Metrics):
-                        _msg = "Metrics expected"
-                        logger.error(_msg)
+                elif isinstance(response, ToolCallCompletedEvent):
+                    if not isinstance(response.tool, ToolExecution):
+                        _msg = "ToolExecution expected"
+                        log_error(_msg)
                         raise TypeError(_msg)
-                    history.append(
-                        ChatMessage(
-                            role="assistant",
-                            content=dumps(response.tool.tool_args, indent=4),
-                            metadata=MetadataDict(
-                                title=str(response.tool.tool_name),
-                                id=str(response.tool.tool_call_id),
-                                log="Tool Call Succeeded",
-                                duration=float(str(response.tool.metrics.duration)),
+                    if response.tool.tool_call_error:
+                        if not isinstance(response.tool.metrics, Metrics):
+                            _msg = "Metrics expected"
+                            log_error(_msg)
+                            raise TypeError(_msg)
+                        history.append(
+                            ChatMessage(
+                                role="assistant",
+                                content=dumps(response.tool.tool_args, indent=4),
+                                metadata=MetadataDict(
+                                    title=str(response.tool.tool_name),
+                                    id=str(response.tool.tool_call_id),
+                                    log="Tool Call Failed",
+                                    duration=float(str(response.tool.metrics.duration)),
+                                ),
                             ),
-                        ),
-                    )
-                    if response.tool.tool_name == "generate_audio_for_text":
-                        history.append(Audio(response.tool.result, autoplay=True))
-                    elif response.tool.tool_name == "generate_video_mcp":
-                        history.append(Video(response.tool.result, autoplay=True))
+                        )
                     else:
-                        _msg = f"Unknown tool name: {response.tool.tool_name}"
-                        logger.error(_msg)
-                        raise Error(_msg, print_exception=self.settings.debug)
-            yield history
-        await close_mcp_tools(tools)
+                        if not isinstance(response.tool.metrics, Metrics):
+                            _msg = "Metrics expected"
+                            log_error(_msg)
+                            raise TypeError(_msg)
+                        history.append(
+                            ChatMessage(
+                                role="assistant",
+                                content=dumps(response.tool.tool_args, indent=4),
+                                metadata=MetadataDict(
+                                    title=str(response.tool.tool_name),
+                                    id=str(response.tool.tool_call_id),
+                                    log="Tool Call Succeeded",
+                                    duration=float(str(response.tool.metrics.duration)),
+                                ),
+                            ),
+                        )
+                        if response.tool.tool_name == "generate_audio_for_text":
+                            history.append(Audio(response.tool.result, autoplay=True))
+                        elif response.tool.tool_name == "generate_video_mcp":
+                            history.append(Video(response.tool.result, autoplay=True))
+                        else:
+                            _msg = f"Unknown tool name: {response.tool.tool_name}"
+                            log_error(_msg)
+                            raise Error(_msg, print_exception=self.settings.debug)
+                print(f"---------- {history}")
+                yield history
+            await close_mcp_tools(tools)
+        except ResponseHandlingException as e:
+            log_error(f"Vector database is not reachable. {e}")
+        except StopAsyncIteration as e:
+            log_error(
+                f"Iteration stopped. {e}",
+            )
+        except RuntimeError as e:
+            log_error(f"Runtime error. {e}")
+        except Exception as e:
+            log_error(f"Unexpected error. {e}")
