@@ -78,6 +78,7 @@ class App:
             logger.warning(_msg)
         else:
             _tools = [tools]
+        configure_agno_logging(custom_default_logger=logger)
         agent: Agent = await setup_agent(
             model,
             _tools,
