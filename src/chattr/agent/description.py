@@ -1,12 +1,12 @@
 from textwrap import dedent
 
-from chattr.app.logger import logger
+from agno.utils.log import log_error
 
 
 def setup_description(character: str | None) -> str:
     if not character:
         _msg = "Character name is required."
-        logger.error(_msg)
+        log_error(_msg)
         raise ValueError(_msg)
     return dedent(
         f"""

@@ -1,3 +1,4 @@
+from agno.utils.log import log_info
 from agno.vectordb.qdrant import Qdrant
 
 from chattr.app.settings import VectorDatabaseSettings
@@ -15,4 +16,5 @@ def setup_vector_database(vectordb: VectorDatabaseSettings) -> Qdrant:
         Qdrant: An instance of Qdrant configured with the specified vector database
                 settings.
     """
+    log_info("Setting up vector database.")
     return Qdrant(collection=vectordb.name, url=vectordb.url.host, port=vectordb.url.port)

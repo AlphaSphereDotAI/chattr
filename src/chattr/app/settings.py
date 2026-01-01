@@ -3,6 +3,7 @@
 from pathlib import Path
 from typing import Self
 
+from agno.utils.log import log_error, log_info
 from dotenv import load_dotenv
 from pydantic import (
     BaseModel,
@@ -16,7 +17,6 @@ from pydantic import (
 )
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from chattr.app.logger import logger
 from chattr.app.scheme import MCPScheme
 from chattr.app.utils import is_alive
 
@@ -110,9 +110,9 @@ class DirectorySettings(BaseModel):
             if not directory.exists():
                 try:
                     directory.mkdir(parents=True, exist_ok=True)
-                    logger.info("Created directory %s.", directory)
+                    log_info(f"Created directory {directory}.")
                 except OSError as e:
-                    logger.error("Error creating directory %s: %s", directory, e)
+                    log_error(f"Error creating directory {directory}: {e}")
                     raise
         return self
 
