@@ -1,9 +1,8 @@
 from pathlib import Path
 
+from agno.utils.log import log_info
 from httpx import URL, Client, HTTPStatusError, RequestError
 from pydantic import HttpUrl, ValidationError
-
-from chattr.app.logger import logger
 
 VALID_STATUS_CODE = 200
 
@@ -57,9 +56,9 @@ def download_file(url: URL, path: Path) -> None:
     Returns:
         None
     """
-    logger.info(f"Downloading {url} to {path}")
+    log_info(f"Downloading {url} to {path}")
     with Client() as client:
         response = client.get(url)
         response.raise_for_status()
         path.write_bytes(response.content)
-    logger.info(f"Downloaded {url} to {path}")
+    log_info(f"Downloaded {url} to {path}")
