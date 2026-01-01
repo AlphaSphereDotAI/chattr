@@ -12,7 +12,7 @@ async def setup_mcp_tools(mcp: MCPSettings) -> MultiMCPTools | None:
     if not mcp.path.exists():
         logger.warning("MCP config file not found.")
         return None
-    mcp_servers: list[dict] = loads(settings.mcp.path.read_text()).get("mcp_servers", [])
+    mcp_servers: list[dict] = loads(mcp.path.read_text()).get("mcp_servers", [])
     url_servers: list[dict] = [m for m in mcp_servers if m.get("type") == "url"]
     pprint(url_servers)
     if not url_servers:
