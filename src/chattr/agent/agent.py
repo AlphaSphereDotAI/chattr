@@ -48,4 +48,6 @@ async def setup_agent(agent_config: AgentConfiguration) -> Agent:
         save_response_to_file="agno/response.txt",
         add_history_to_context=True,
         add_memories_to_context=True,
+        enable_agentic_state=True,
+        cache_session=True,
     )
