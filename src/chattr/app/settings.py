@@ -52,13 +52,6 @@ class MCPSettings(BaseModel):
     path: FilePath = Field(default_factory=lambda: Path.cwd() / "mcp.json")
 
     @model_validator(mode="after")
-    def is_exists(self) -> Self:
-        """Check if the MCP config file exists."""
-        if not self.path.exists():
-            logger.warning("`mcp.json` not found.")
-        return self
-
-    @model_validator(mode="after")
     def is_valid(self) -> Self:
         """Validate that the MCP config file is a JSON file."""
         if self.path and self.path.suffix != ".json":
