@@ -18,7 +18,6 @@ from pydantic import (
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from chattr.app.scheme import MCPScheme
-from chattr.app.utils import is_alive
 
 load_dotenv()
 
@@ -35,15 +34,6 @@ class VectorDatabaseSettings(BaseModel):
 
     name: str = Field(default="chattr")
     url: HttpUrl = HttpUrl("http://localhost:6333")
-
-    @model_validator(mode="after")
-    def is_vectordb_alive(self) -> Self:
-        """Check if the vector database is alive."""
-        if not is_alive(self.url):
-            _msg = "Vector database is not reachable."
-            logger.error(_msg)
-            raise ConnectionError(_msg)
-        return self
 
 
 class MCPSettings(BaseModel):
