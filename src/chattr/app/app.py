@@ -66,8 +66,8 @@ class App:
                             ChatMessage, Audio, and Video objects if it existed.
         """
         _tools: list[MultiMCPTools] | None = None
-        tools: MultiMCPTools | None = await setup_mcp_tools(self.settings)
-        model: OpenAILike = setup_model(self.settings)
+        tools: MultiMCPTools | None = await setup_mcp_tools(self.settings.mcp)
+        model: OpenAILike = setup_model(self.settings.model)
         db: JsonDb = setup_database()
         vectordb: Qdrant = setup_vector_database(self.settings)
         knowledge: Knowledge = setup_knowledge(vectordb, db)
