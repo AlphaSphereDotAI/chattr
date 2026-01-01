@@ -1,3 +1,5 @@
+"""A module for Initializing the database for Chattr agent."""
+
 from agno.db.json import JsonDb
 
 
