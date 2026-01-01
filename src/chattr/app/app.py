@@ -69,7 +69,7 @@ class App:
         tools: MultiMCPTools | None = await setup_mcp_tools(self.settings.mcp)
         model: OpenAILike = setup_model(self.settings.model)
         db: JsonDb = setup_database()
-        vectordb: Qdrant = setup_vector_database(self.settings)
+        vectordb: Qdrant = setup_vector_database(self.settings.vector_database)
         knowledge: Knowledge = setup_knowledge(vectordb, db)
         description: str = setup_description(self.settings.character.name)
         instructions: list[str] = setup_instructions(self.settings.character.name, [tools])
