@@ -158,18 +158,6 @@ class App:
                         _msg = f"Unknown tool name: {response.tool.tool_name}"
                         logger.error(_msg)
                         raise Error(_msg, print_exception=self.settings.debug)
-            elif isinstance(response, RunStartedEvent):
-                history.append(
-                    ChatMessage(
-                        role="assistant",
-                        content=f"Using {response.model} model",
-                        metadata=MetadataDict(
-                            title=response.model,
-                            id=str(response.run_id),
-                            log=f"({response.model_provider} client)",
-                        ),
-                    ),
-                )
             elif isinstance(response, RunCompletedEvent):
                 if not isinstance(response.metrics, Metrics):
                     _msg = "Metrics expected"
