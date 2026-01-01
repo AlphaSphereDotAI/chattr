@@ -7,6 +7,7 @@ from rich.logging import RichHandler
 
 
 def setup_logger(logger_name: str | None) -> Logger:
+    """Initialize the logger for the application."""
     logger: Logger = getLogger(logger_name)
     console: Console = Console()
     handler: RichHandler = RichHandler(level=INFO, console=console, rich_tracebacks=True)
