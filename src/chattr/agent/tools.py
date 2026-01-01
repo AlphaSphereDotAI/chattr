@@ -9,12 +9,14 @@ from chattr.app.settings import MCPSettings
 
 async def setup_mcp_tools(mcp: MCPSettings) -> MultiMCPTools | None:
     """Return and setup MCP tools connection."""
-    if not settings.mcp.path.exists():
+    if not mcp.path.exists():
+        logger.warning("MCP config file not found.")
         return None
     mcp_servers: list[dict] = loads(settings.mcp.path.read_text()).get("mcp_servers", [])
     url_servers: list[dict] = [m for m in mcp_servers if m.get("type") == "url"]
     pprint(url_servers)
     if not url_servers:
+        logger.info("No Remote MCP servers found.")
         return None
     mcp_tools = MultiMCPTools(
         urls=[m["url"] for m in url_servers],
@@ -22,6 +24,9 @@ async def setup_mcp_tools(mcp: MCPSettings) -> MultiMCPTools | None:
         allow_partial_failure=True,
     )
     logger.info(f"MCP servers: {len(mcp_tools.tools)}")
+    if not mcp_tools.tools or len(mcp_tools.tools) == 0:
+        logger.info("No MCP servers available.")
+        return None
     await mcp_tools.connect()
     return mcp_tools
 
