@@ -1,6 +1,6 @@
 from agno.models.openai.like import OpenAILike
+from agno.utils.log import log_error, log_info
 
-from chattr.app.logger import logger
 from chattr.app.settings import ModelSettings
 from chattr.app.utils import is_url
 
@@ -17,21 +17,21 @@ def setup_model(model: ModelSettings) -> OpenAILike:
     """
     if not model.url:
         _msg = "Model URL is missing. Set it with `MODEL__URL`"
-        logger.error(_msg)
+        log_error(_msg)
         raise ValueError(_msg)
     if not is_url(model.url.encoded_string()):
         _msg = "Model URL is invalid. Set it with `MODEL__URL`"
-        logger.error(_msg)
+        log_error(_msg)
         raise ValueError(_msg)
     if not model.name:
         _msg = "Model name is missing. Set it with `MODEL__NAME`"
-        logger.error(_msg)
+        log_error(_msg)
         raise ValueError(_msg)
     if not model.api_key:
         _msg = "API key is missing. Set it with `MODEL__API_KEY`"
-        logger.error(_msg)
+        log_error(_msg)
         raise ValueError(_msg)
-    logger.info("Initializing OpenAILike language model")
+    log_info("Initializing OpenAILike language model")
     return OpenAILike(
         base_url=model.url.encoded_string(),
         id=model.name,

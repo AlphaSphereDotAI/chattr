@@ -2,15 +2,8 @@
 
 from typing import Annotated, Literal
 
-from pydantic import (
-    BaseModel,
-    ConfigDict,
-    Field,
-    HttpUrl,
-    ValidationError,
-)
-
-from chattr.app.logger import logger
+from agno.utils.log import log_error
+from pydantic import BaseModel, ConfigDict, Field, HttpUrl, ValidationError
 
 
 class CommandConnection(BaseModel):
@@ -74,6 +67,6 @@ if __name__ == "__main__":
             {"mcp_servers": [{"type": "url", "command": "ls"}]},
         )
     except ValidationError as e:
-        logger.error("Validation error: %s", e)
+        log_error(f"Validation error: {e}")
 
     # Additional validation examples can be added here if needed.
