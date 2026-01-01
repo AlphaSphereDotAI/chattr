@@ -5,6 +5,5 @@ from warnings import filterwarnings
 from rich.console import Console
 
 filterwarnings("ignore", category=DeprecationWarning)
-
-console = Console()
-APP_NAME: str = str(__package__)
+logger: Logger = setup_logger(__package__)
+configure_agno_logging(custom_default_logger=logger)
