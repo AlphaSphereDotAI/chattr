@@ -2,38 +2,43 @@
 
 from typing import Annotated, Literal
 
+from agno.tools.mcp import SSEClientParams, StreamableHTTPClientParams
 from agno.utils.log import log_error
-from pydantic import BaseModel, ConfigDict, Field, HttpUrl, ValidationError
+from mcp import StdioServerParameters
+from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 
-class CommandConnection(BaseModel):
+class CommandConnection(StdioServerParameters):
     """MCP connection variant using a shell command."""
 
-    model_config = ConfigDict(extra="forbid")
     name: str = Field(..., description="Name of the MCP server instance")
-    type: Literal["command"]
-    command: str = Field(..., description="Executable command to start MCP server")
-    args: list[str] | None = Field(default=None)
     transport: Literal["stdio"] = Field("stdio")
 
 
-class URLConnection(BaseModel):
+class SSEConnection(BaseModel, SSEClientParams):
+    """SSE connection variant using a URL endpoint."""
+
+    name: str = Field(..., description="Name of the MCP server instance")
+    transport: Literal["sse"] = Field("sse")
+
+
+class StreamableHTTPConnection(BaseModel, StreamableHTTPClientParams):
     """MCP connection variant using a URL endpoint."""
 
-    model_config = ConfigDict(extra="forbid")
     name: str = Field(..., description="Name of the MCP server instance")
-    type: Literal["url"]
-    url: HttpUrl = Field(..., description="URL of the MCP server endpoint")
-    transport: Literal["sse", "streamable-http"] = Field(...)
+    transport: Literal["streamable-http"] = Field("streamable-http")
 
 
 class MCPScheme(BaseModel):
     """Model representing the MCP scheme configuration."""
 
     model_config = ConfigDict(extra="forbid")
-    mcp_servers: list[Annotated[CommandConnection | URLConnection, Field(discriminator="type")]] = (
-        Field(default_factory=list)
-    )
+    mcp_servers: list[
+        Annotated[
+            CommandConnection | SSEConnection | StreamableHTTPConnection,
+            Field(discriminator="transport"),
+        ]
+    ] = Field(default_factory=list)
 
 
 if __name__ == "__main__":
@@ -49,6 +54,7 @@ if __name__ == "__main__":
                     "type": "command",
                     "command": "mcp-server",
                     "args": ["--port", "8080"],
+                    "transport": "stdio",
                 },
                 {
                     "name": "example_url_server",
