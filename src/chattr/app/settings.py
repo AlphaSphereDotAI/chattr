@@ -43,10 +43,14 @@ class MCPSettings(BaseModel):
 
     @model_validator(mode="after")
     def is_valid(self) -> Self:
-        """Validate that the MCP config file is a JSON file."""
-        if self.path and self.path.suffix != ".json":
-            msg = "MCP config file must be a JSON file"
-            raise ValueError(msg)
+        """Validate that the MCP config file is a valid JSON file."""
+        if self.path:
+            if self.path.suffix != ".json":
+                msg = "MCP config file must be a JSON file"
+                raise ValueError(msg)
+            if self.path.stem != "mcp":
+                msg = "MCP config file must be named 'mcp.json'"
+                raise ValueError(msg)
         return self
 
     @model_validator(mode="after")
