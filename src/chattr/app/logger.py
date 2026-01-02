@@ -1,19 +1,20 @@
 """A module handles the configuration of logging for the application."""
 
-from logging import INFO, Formatter, Logger, getLogger
+from logging import WARNING, Formatter, Logger, getLogger
 
 from rich.console import Console
 from rich.logging import RichHandler
 
 
-def setup_logger(logger_name: str | None) -> Logger:
+
+def setup_logger(log: LoggerSettings) -> Logger:
     """Initialize the logger for the application."""
-    logger: Logger = getLogger(logger_name)
+    logger: Logger = getLogger(log.name)
     console: Console = Console()
-    handler: RichHandler = RichHandler(level=INFO, console=console, rich_tracebacks=True)
-    formatter: Formatter = Formatter("%(name)s | %(process)d | %(message)s")
+    handler: RichHandler = RichHandler(level=log.level.value, console=console, rich_tracebacks=True)
+    formatter: Formatter = Formatter(log.format)
     handler.setFormatter(formatter)
     logger.addHandler(handler)
-    logger.setLevel(INFO)
+    logger.setLevel(log.level.value)
     logger.propagate = False
     return logger
