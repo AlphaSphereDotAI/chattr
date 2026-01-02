@@ -1,5 +1,7 @@
 """Settings for the Chattr app."""
 
+from enum import Enum
+from logging import CRITICAL, DEBUG, ERROR, INFO, NOTSET, WARNING
 from pathlib import Path
 from typing import Self
 
@@ -142,6 +144,26 @@ class CharacterSettings(BaseModel):
     name: str | None = Field(default=None)
 
 
+class LogLevel(Enum):
+    """Logging levels."""
+
+    CRITICAL = CRITICAL
+    ERROR = ERROR
+    WARNING = WARNING
+    INFO = INFO
+    DEBUG = DEBUG
+    NOTSET = NOTSET
+
+
+class LoggerSettings(BaseModel):
+    """Settings related to logger configuration."""
+
+    name: str | None = Field(default=None)
+    level: LogLevel = Field(default=LogLevel.INFO)
+    propagate: bool = Field(default=False)
+    format: str = Field(default="%(name)s | %(process)d | %(message)s")
+
+
 class Settings(BaseSettings):
     """Configuration for the Chattr app."""
 
@@ -160,6 +182,7 @@ class Settings(BaseSettings):
     )
     mcp: MCPSettings = Field(default_factory=MCPSettings)
     character: CharacterSettings = Field(default_factory=CharacterSettings)
+    log: LoggerSettings = Field(default_factory=LoggerSettings)
     debug: bool = Field(default=False)
     timezone: str = Field(default="Africa/Cairo")
 
