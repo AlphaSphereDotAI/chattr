@@ -5,6 +5,7 @@ from logging import WARNING, Formatter, Logger, getLogger
 from rich.console import Console
 from rich.logging import RichHandler
 
+from chattr.app.settings import LoggerSettings
 
 getLogger("httpx").setLevel(WARNING)
 
