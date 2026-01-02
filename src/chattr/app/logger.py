@@ -6,6 +6,8 @@ from rich.console import Console
 from rich.logging import RichHandler
 
 
+getLogger("httpx").setLevel(WARNING)
+
 
 def setup_logger(log: LoggerSettings) -> Logger:
     """Initialize the logger for the application."""
