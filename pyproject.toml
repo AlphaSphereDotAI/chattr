@@ -3,7 +3,7 @@
     { email = "mohamed.hisham.abdelzaher@gmail.com", name = "Mohamed Hisham Abdelzaher" },
   ]
   dependencies = [
-    "agno[google,qdrant]>=2.3.21",
+    "agno[google,qdrant]>=2.3.22",
     "ddgs>=9.10.0",
     "fastembed>=0.7.4",
     "gradio[mcp]>=6.2.0",
@@ -16,7 +16,7 @@
   name = "chattr"
   readme = "README.md"
   requires-python = ">=3.13,<3.14"
-  version = "0.0.54"
+  version = "0.0.55"
 
   [project.scripts]
     chattr = "chattr.__main__:main"
