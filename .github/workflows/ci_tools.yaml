@@ -28,7 +28,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       - name: Run opencode
-        uses: sst/opencode/github@184834da980cb50c442a192b88397d634901abe2 # v1.1.6
+        uses: sst/opencode/github@bd9c13bb27e6a375f0232ed383213bc86c77387d # v1.1.8
         env:
           OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
         with:
