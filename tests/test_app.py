@@ -1,4 +1,4 @@
-"""This module contains tests for the application's HTTP endpoints."""
+"""Contain tests for the application's HTTP endpoints."""
 
 from os import getenv
 
@@ -12,8 +12,5 @@ def test_app() -> None:
     Returns:
         None
     """
-    response: Response = head(
-        getenv("CHATTR_URL", "http://localhost:7860/"),
-        timeout=30,
-    )
+    response: Response = head(getenv("CHATTR_URL", "http://localhost:7860/"), timeout=30)
     assert response.status_code == 200

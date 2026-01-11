@@ -1,6 +1,7 @@
 name: Chattr Dev
 services:
   vector_database:
+    container_name: VectorDB
     image: qdrant/qdrant:latest@sha256:0425e3e03e7fd9b3dc95c4214546afe19de2eb2e28ca621441a56663ac6e1f46
     ports:
       - 6333:6333
@@ -9,6 +10,7 @@ services:
       - qdrant_storage:/qdrant/storage
     restart: on-failure:3
   voice_generator:
+    container_name: VoiceGenerator
     image: ghcr.io/alphaspheredotai/vocalizr:latest@sha256:df1f4fa0615ae3f34249454ddc3a74e3fd955332da507ff2c7d5373190037863
     ports:
       - 7861:7860
@@ -48,6 +50,7 @@ services:
               capabilities:
                 - gpu
   video_generator:
+    container_name: VideoGenerator
     image: ghcr.io/alphaspheredotai/visualizr:latest@sha256:2c5b096a66c6ebee1a5c0242a8b42c393e0cfdcda086ae6ceba11f92618ec7aa
     ports:
       - 7862:7860
