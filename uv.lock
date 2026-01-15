@@ -233,7 +233,7 @@ wheels = [
 
 [[package]]
 name = "chattr"
-version = "0.0.72"
+version = "0.0.73"
 source = { editable = "." }
 dependencies = [
     { name = "agno", extra = ["google", "qdrant"] },
