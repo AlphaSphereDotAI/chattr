@@ -278,7 +278,7 @@ dev = [
     { name = "pyrefly", specifier = ">=0.46.1" },
     { name = "pytest-emoji", specifier = ">=0.2.0" },
     { name = "pytest-md", specifier = ">=0.2.0" },
-    { name = "pytest-mergify", specifier = ">=2026.1.12.1" },
+    { name = "pytest-mergify", specifier = ">=2026.1.20.1" },
     { name = "ruff", specifier = ">=0.14.13" },
     { name = "ty", specifier = ">=0.0.12" },
     { name = "uv-build", specifier = ">=0.9.26" },
@@ -1703,7 +1703,7 @@ wheels = [
 
 [[package]]
 name = "pytest-mergify"
-version = "2026.1.12.1"
+version = "2026.1.20.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "opentelemetry-exporter-otlp-proto-http" },
@@ -1712,9 +1712,9 @@ dependencies = [
     { name = "pytest-timeout" },
     { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/08/36/b97d98451e7ac46800cbd73f51bf798aeb0514e820e836520d72e56bf682/pytest_mergify-2026.1.12.1.tar.gz", hash = "sha256:caa19e551f22a01457f59c10f75ae09094ea8dc49fe2062de37511fb71e0fc92", size = 77954, upload-time = "2026-01-12T11:58:46.457Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e9/d4/1e1239cef00880f614708ac81632b07a76c79cb6964ff5565a08dfac930f/pytest_mergify-2026.1.20.1.tar.gz", hash = "sha256:4a8ae8ccaa01d73da899d5346236c3bc8a71caf40a36db82bf1c94a41853f7c9", size = 78302, upload-time = "2026-01-20T09:11:37.257Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c4/ec/5fd70b050ed10cd138e971edfedd1a9385b3683e2ff6dee585cc0918dbc3/pytest_mergify-2026.1.12.1-py3-none-any.whl", hash = "sha256:66a68e58e66f85794f1a519a4c6238bc17cfb4fcaad38d610935fb171fb575fd", size = 32055, upload-time = "2026-01-12T11:58:45.095Z" },
+    { url = "https://files.pythonhosted.org/packages/50/80/fc6b5bc23f1c8973ad1913ee7f85dcc9ba0b414d5ea7bc4aff2bee73eb31/pytest_mergify-2026.1.20.1-py3-none-any.whl", hash = "sha256:a0055e50c03877f5f6a1f0660e12ac8539822e2548280e183c189cfc34f4f4e4", size = 32180, upload-time = "2026-01-20T09:11:36.177Z" },
 ]
 
 [[package]]
