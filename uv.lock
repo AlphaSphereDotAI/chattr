@@ -4,7 +4,7 @@ requires-python = "==3.13.*"
 
 [[package]]
 name = "agno"
-version = "2.4.0"
+version = "2.4.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "docstring-parser" },
@@ -21,9 +21,9 @@ dependencies = [
     { name = "typer" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e4/54/9846d2a9bc0e7e1bf5b92894dea0661da59ae5569fb5126c59b63579e933/agno-2.4.0.tar.gz", hash = "sha256:489184fd84d38b17a827462c3043ae434476f45eb93a835ae3461792ce96fda8", size = 1500849, upload-time = "2026-01-19T13:07:53.656Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/4b/58/6f4533874b43e5e29b5793fd9b6844ee1aedf24d42f815e8b318ac19c6f1/agno-2.4.1.tar.gz", hash = "sha256:e60f52f186799c0cc90b7a116f617c95eefa0c601326bcfcad4395b1eb96dff9", size = 1511813, upload-time = "2026-01-21T15:53:23.834Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/0b/b7/f38898bcea7cff804ad718f080f49d6d9802ba8df075e23b3bdd747cd758/agno-2.4.0-py3-none-any.whl", hash = "sha256:479a68b3dcaad6ed1b3ea4c6d8e89684a2fc889e5300dafd184135324629f8e9", size = 1797222, upload-time = "2026-01-19T13:07:51.76Z" },
+    { url = "https://files.pythonhosted.org/packages/a9/b2/bb717e04363b7966b50f760e64f81c331c219f37b237feeb7beeddb88390/agno-2.4.1-py3-none-any.whl", hash = "sha256:bb6c19ae57c5a8b8e55b6f5cb40b4b7f6413304415d6ce76d908046c0ae998d1", size = 1810138, upload-time = "2026-01-21T15:53:21.265Z" },
 ]
 
 [package.optional-dependencies]
@@ -233,7 +233,7 @@ wheels = [
 
 [[package]]
 name = "chattr"
-version = "0.0.82"
+version = "0.0.83"
 source = { editable = "." }
 dependencies = [
     { name = "agno", extra = ["google", "qdrant"] },
@@ -260,7 +260,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "agno", extras = ["google", "qdrant"], specifier = ">=2.4.0" },
+    { name = "agno", extras = ["google", "qdrant"], specifier = ">=2.4.1" },
     { name = "ddgs", specifier = ">=9.10.0" },
     { name = "fastembed", specifier = ">=0.7.4" },
     { name = "gradio", extras = ["mcp"], specifier = ">=6.3.0" },
