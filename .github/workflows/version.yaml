@@ -9,25 +9,25 @@ on:
       - Dockerfile
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 permissions: read-all
 jobs:
   version:
     name: Versioning
     runs-on: ubuntu-latest
-    if: github.actor == 'renovate[bot]'
+    if: github.actor == 'renovate[bot]' || github.actor == 'mergify[bot]'
     permissions:
       contents: write
     environment:
       name: versioning
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6.0.0
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           token: ${{ secrets.GH_TOKEN }}
           fetch-depth: 0
       - name: Install uv
-        uses: astral-sh/setup-uv@v7.0.0
+        uses: astral-sh/setup-uv@61cb8a9741eeb8a550a1b8544337180c0fc8476b # v7.2.0
         with:
           enable-cache: true
           activate-environment: true
@@ -35,11 +35,11 @@ jobs:
         run: uv version --bump patch
       - name: Get Package version from pyproject.toml
         id: get_package_version
-        uses: mikefarah/yq@v4.49.1
+        uses: mikefarah/yq@065b200af9851db0d5132f50bc10b1406ea5c0a8 # v4.50.1
         with:
           cmd: yq -roy '.project.version' pyproject.toml
       - name: Commit updated count
-        uses: stefanzweifel/git-auto-commit-action@v7.0.0
+        uses: stefanzweifel/git-auto-commit-action@04702edda442b2e678b25b537cec683a1493fcb9 # v7.1.0
         with:
           commit_message: 'Tag: ${{ steps.get_package_version.outputs.result }}'
           tagging_message: ${{ steps.get_package_version.outputs.result }}
