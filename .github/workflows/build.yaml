@@ -1,0 +1,86 @@
+name: Build
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+      - '[0-9]+.[0-9]+.[0-9]+a[0-9]+'
+      - '[0-9]+.[0-9]+.[0-9]+b[0-9]+'
+permissions: read-all
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: true
+jobs:
+  setup_and_build:
+    name: Setup and Build
+    environment:
+      name: uv
+      url: ${{github.event.repository.html_url}}/commits/${{github.ref_name}}
+    env:
+      UV_COMPILE_BYTECODE: '1'
+      UV_LINK_MODE: copy
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+      - name: Get Package version from pyproject.toml
+        id: get_package_version
+        uses: mikefarah/yq@065b200af9851db0d5132f50bc10b1406ea5c0a8 # v4.50.1
+        with:
+          cmd: yq -roy '.project.version' pyproject.toml
+      - name: Install uv
+        uses: astral-sh/setup-uv@61cb8a9741eeb8a550a1b8544337180c0fc8476b # v7.2.0
+        with:
+          enable-cache: true
+          activate-environment: true
+      - name: Install the project
+        run: uv sync --no-dev --frozen --no-editable
+      - name: Update Project Version
+        if: ${{ github.ref_name != steps.get_package_version.outputs.result }}
+        run: uv version ${{ github.ref_name }}
+      - name: Build source and wheel distribution
+        run: uv build
+      - name: Upload artifacts
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: dist
+          path: dist/
+      - name: Update the main branch to the updated version
+        if: ${{ github.ref_name != steps.get_package_version.outputs.result }}
+        uses: stefanzweifel/git-auto-commit-action@04702edda442b2e678b25b537cec683a1493fcb9 # v7.1.0
+        with:
+          commit_message: 'Version: ${{ github.ref_name }}'
+          branch: main
+          commit_options: --no-verify
+      - name: Update the tag to the updated version
+        if: ${{ github.ref_name != steps.get_package_version.outputs.result }}
+        run: |
+          git tag --force ${{ github.ref_name }}
+          git push origin --force HEAD:refs/tags/${{ github.ref_name }}
+  github_release:
+    name: Create GitHub Release
+    needs: setup_and_build
+    runs-on: ubuntu-latest
+    environment:
+      name: github
+      url: ${{github.event.repository.html_url}}/releases/tag/${{github.ref_name}}
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Download artifacts
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          name: dist
+          path: dist/
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2.5.0
+        with:
+          files: dist/*
+          generate_release_notes: true
+          make_latest: true
+          fail_on_unmatched_files: true
