@@ -67,7 +67,7 @@ jobs:
           enable-cache: true
           activate-environment: true
       - name: Restore pre-commit cache
-        uses: actions/cache/restore@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
+        uses: actions/cache/restore@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5.0.2
         id: cache-restore
         with:
           path: ~/.cache/pre-commit
@@ -76,7 +76,7 @@ jobs:
       - name: Run pre-commit hooks
         run: uvx pre-commit run --show-diff-on-failure --color=always --all-files
       - name: Save pre-commit cache
-        uses: actions/cache/save@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
+        uses: actions/cache/save@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5.0.2
         if: always() && steps.cache-restore.outputs.cache-hit != 'true'
         with:
           path: ~/.cache/pre-commit
@@ -149,7 +149,7 @@ jobs:
             ${{matrix.output == 'sarif' && '--output-file ruff.sarif' || ''}}
       - name: upload Ruff scan SARIF report
         if: matrix.output == 'sarif' && ( success() || failure() )
-        uses: github/codeql-action/upload-sarif@5d4e8d1aca955e8d8589aabd499c5cae939e33c7 # v4.31.9
+        uses: github/codeql-action/upload-sarif@cdefb33c0f6224e58673d9004f47f7cb3e328b89 # v4.31.10
         with:
           sarif_file: ruff.sarif
       - name: Commit and push applied Ruff fixes
@@ -204,7 +204,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       - name: SBOM Generation
-        uses: anchore/sbom-action@0b82b0b1a22399a1c542d4d656f70cd903571b5c # v0.21.1
+        uses: anchore/sbom-action@62ad5284b8ced813296287a0b63906cb364b73ee # v0.22.0
         with:
           path: .
           dependency-snapshot: true
@@ -219,14 +219,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       - name: Scan current project
-        uses: anchore/scan-action@62b74fb7bb810d2c45b1865f47a77655621862a5 # v7.2.3
+        uses: anchore/scan-action@0d444ed77d83ee2ba7f5ced0d90d640a1281d762 # v7.3.0
         id: scan
         with:
           path: .
           cache-db: true
       - name: upload Anchore scan SARIF report
         if: success() || failure()
-        uses: github/codeql-action/upload-sarif@5d4e8d1aca955e8d8589aabd499c5cae939e33c7 # v4.31.9
+        uses: github/codeql-action/upload-sarif@cdefb33c0f6224e58673d9004f47f7cb3e328b89 # v4.31.10
         with:
           sarif_file: ${{ steps.scan.outputs.sarif }}
   trivy:
@@ -269,7 +269,7 @@ jobs:
           scanners: vuln,secret,misconfig,license
       - name: Upload Trivy scan results to GitHub Security tab
         if: matrix.scan-type != 'fs' && ( success() || failure() )
-        uses: github/codeql-action/upload-sarif@5d4e8d1aca955e8d8589aabd499c5cae939e33c7 # v4.31.9
+        uses: github/codeql-action/upload-sarif@cdefb33c0f6224e58673d9004f47f7cb3e328b89 # v4.31.10
         with:
           sarif_file: ${{ matrix.output }}
           category: ${{ matrix.scan-type }}
@@ -337,7 +337,7 @@ jobs:
           output-file: hadolint.sarif
       - name: upload Hadolint scan SARIF report
         if: success() || failure()
-        uses: github/codeql-action/upload-sarif@5d4e8d1aca955e8d8589aabd499c5cae939e33c7 # v4.31.9
+        uses: github/codeql-action/upload-sarif@cdefb33c0f6224e58673d9004f47f7cb3e328b89 # v4.31.10
         with:
           sarif_file: hadolint.sarif
   actionlint:
