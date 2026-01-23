@@ -158,7 +158,7 @@ class LogLevel(Enum):
 class LoggerSettings(BaseModel):
     """Settings related to logger configuration."""
 
-    name: str | None = Field(default=None)
+    name: str = Field(default="chattr", frozen=True)
     level: LogLevel = Field(default=LogLevel.INFO)
     propagate: bool = Field(default=False)
     format: str = Field(default="%(name)s | %(process)d | %(message)s")
