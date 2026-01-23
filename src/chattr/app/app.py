@@ -172,9 +172,7 @@ class App:
         except ResponseHandlingException as e:
             log_error(f"Vector database is not reachable. {e}")
         except StopAsyncIteration as e:
-            log_error(
-                f"Iteration stopped. {e}",
-            )
+            log_error(f"Iteration stopped. {e}")
         except RuntimeError as e:
             log_error(f"Runtime error. {e}")
         except Exception as e:
