@@ -16,7 +16,7 @@
   name = "chattr"
   readme = "README.md"
   requires-python = ">=3.13,<3.14"
-  version = "0.0.87"
+  version = "0.0.88"
 
   [project.scripts]
     chattr = "chattr.__main__:main"
