@@ -50,6 +50,95 @@ class App:
             show_progress="full",
         )
 
+    def _response_at_run_content_event(
+        self,
+        history: list[ChatMessage | Audio | Video],
+        response: RunContentEvent,
+    ) -> list[ChatMessage | Audio | Video]:
+        """Handle the response run content event."""
+        if not isinstance(response, RunContentEvent):
+            _msg = "Expected RunContentEvent"
+            raise TypeError(_msg)
+        history.append(ChatMessage(role="assistant", content=str(response.content)))
+        return history
+
+    def _response_at_tool_call_started_event(
+        self,
+        history: list[ChatMessage | Audio | Video],
+        response: ToolCallStartedEvent,
+    ) -> list[ChatMessage | Audio | Video]:
+        """Handle the response tool call started event."""
+        if not isinstance(response.tool, ToolExecution):
+            _msg = "ToolExecution expected"
+            log_error(_msg)
+            raise TypeError(_msg)
+        history.append(
+            ChatMessage(
+                role="assistant",
+                content=dumps(response.tool.tool_args, indent=4),
+                metadata=MetadataDict(
+                    title=str(response.tool.tool_name),
+                    id=str(response.tool.tool_call_id),
+                    duration=response.tool.created_at,
+                ),
+            ),
+        )
+        return history
+
+    def _response_at_tool_call_completed_event(
+        self,
+        history: list[ChatMessage | Audio | Video],
+        response: ToolCallCompletedEvent,
+    ) -> list[ChatMessage | Audio | Video]:
+        """Handle the response tool call completed event."""
+        if not isinstance(response.tool, ToolExecution):
+            _msg = "ToolExecution expected"
+            log_error(_msg)
+            raise TypeError(_msg)
+        if response.tool.tool_call_error:
+            if not isinstance(response.tool.metrics, Metrics):
+                _msg = "Metrics expected"
+                log_error(_msg)
+                raise TypeError(_msg)
+            history.append(
+                ChatMessage(
+                    role="assistant",
+                    content=dumps(response.tool.tool_args, indent=4),
+                    metadata=MetadataDict(
+                        title=str(response.tool.tool_name),
+                        id=str(response.tool.tool_call_id),
+                        log="Tool Call Failed",
+                        duration=float(str(response.tool.metrics.duration)),
+                    ),
+                ),
+            )
+        else:
+            if not isinstance(response.tool.metrics, Metrics):
+                _msg = "Metrics expected"
+                log_error(_msg)
+                raise TypeError(_msg)
+            history.append(
+                ChatMessage(
+                    role="assistant",
+                    content=dumps(response.tool.tool_args, indent=4),
+                    metadata=MetadataDict(
+                        title=str(response.tool.tool_name),
+                        id=str(response.tool.tool_call_id),
+                        log="Tool Call Succeeded",
+                        duration=float(str(response.tool.metrics.duration)),
+                    ),
+                ),
+            )
+            if response.tool.tool_name == "generate_audio_for_text":
+                history.append(Audio(response.tool.result, autoplay=True))
+            elif response.tool.tool_name == "generate_video_mcp":
+                history.append(Video(response.tool.result, autoplay=True))
+            else:
+                _msg = f"Unknown tool name: {response.tool.tool_name}"
+                log_error(_msg)
+                raise Error(_msg, print_exception=self.settings.debug)
+        return history
+
     async def generate_response(
         self,
         message: str,
@@ -102,70 +191,11 @@ class App:
             ):
                 # pprint(response)
                 if isinstance(response, RunContentEvent):
-                    history.append(ChatMessage(role="assistant", content=str(response.content)))
+                    history = self._response_at_run_content_event(history, response)
                 elif isinstance(response, ToolCallStartedEvent):
-                    if not isinstance(response.tool, ToolExecution):
-                        _msg = "ToolExecution expected"
-                        log_error(_msg)
-                        raise TypeError(_msg)
-                    history.append(
-                        ChatMessage(
-                            role="assistant",
-                            content=dumps(response.tool.tool_args, indent=4),
-                            metadata=MetadataDict(
-                                title=str(response.tool.tool_name),
-                                id=str(response.tool.tool_call_id),
-                                duration=response.tool.created_at,
-                            ),
-                        ),
-                    )
+                    history = self._response_at_tool_call_started_event(history, response)
                 elif isinstance(response, ToolCallCompletedEvent):
-                    if not isinstance(response.tool, ToolExecution):
-                        _msg = "ToolExecution expected"
-                        log_error(_msg)
-                        raise TypeError(_msg)
-                    if response.tool.tool_call_error:
-                        if not isinstance(response.tool.metrics, Metrics):
-                            _msg = "Metrics expected"
-                            log_error(_msg)
-                            raise TypeError(_msg)
-                        history.append(
-                            ChatMessage(
-                                role="assistant",
-                                content=dumps(response.tool.tool_args, indent=4),
-                                metadata=MetadataDict(
-                                    title=str(response.tool.tool_name),
-                                    id=str(response.tool.tool_call_id),
-                                    log="Tool Call Failed",
-                                    duration=float(str(response.tool.metrics.duration)),
-                                ),
-                            ),
-                        )
-                    else:
-                        if not isinstance(response.tool.metrics, Metrics):
-                            _msg = "Metrics expected"
-                            log_error(_msg)
-                            raise TypeError(_msg)
-                        history.append(
-                            ChatMessage(
-                                role="assistant",
-                                content=dumps(response.tool.tool_args, indent=4),
-                                metadata=MetadataDict(
-                                    title=str(response.tool.tool_name),
-                                    id=str(response.tool.tool_call_id),
-                                    log="Tool Call Succeeded",
-                                    duration=float(str(response.tool.metrics.duration)),
-                                ),
-                            ),
-                        )
-                        if response.tool.tool_name == "generate_audio_for_text":
-                            history.append(Audio(response.tool.result, autoplay=True))
-                        elif response.tool.tool_name == "generate_video_mcp":
-                            history.append(Video(response.tool.result, autoplay=True))
-                        else:
-                            _msg = f"Unknown tool name: {response.tool.tool_name}"
-                            log_error(_msg)
-                            raise Error(_msg, print_exception=self.settings.debug)
+                    history = self._response_at_tool_call_completed_event(history, response)
                 print(f"---------- {history}")
                 yield history
             await close_mcp_tools(tools)
