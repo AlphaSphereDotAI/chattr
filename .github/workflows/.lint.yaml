@@ -308,7 +308,7 @@ jobs:
       - name: Setup Venv
         run: uv sync
       - name: Check
-        run: ty check --output-format github
+        run: uv run ty check --output-format github
   markdownlint:
     name: MarkdownLint
     runs-on: ubuntu-latest
