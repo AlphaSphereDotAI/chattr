@@ -1,7 +1,5 @@
 from textwrap import dedent
 
-from agno.utils.log import log_error
-
 
 def setup_description(character: str | None) -> str:
     if not character:
