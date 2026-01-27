@@ -33,5 +33,5 @@ def setup_model(model: ModelSettings) -> OpenAILike:
         id=model.name,
         api_key=model.api_key.get_secret_value(),
         temperature=model.temperature,
-        cache_response=True,
+        cache_response=model.cache_response,
     )
