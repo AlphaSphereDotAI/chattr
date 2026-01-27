@@ -6,7 +6,7 @@ def setup_instructions(character: str | None, tools: list[MultiMCPTools | None])
     """Return a list of instructions to mimic a given character."""
     if not character:
         _msg = "Character name is required."
-        logger.error(_msg)
+        log_error(_msg)
         raise ValueError(_msg)
     instructions: list[str] = [
         "Understand the user's question and context.",
