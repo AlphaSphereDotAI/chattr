@@ -199,11 +199,17 @@ class App:
                 print(f"---------- {history}")
                 yield history
             await close_mcp_tools(tools)
+        except (StopAsyncIteration, StopIteration) as e:
+            log_error(f"Iteration stopped. {e}")
         except ResponseHandlingException as e:
             log_error(f"Vector database is not reachable. {e}")
-        except StopAsyncIteration as e:
-            log_error(f"Iteration stopped. {e}")
         except RuntimeError as e:
             log_error(f"Runtime error. {e}")
+        except ValueError as e:
+            log_error(f"Value error. {e}")
+        except TypeError as e:
+            log_error(f"Type error. {e}")
         except Exception as e:
             log_error(f"Unexpected error. {e}")
+        finally:
+            yield history
