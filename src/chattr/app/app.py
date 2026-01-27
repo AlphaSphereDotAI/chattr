@@ -152,7 +152,7 @@ class App:
 
         Args:
             message: The user's input message as a string.
-            history: The conversation history as a list of ChatMessage objects.
+            history: The conversation history as a list of ChatMessage, Audio, or Video objects.
 
         Returns:
             AsyncGenerator: Yields a list of the updated history containing
