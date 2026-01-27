@@ -4,6 +4,7 @@ from chattr.app.exceptions import CharacterNameMissingError
 
 
 def setup_description(character: str | None) -> str:
+    """Set up the description for the agent."""
     if not character:
         raise CharacterNameMissingError
     return dedent(
