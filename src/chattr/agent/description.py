@@ -1,11 +1,11 @@
 from textwrap import dedent
 
-from agno.utils.log import log_error
+from chattr.app.exceptions import CharacterNameMissingError
 
 
 def setup_description(character: str | None) -> str:
     if not character:
-        raise ParameterMissingError("Character name", "CHARACTER__NAME")
+        raise CharacterNameMissingError
     return dedent(
         f"""
         You are a helpful assistant
