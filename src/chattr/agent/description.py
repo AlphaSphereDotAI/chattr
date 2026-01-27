@@ -5,9 +5,7 @@ from agno.utils.log import log_error
 
 def setup_description(character: str | None) -> str:
     if not character:
-        _msg = "Character name is required."
-        log_error(_msg)
-        raise ValueError(_msg)
+        raise ParameterMissingError("Character name", "CHARACTER__NAME")
     return dedent(
         f"""
         You are a helpful assistant
