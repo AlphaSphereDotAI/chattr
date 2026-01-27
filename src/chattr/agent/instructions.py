@@ -1,13 +1,12 @@
 from agno.tools.mcp import MultiMCPTools
-from agno.utils.log import log_error
+
+from chattr.app.exceptions import CharacterNameMissingError
 
 
 def setup_instructions(character: str | None, tools: list[MultiMCPTools | None]) -> list[str]:
     """Return a list of instructions to mimic a given character."""
     if not character:
-        _msg = "Character name is required."
-        log_error(_msg)
-        raise ValueError(_msg)
+        raise CharacterNameMissingError
     instructions: list[str] = [
         "Understand the user's question and context.",
         "Gather relevant information and resources.",
