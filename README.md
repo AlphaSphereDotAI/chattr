@@ -23,8 +23,8 @@ short_description: Chat with Characters
 [Features](#-features) •
 [Quick Start](#-quick-start) •
 [Documentation](#-documentation) •
-[Contributing](#-contributing) •
-[License](#-license)
+[API Reference](docs/API.md) •
+[Contributing](#-contributing)
 
 </div>
 
@@ -111,7 +111,7 @@ Chattr follows a modular microservices architecture:
 
 ## 🚀 Quick Start
 
-Get Chattr up and running in minutes:
+Get Chattr up and running in minutes! For a detailed walkthrough, see the [Quick Start Guide](docs/QUICKSTART.md).
 
 ### Prerequisites
 
@@ -414,13 +414,17 @@ chattr/
 
 ## 📚 Documentation
 
-For more detailed documentation, see:
+For comprehensive documentation, see the [Documentation Index](docs/INDEX.md).
 
+### Core Documentation
+
+- [**Quick Start Guide**](docs/QUICKSTART.md) - Get running in 5 minutes
 - [**API Reference**](docs/API.md) - Detailed API documentation
 - [**Deployment Guide**](docs/DEPLOYMENT.md) - Production deployment instructions
 - [**Development Guide**](docs/DEVELOPMENT.md) - Contributing and development workflow
 - [**Architecture**](docs/ARCHITECTURE.md) - System design and architecture details
 - [**Troubleshooting**](docs/TROUBLESHOOTING.md) - Common issues and solutions
+- [**Security Policy**](SECURITY.md) - Security best practices and reporting
 
 ## 🤝 Contributing
 
