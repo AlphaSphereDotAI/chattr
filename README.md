@@ -1,10 +1,10 @@
 ---
 title: Chattr
-emoji: 💬
-colorFrom: gray
-colorTo: blue
-sdk: docker
-app_port: 7860
+sdk: gradio
+emoji: 📚
+colorFrom: blue
+colorTo: gray
+license: mit
 short_description: Chat with Characters
 ---
 
