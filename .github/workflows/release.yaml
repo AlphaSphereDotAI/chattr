@@ -28,6 +28,26 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: dist/
+  huggingface:
+    name: Upload to HuggingFace Hub
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    environment:
+      name: huggingface
+      url: https://huggingface.co/spaces/${{github.repository}}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.0.0
+        with:
+          fetch-depth: 0
+          lfs: true
+      - name: Push to HF
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_USERNAME: MH0386
+        run: git push --force https://$HF_USERNAME:$HF_TOKEN@huggingface.co/spaces/${{github.repository}} main
   image:
     name: Release Image
     needs: pypi
