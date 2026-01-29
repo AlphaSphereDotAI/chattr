@@ -85,4 +85,5 @@ jobs:
           enable-cache: true
           activate-environment: true
       - name: Push to HF
-        run: uvx hf upload ${{github.repository}} . . --repo-type space --token ${{secrets.HF_TOKEN}} --delete '*'
+        run: uvx hf upload ${{github.repository}} . . --repo-type space --token ${{secrets.HF_TOKEN}}
+          --delete '*'
