@@ -6,7 +6,7 @@
     "agno[google,qdrant]>=2.4.7",
     "ddgs>=9.10.0",
     "fastembed>=0.7.4",
-    "gradio[mcp]>=6.5.0",
+    "gradio[mcp]>=6.5.1",
     "m3u8>=6.0.0",
     "mem0ai>=1.0.2",
     "poml>=0.0.8",
@@ -16,7 +16,7 @@
   name = "chattr"
   readme = "README.md"
   requires-python = ">=3.13,<3.14"
-  version = "0.0.101"
+  version = "0.0.102"
 
   [project.scripts]
     chattr = "chattr.__main__:main"
