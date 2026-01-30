@@ -98,6 +98,8 @@ jobs:
           enable-cache: true
           activate-environment: true
       - name: Push to HF
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: >-
-          uvx hf upload ${{github.repository}} . . --repo-type space --token ${{secrets.HF_TOKEN}}
+          uvx hf upload ${{github.repository}} . . --repo-type space
           --delete '*' --exclude '.github' --commit-message ${{github.event.head_commit.message || 'Sync from GitHub'}}
