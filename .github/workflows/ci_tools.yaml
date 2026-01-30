@@ -101,4 +101,4 @@ jobs:
       - name: Push to HF
         run: >-
           uvx hf upload ${{github.repository}} . . --repo-type space --token ${{secrets.HF_TOKEN}}
-          --delete '*'
+          --delete '*' --exclude '.github' --commit-message ${{github.event.head_commit.message || 'Sync from GitHub'}}
