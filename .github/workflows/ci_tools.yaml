@@ -1,4 +1,4 @@
-  name: CI Tools
+name: CI Tools
 on:
   push:
     branches:
