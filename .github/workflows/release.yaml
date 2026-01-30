@@ -44,9 +44,11 @@ jobs:
           enable-cache: true
           activate-environment: true
       - name: Push to HF
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: >-
           uvx hf repo tag create ${{github.repository}} ${{github.event.release.tag_name}}
-          --repo-type space --token ${{secrets.HF_TOKEN}}
+          --repo-type space
   image:
     name: Release Image
     needs: pypi
