@@ -1,4 +1,4 @@
-name: CI Tools
+  name: CI Tools
 on:
   push:
     branches:
@@ -97,6 +97,8 @@ jobs:
         with:
           enable-cache: true
           activate-environment: true
+      - name: Export requirements
+        run: uv export --format requirements.txt --no-dev --output-file requirements.txt
       - name: Push to HF
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
