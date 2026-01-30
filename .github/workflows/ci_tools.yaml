@@ -100,8 +100,7 @@ jobs:
       - name: Push to HF
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
-        env:
           COMMIT_MESSAGE: ${{ github.event.head_commit.message || 'Sync from GitHub' }}
         run: >-
-          uvx hf upload ${{github.repository}} . . --repo-type space --token ${{secrets.HF_TOKEN}}
+          uvx hf upload ${{github.repository}} . . --repo-type space
           --delete '*' --exclude '.github' --commit-message "$COMMIT_MESSAGE"
