@@ -3,8 +3,7 @@ title: Chattr
 emoji: 💬
 colorFrom: gray
 colorTo: blue
-sdk: docker
-app_port: 7860
+sdk: gradio
 short_description: Chat with Characters
 ---
 
