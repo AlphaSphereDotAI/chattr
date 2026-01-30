@@ -4,6 +4,7 @@ emoji: 💬
 colorFrom: gray
 colorTo: blue
 sdk: gradio
+python_version: 3.x
 short_description: Chat with Characters
 ---
 
