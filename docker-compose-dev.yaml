@@ -1,0 +1,100 @@
+name: Chattr Dev
+services:
+  vector_database:
+    container_name: VectorDB
+    image: qdrant/qdrant:latest@sha256:0425e3e03e7fd9b3dc95c4214546afe19de2eb2e28ca621441a56663ac6e1f46
+    ports:
+      - 6333:6333
+      - 6334:6334
+    volumes:
+      - qdrant_storage:/qdrant/storage
+    restart: on-failure:3
+  voice_generator:
+    container_name: VoiceGenerator
+    image: ghcr.io/alphaspheredotai/vocalizr:latest@sha256:df1f4fa0615ae3f34249454ddc3a74e3fd955332da507ff2c7d5373190037863
+    ports:
+      - 7861:7860
+    post_start:
+      - command: chown -R nonroot:nonroot /home/nonroot
+        user: root
+      - command: chmod -R 700 /home/nonroot
+        user: root
+    volumes:
+      - huggingface:/home/nonroot/hf
+      - results:/home/nonroot/results
+      - logs:/home/nonroot/logs
+    restart: on-failure:3
+    environment:
+      GRADIO_DEBUG: 1
+    healthcheck:
+      test:
+        - CMD
+        - curl
+        - -o
+        - /dev/null
+        - -f
+        - -s
+        - -w
+        - "'Status: %{http_code},\tTime: %{time_total}s'"
+        - http://localhost:7860/
+      interval: 1m30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities:
+                - gpu
+  video_generator:
+    container_name: VideoGenerator
+    image: ghcr.io/alphaspheredotai/visualizr:latest@sha256:2c5b096a66c6ebee1a5c0242a8b42c393e0cfdcda086ae6ceba11f92618ec7aa
+    ports:
+      - 7862:7860
+    volumes:
+      - assets:/home/nonroot/assets
+      - checkpoint:/home/nonroot/ckpts
+      - gfpgan:/home/nonroot/gfpgan
+    post_start:
+      - command: chown -R nonroot:nonroot /home/nonroot
+        user: root
+      - command: chmod -R 700 /home/nonroot
+        user: root
+    restart: on-failure:3
+    environment:
+      GRADIO_DEBUG: 1
+    healthcheck:
+      test:
+        - CMD
+        - curl
+        - -o
+        - /dev/null
+        - -f
+        - -s
+        - -w
+        - "'Status: %{http_code},\tTime: %{time_total}s'"
+        - http://localhost:7860/
+      interval: 1m30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities:
+                - gpu
+volumes:
+  logs:
+  assets:
+  fastembed:
+  qdrant_storage:
+  checkpoint:
+  gfpgan:
+  huggingface:
+  results:
