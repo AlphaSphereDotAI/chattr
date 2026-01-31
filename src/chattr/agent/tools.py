@@ -2,7 +2,6 @@ from json import loads
 
 from agno.tools.mcp import MultiMCPTools
 from agno.utils.log import log_info, log_warning
-from rich.pretty import pprint
 
 from chattr.app.settings import MCPSettings
 
