@@ -1,10 +1,8 @@
-from asyncio import run
-
 from chattr.app.app import App
 from chattr.app.settings import Settings
 
 
-async def main() -> None:
+def main() -> None:
     """Launch the app."""
     settings = Settings()
     application = App(settings)
@@ -14,4 +12,4 @@ async def main() -> None:
 
 
 if __name__ == "__main__":
-    run(main())
+    main()
