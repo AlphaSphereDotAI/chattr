@@ -28,6 +28,27 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: dist/
+  huggingface:
+    name: Tag HuggingFace Space
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    environment:
+      name: huggingface
+      url: https://huggingface.co/spaces/${{github.repository}}/tree/${{github.event.release.tag_name}}
+    steps:
+      - name: Install uv
+        uses: astral-sh/setup-uv@61cb8a9741eeb8a550a1b8544337180c0fc8476b # v7.2.0
+        with:
+          enable-cache: true
+          activate-environment: true
+      - name: Push to HF
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: >-
+          uvx hf repo tag create ${{github.repository}} ${{github.event.release.tag_name}}
+          --repo-type space
   image:
     name: Release Image
     needs: pypi
