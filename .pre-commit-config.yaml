@@ -90,10 +90,6 @@ repos:
         args:
           - --config
           - .github/lint/.ruff.toml
-  - repo: https://github.com/facebook/pyrefly-pre-commit
-    rev: 0.50.1
-    hooks:
-      - id: pyrefly-check
   - repo: https://github.com/lyz-code/yamlfix
     rev: 1.19.1
     hooks:
@@ -112,7 +108,7 @@ repos:
   - repo: https://github.com/hadolint/hadolint
     rev: v2.14.0
     hooks:
-      - id: hadolint-docker
+      - id: hadolint
         args:
           - -c
           - .github/lint/.hadolint.yaml

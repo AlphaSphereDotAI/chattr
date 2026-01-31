@@ -242,7 +242,6 @@ dependencies = [
     { name = "gradio", extra = ["mcp"] },
     { name = "m3u8" },
     { name = "mem0ai" },
-    { name = "poml" },
     { name = "rich" },
 ]
 
@@ -250,6 +249,7 @@ dependencies = [
 dev = [
     { name = "doppler-env" },
     { name = "pre-commit" },
+    { name = "pyrefly" },
     { name = "pytest-emoji" },
     { name = "pytest-md" },
     { name = "pytest-mergify" },
@@ -266,7 +266,6 @@ requires-dist = [
     { name = "gradio", extras = ["mcp"], specifier = ">=6.5.1" },
     { name = "m3u8", specifier = ">=6.0.0" },
     { name = "mem0ai", specifier = ">=1.0.2" },
-    { name = "poml", specifier = ">=0.0.8" },
     { name = "rich", specifier = ">=14.3.1" },
 ]
 
@@ -274,6 +273,7 @@ requires-dist = [
 dev = [
     { name = "doppler-env", specifier = ">=0.3.1" },
     { name = "pre-commit", specifier = ">=4.5.1" },
+    { name = "pyrefly", specifier = ">=0.46.1" },
     { name = "pytest-emoji", specifier = ">=0.2.0" },
     { name = "pytest-md", specifier = ">=0.2.0" },
     { name = "pytest-mergify", specifier = ">=2026.1.26.1" },
@@ -1113,34 +1113,6 @@ wheels = [
 ]
 
 [[package]]
-name = "nodejs-wheel"
-version = "24.13.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "nodejs-wheel-binaries" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/37/f0/3345c6ec958c96eaa9d59355e59c0e93359aec54634f38bc4cd06baf23aa/nodejs_wheel-24.13.0.tar.gz", hash = "sha256:8c423cbf434b4c853ebac076d563b0899d3c6594ef0f99f6cd368ca4e3a28ca2", size = 2965, upload-time = "2026-01-14T11:05:32.811Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/c3/29/f259f6c5d31a0dae8257afd8dd7ab4b60a1b6e03fab793789e5bad480d83/nodejs_wheel-24.13.0-py3-none-any.whl", hash = "sha256:c0fc56a4677f55f7639f306a6381fb253d11ce24189c87a5489ea848f6e2bf24", size = 3986, upload-time = "2026-01-14T11:05:02.807Z" },
-]
-
-[[package]]
-name = "nodejs-wheel-binaries"
-version = "24.13.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/b7/f1/73182280e2c05f49a7c2c8dbd46144efe3f74f03f798fb90da67b4a93bbf/nodejs_wheel_binaries-24.13.0.tar.gz", hash = "sha256:766aed076e900061b83d3e76ad48bfec32a035ef0d41bd09c55e832eb93ef7a4", size = 8056, upload-time = "2026-01-14T11:05:33.653Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/c4/dc/4d7548aa74a5b446d093f03aff4fb236b570959d793f21c9c42ab6ad870a/nodejs_wheel_binaries-24.13.0-py2.py3-none-macosx_13_0_arm64.whl", hash = "sha256:356654baa37bfd894e447e7e00268db403ea1d223863963459a0fbcaaa1d9d48", size = 55133268, upload-time = "2026-01-14T11:05:05.335Z" },
-    { url = "https://files.pythonhosted.org/packages/24/8a/8a4454d28339487240dd2232f42f1090e4a58544c581792d427f6239798c/nodejs_wheel_binaries-24.13.0-py2.py3-none-macosx_13_0_x86_64.whl", hash = "sha256:92fdef7376120e575f8b397789bafcb13bbd22a1b4d21b060d200b14910f22a5", size = 55314800, upload-time = "2026-01-14T11:05:09.121Z" },
-    { url = "https://files.pythonhosted.org/packages/e7/fb/46c600fcc748bd13bc536a735f11532a003b14f5c4dfd6865f5911672175/nodejs_wheel_binaries-24.13.0-py2.py3-none-manylinux_2_28_aarch64.whl", hash = "sha256:3f619ac140e039ecd25f2f71d6e83ad1414017a24608531851b7c31dc140cdfd", size = 59666320, upload-time = "2026-01-14T11:05:12.369Z" },
-    { url = "https://files.pythonhosted.org/packages/85/47/d48f11fc5d1541ace5d806c62a45738a1db9ce33e85a06fe4cd3d9ce83f6/nodejs_wheel_binaries-24.13.0-py2.py3-none-manylinux_2_28_x86_64.whl", hash = "sha256:dfb31ebc2c129538192ddb5bedd3d63d6de5d271437cd39ea26bf3fe229ba430", size = 60162447, upload-time = "2026-01-14T11:05:16.003Z" },
-    { url = "https://files.pythonhosted.org/packages/b1/74/d285c579ae8157c925b577dde429543963b845e69cd006549e062d1cf5b6/nodejs_wheel_binaries-24.13.0-py2.py3-none-musllinux_1_2_aarch64.whl", hash = "sha256:fdd720d7b378d5bb9b2710457bbc880d4c4d1270a94f13fbe257198ac707f358", size = 61659994, upload-time = "2026-01-14T11:05:19.68Z" },
-    { url = "https://files.pythonhosted.org/packages/ba/97/88b4254a2ff93ed2eaed725f77b7d3d2d8d7973bf134359ce786db894faf/nodejs_wheel_binaries-24.13.0-py2.py3-none-musllinux_1_2_x86_64.whl", hash = "sha256:9ad6383613f3485a75b054647a09f1cd56d12380d7459184eebcf4a5d403f35c", size = 62244373, upload-time = "2026-01-14T11:05:23.987Z" },
-    { url = "https://files.pythonhosted.org/packages/4e/c3/0e13a3da78f08cb58650971a6957ac7bfef84164b405176e53ab1e3584e2/nodejs_wheel_binaries-24.13.0-py2.py3-none-win_amd64.whl", hash = "sha256:605be4763e3ef427a3385a55da5a1bcf0a659aa2716eebbf23f332926d7e5f23", size = 41345528, upload-time = "2026-01-14T11:05:27.67Z" },
-    { url = "https://files.pythonhosted.org/packages/a3/f1/0578d65b4e3dc572967fd702221ea1f42e1e60accfb6b0dd8d8f15410139/nodejs_wheel_binaries-24.13.0-py2.py3-none-win_arm64.whl", hash = "sha256:2e3431d869d6b2dbeef1d469ad0090babbdcc8baaa72c01dd3cc2c6121c96af5", size = 39054688, upload-time = "2026-01-14T11:05:30.739Z" },
-]
-
-[[package]]
 name = "numpy"
 version = "2.4.1"
 source = { registry = "https://pypi.org/simple" }
@@ -1412,22 +1384,6 @@ wheels = [
 ]
 
 [[package]]
-name = "poml"
-version = "0.0.8"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "nodejs-wheel" },
-    { name = "pydantic" },
-]
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/b2/94/20b41e3826dcfec0313c8562a430ad158b1a759e064cd5bef61d0f5327d1/poml-0.0.8-py3-none-macosx_10_9_x86_64.whl", hash = "sha256:37be5da8572222854464969f76fac2e356297305c84fdcc7d3103d914811932b", size = 29549351, upload-time = "2025-08-25T04:23:18.411Z" },
-    { url = "https://files.pythonhosted.org/packages/28/93/0ab553b3f7da62358309743e64ddf09839fe6b0eaaa189a48d225ab92ab3/poml-0.0.8-py3-none-macosx_11_0_arm64.whl", hash = "sha256:f15c2d2e512b3ad699f22df289e7d834b6e85c804905f1431aaa98c223e1560e", size = 28651082, upload-time = "2025-08-25T04:22:14.277Z" },
-    { url = "https://files.pythonhosted.org/packages/98/48/3a265180712709b2a940cce053272b6d14c940e41b0125af85b74bfc0ff8/poml-0.0.8-py3-none-manylinux_2_17_aarch64.whl", hash = "sha256:e826586b9f623c4a4e3fd9457ad23a538adc917f16519d4ecdebab9ced3086aa", size = 35930454, upload-time = "2025-08-25T04:22:43.37Z" },
-    { url = "https://files.pythonhosted.org/packages/31/1d/7aead96240c82022cbfec914d6c9121146b95594f5de52a04ceece3ce2ca/poml-0.0.8-py3-none-manylinux_2_17_x86_64.whl", hash = "sha256:a0a53edc7615156d6841adbd401831520573dc8393dea9fa6971af09bc864f16", size = 35979155, upload-time = "2025-08-25T04:22:36.427Z" },
-    { url = "https://files.pythonhosted.org/packages/dc/2f/0f3157835901937d1bfe62f4bbfc7533e7642fb862f1fadf6912e224e438/poml-0.0.8-py3-none-win_amd64.whl", hash = "sha256:48a7880bc8d684231e78f11fb85cd78ce7a9b4121b9376f338f6589b5fccee98", size = 29656342, upload-time = "2025-08-25T04:25:43.624Z" },
-]
-
-[[package]]
 name = "portalocker"
 version = "3.2.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1643,6 +1599,22 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/0f/49/4cea918a08f02817aabae639e3d0ac046fef9f9180518a3ad394e22da148/pyreadline3-3.5.4.tar.gz", hash = "sha256:8d57d53039a1c75adba8e50dd3d992b28143480816187ea5efbd5c78e6c885b7", size = 99839, upload-time = "2024-09-19T02:40:10.062Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/5a/dc/491b7661614ab97483abf2056be1deee4dc2490ecbf7bff9ab5cdbac86e1/pyreadline3-3.5.4-py3-none-any.whl", hash = "sha256:eaf8e6cc3c49bcccf145fc6067ba8643d1df34d604a1ec0eccbf7a18e6d3fae6", size = 83178, upload-time = "2024-09-19T02:40:08.598Z" },
+]
+
+[[package]]
+name = "pyrefly"
+version = "0.46.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/8d/7e/b4f9f26611f72405af16af916f460025bd6d40d00952a046eab0df98bb82/pyrefly-0.46.1.tar.gz", hash = "sha256:ea6db4788cd11eb7fd7ef7f0bdeef4621861cb44cd7d62db073706022669ef4a", size = 4760174, upload-time = "2025-12-23T23:06:10.501Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/16/46/8f9d4400e4d60da6555415351b11cbe5e122cfa299194278ebf7bcf26cd3/pyrefly-0.46.1-py3-none-macosx_10_12_x86_64.whl", hash = "sha256:f4975d4d2a451423727f70461bd1ef3f18c6c8c0e4bb5acf902add73bdaf6642", size = 11659836, upload-time = "2025-12-23T23:05:49.879Z" },
+    { url = "https://files.pythonhosted.org/packages/3b/15/486b8ea769560e65152201df5d887c9f817fa4e536388e86eb6b1ce774f0/pyrefly-0.46.1-py3-none-macosx_11_0_arm64.whl", hash = "sha256:bcecd921990e56759e7ec2c91ab69aaf790dcc6c17b36054d0f42789085e0dde", size = 11269185, upload-time = "2025-12-23T23:05:52.423Z" },
+    { url = "https://files.pythonhosted.org/packages/33/bc/b5982fc9dfe2abe5d5341a3576aca3c8c5e3af24223b56d256f16df1d31b/pyrefly-0.46.1-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:262f6ff2c593ec575eb626dbb3309d9fbb1527cbb0dab2b4d6ae8c8f51bf2715", size = 31504426, upload-time = "2025-12-23T23:05:54.692Z" },
+    { url = "https://files.pythonhosted.org/packages/05/fd/34c9dec50075bbf471c23ec46ccca4b167490a3418aef351cfd0cdd7feeb/pyrefly-0.46.1-py3-none-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:adccc7e54952a3788f7a108abc3177f9ad83b56b052fc0cb1ed7a93da5c69f71", size = 33721544, upload-time = "2025-12-23T23:05:57.465Z" },
+    { url = "https://files.pythonhosted.org/packages/fe/2f/7c9dcf8b77ad3e3579fe7a8d2eaf3a2df8a31e8be7bc5561b369e0bc73f8/pyrefly-0.46.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:7251eec7366a3a4df5e87214300645c8f7d27b1339cf30b166227aa8f07979d9", size = 34778153, upload-time = "2025-12-23T23:06:00.313Z" },
+    { url = "https://files.pythonhosted.org/packages/5d/1f/6ffa777f3a8f1a66a96ff5b6a6f1659e2172662fec5fcbce5db0f3ff617d/pyrefly-0.46.1-py3-none-win32.whl", hash = "sha256:a5babc50ebfc2227e4209697e4e5754a10935cedba3ab26d26fd3e20625b6479", size = 10728406, upload-time = "2025-12-23T23:06:02.863Z" },
+    { url = "https://files.pythonhosted.org/packages/f7/34/7faaee043cc6b268010e0124a82bb5793588531e3d4af2e3283588d88eb7/pyrefly-0.46.1-py3-none-win_amd64.whl", hash = "sha256:e2a784530ad8c918ad7f656957c9db8d00e484111298a6601490141cabd9966a", size = 11418624, upload-time = "2025-12-23T23:06:06.16Z" },
+    { url = "https://files.pythonhosted.org/packages/58/4f/13e0e1c2136d35c44a034c9606bce2513ed3e896df86985fedd9c1347432/pyrefly-0.46.1-py3-none-win_arm64.whl", hash = "sha256:1835206055454cc2b88bc0b6acb557c2e5bd9ae8df724bb48fd2dc3dc40ffe13", size = 10964488, upload-time = "2025-12-23T23:06:08.165Z" },
 ]
 
 [[package]]
