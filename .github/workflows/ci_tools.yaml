@@ -1,5 +1,8 @@
 name: CI Tools
 on:
+  push:
+    branches:
+      - main
   issue_comment:
     types:
       - created
@@ -28,7 +31,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name: Run opencode
-        uses: sst/opencode/github@7c0067d59d318bfd6ecd473c36a9e673a4f68ff9 # v1.1.42
+        uses: sst/opencode/github@8f537940178772deedf3317c5c669950f1f6c5a6 # v1.1.45
         env:
           OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
         with:
@@ -64,3 +67,40 @@ jobs:
         with:
           commit_message: Sync uv.lock
           commit_options: --no-verify
+  huggingface:
+    name: Sync HuggingFace Space
+    runs-on: ubuntu-latest
+    if: |
+      github.event_name == 'push' ||
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event_name == 'issue_comment' &&
+        (
+          contains(github.event.comment.body, ' /hf-sync') ||
+          startsWith(github.event.comment.body, '/hf-sync')
+        )
+      )
+    permissions:
+      contents: read
+      id-token: write
+    environment:
+      name: huggingface
+      url: https://huggingface.co/spaces/${{github.repository}}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.0.0
+        with:
+          fetch-depth: 0
+          lfs: true
+      - name: Install uv
+        uses: astral-sh/setup-uv@61cb8a9741eeb8a550a1b8544337180c0fc8476b # v7.2.0
+        with:
+          enable-cache: true
+          activate-environment: true
+      - name: Push to HF
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message || 'Sync from GitHub' }}
+        run: >-
+          uvx hf upload ${{github.repository}} . . --repo-type space
+          --delete '*' --exclude '.github' --commit-message "$COMMIT_MESSAGE"
