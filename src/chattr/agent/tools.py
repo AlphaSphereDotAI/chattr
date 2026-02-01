@@ -12,7 +12,7 @@ async def setup_mcp_tools(mcp: MCPSettings) -> MultiMCPTools | None:
         log_warning("MCP config file not found.")
         return None
     mcp_servers: list[dict] = loads(mcp.path.read_text()).get("mcp_servers", [])
-    url_servers: list[dict] = [m for m in mcp_servers if m.get("type") == "url"]
+    url_servers: list[dict] = [m for m in mcp_servers if m.get("transport") in ("sse", "streamable-http")]
     if not url_servers:
         log_info("No Remote MCP servers found.")
         return None
