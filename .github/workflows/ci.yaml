@@ -28,5 +28,4 @@ jobs:
         uses: AlphaSphereDotAI/helpr_action@test
         with:
           is_test: true
-          test_dependency_compatibility: true
-          dependency_compatibility_tool: uv
+          test_code: true
