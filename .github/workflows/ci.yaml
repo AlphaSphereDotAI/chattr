@@ -25,7 +25,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5.0.0
       - name: Test
-        uses: AlphaSphereDotAI/helpr_action@main
+        uses: AlphaSphereDotAI/helpr_action@test
         with:
           is_test: true
           test_dependency_compatibility: true
