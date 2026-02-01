@@ -233,7 +233,7 @@ wheels = [
 
 [[package]]
 name = "chattr"
-version = "0.0.103"
+version = "0.0.98"
 source = { editable = "." }
 dependencies = [
     { name = "agno", extra = ["google", "qdrant"] },
@@ -263,7 +263,7 @@ requires-dist = [
     { name = "agno", extras = ["google", "qdrant"], specifier = ">=2.4.7" },
     { name = "ddgs", specifier = ">=9.10.0" },
     { name = "fastembed", specifier = ">=0.7.4" },
-    { name = "gradio", extras = ["mcp"], specifier = ">=6.5.1" },
+    { name = "gradio", extras = ["mcp"], specifier = ">=6.4.0" },
     { name = "m3u8", specifier = ">=6.0.0" },
     { name = "mem0ai", specifier = ">=1.0.2" },
     { name = "rich", specifier = ">=14.3.1" },
