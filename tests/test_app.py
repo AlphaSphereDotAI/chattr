@@ -1,4 +1,4 @@
-"""Contain tests for the application's HTTP endpoints."""
+"""Tests for the application's HTTP endpoints."""
 
 from os import getenv
 
