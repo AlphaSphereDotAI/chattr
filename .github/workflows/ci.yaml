@@ -29,4 +29,4 @@ jobs:
         with:
           is_test: true
           test_code: true
-          linter: 'lint'
+          linter: lint
