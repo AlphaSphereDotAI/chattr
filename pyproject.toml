@@ -17,9 +17,7 @@
   readme = "README.md"
   requires-python = ">=3.13,<3.14"
   version = "0.0.99"
-
-  [project.scripts]
-    chattr = "chattr.__main__:main"
+  scripts = { chattr = "chattr.__main__:main" }
 
 [build-system]
   build-backend = "uv_build"
