@@ -31,7 +31,7 @@ if TYPE_CHECKING:
     from agno.tools.mcp import MultiMCPTools
     from agno.vectordb.qdrant import Qdrant
 
-
+TOOLEXECUTION_EXPECTED = "ToolExecution expected"
 class App:
     """Main application class for the Chattr Multi-agent system app."""
 
@@ -69,9 +69,8 @@ class App:
     ) -> list[ChatMessage | Audio | Video]:
         """Handle the response tool call started event."""
         if not isinstance(response.tool, ToolExecution):
-            _msg = "ToolExecution expected"
-            log_error(_msg)
-            raise TypeError(_msg)
+            log_error(TOOLEXECUTION_EXPECTED)
+            raise TypeError(TOOLEXECUTION_EXPECTED)
         history.append(
             ChatMessage(
                 role="assistant",
@@ -92,9 +91,8 @@ class App:
     ) -> list[ChatMessage | Audio | Video]:
         """Handle the response tool call completed event."""
         if not isinstance(response.tool, ToolExecution):
-            _msg = "ToolExecution expected"
-            log_error(_msg)
-            raise TypeError(_msg)
+            log_error(TOOLEXECUTION_EXPECTED)
+            raise TypeError(TOOLEXECUTION_EXPECTED)
         if response.tool.tool_call_error:
             if not isinstance(response.tool.metrics, Metrics):
                 _msg = "Metrics expected"
