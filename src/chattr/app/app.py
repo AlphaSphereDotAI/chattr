@@ -167,7 +167,9 @@ class App:
             vectordb: Qdrant = setup_vector_database(self.settings.vector_database)
             knowledge: Knowledge = setup_knowledge(vectordb, db)
             description: str = setup_description(self.settings.character.name)
-            instructions: list[str] = setup_instructions(self.settings.character.name, [tools])
+            instructions: list[str] = setup_instructions(
+                self.settings.character.name, [tools]
+            )
             if not tools or len(tools.tools) == 0:
                 _msg = "No tools found"
                 log_warning(_msg)
@@ -193,9 +195,13 @@ class App:
                 if isinstance(response, RunContentEvent):
                     history = self._response_at_run_content_event(history, response)
                 elif isinstance(response, ToolCallStartedEvent):
-                    history = self._response_at_tool_call_started_event(history, response)
+                    history = self._response_at_tool_call_started_event(
+                        history, response
+                    )
                 elif isinstance(response, ToolCallCompletedEvent):
-                    history = self._response_at_tool_call_completed_event(history, response)
+                    history = self._response_at_tool_call_completed_event(
+                        history, response
+                    )
                 yield history
             await close_mcp_tools(tools)
         except (StopAsyncIteration, StopIteration) as e:
