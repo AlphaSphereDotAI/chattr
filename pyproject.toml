@@ -33,6 +33,3 @@
     "ty>=0.0.15",
     "uv-build>=0.10.0",
   ]
-
-[tool.ruff]
-  extend = ".github/lint/.ruff.toml"
