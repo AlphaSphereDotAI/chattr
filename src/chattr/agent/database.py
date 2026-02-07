@@ -1,4 +1,4 @@
-"""A module for Initializing the database for Chattr agent."""
+"""A module for initializing the database for the Chattr agent."""
 
 from agno.db.json import JsonDb
 
