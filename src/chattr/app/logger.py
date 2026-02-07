@@ -19,5 +19,5 @@ def setup_logger(log: LoggerSettings) -> Logger:
     handler.setFormatter(formatter)
     logger.addHandler(handler)
     logger.setLevel(log.level.value)
-    logger.propagate = False
+    logger.propagate = log.propagate
     return logger
