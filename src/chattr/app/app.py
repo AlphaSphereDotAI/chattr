@@ -189,14 +189,12 @@ class App:
                 stream=True,
                 stream_events=True,
             ):
-                # pprint(response)
                 if isinstance(response, RunContentEvent):
                     history = self._response_at_run_content_event(history, response)
                 elif isinstance(response, ToolCallStartedEvent):
                     history = self._response_at_tool_call_started_event(history, response)
                 elif isinstance(response, ToolCallCompletedEvent):
                     history = self._response_at_tool_call_completed_event(history, response)
-                print(f"---------- {history}")
                 yield history
             await close_mcp_tools(tools)
         except (StopAsyncIteration, StopIteration) as e:
