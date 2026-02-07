@@ -45,20 +45,22 @@ def is_alive(url: HttpUrl) -> bool:
         return False
 
 
-def download_file(url: URL, path: Path) -> None:
+def download_file(url: URL, path: Path, timeout: float = 30.0) -> None:
     """
-    Download a file from a URL and save it to a local path.
+    Download a file from a URL and save it to a local path using streaming.
 
     Args:
         url (URL): The URL to download the file from.
         path (Path): The local file path where the downloaded file will be saved.
+        timeout (float): Request timeout in seconds. Defaults to 30.0.
 
     Returns:
         None
     """
     log_info(f"Downloading {url} to {path}")
-    with Client() as client:
-        response = client.get(url)
-        response.raise_for_status()
-        path.write_bytes(response.content)
+    with Client(timeout=timeout) as client:
+        with client.stream("GET", url) as response:
+            response.raise_for_status()
+            with path.open("wb") as f:
+                f.writelines(response.iter_bytes())
     log_info(f"Downloaded {url} to {path}")
