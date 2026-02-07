@@ -2,7 +2,12 @@ from collections.abc import AsyncGenerator
 from json import dumps
 from typing import TYPE_CHECKING
 
-from agno.agent import Agent, RunContentEvent, ToolCallCompletedEvent, ToolCallStartedEvent
+from agno.agent import (
+    Agent,
+    RunContentEvent,
+    ToolCallCompletedEvent,
+    ToolCallStartedEvent,
+)
 from agno.models.message import Message
 from agno.models.metrics import Metrics
 from agno.models.response import ToolExecution
