@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from agno.utils.log import log_info
-from httpx import URL, Client, HTTPStatusError, RequestError
+from httpx import URL, Client, HTTPStatusError, RequestError, Response
 from pydantic import HttpUrl, ValidationError
 
 VALID_STATUS_CODE = 200
@@ -39,7 +39,7 @@ def is_alive(url: HttpUrl) -> bool:
     """
     try:
         with Client() as client:
-            response = client.get(str(url))
+            response: Response = client.get(str(url))
             return response.status_code == VALID_STATUS_CODE
     except (RequestError, HTTPStatusError):
         return False
