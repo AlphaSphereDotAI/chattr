@@ -1,4 +1,4 @@
-"""A module handles the configuration of logging for the application."""
+"""A module that handles the configuration of logging for the application."""
 
 from logging import WARNING, Formatter, Logger, getLogger
 
