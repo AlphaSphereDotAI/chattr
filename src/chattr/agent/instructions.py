@@ -21,6 +21,6 @@ def setup_instructions(character: str | None, tools: list[MultiMCPTools | None])
                     )
                 if tool.functions[key].name == "generate_video_mcp":
                     instructions.append(
-                        "Generate video from the resulted audio using the appropriate Tool.",
+                        "Generate video from the resulting audio using the appropriate Tool.",
                     )
     return instructions
