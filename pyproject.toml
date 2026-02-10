@@ -7,7 +7,6 @@
     "ddgs>=9.10.0",
     "fastembed>=0.7.4",
     "gradio[mcp]>=6.5.1",
-    "m3u8>=6.0.0",
     "mem0ai>=1.0.3",
     "poml>=0.0.8",
     "rich>=14.3.2",
@@ -16,10 +15,8 @@
   name = "chattr"
   readme = "README.md"
   requires-python = ">=3.13,<3.14"
+  scripts = { chattr = "chattr.__main__:main" }
   version = "0.0.111"
-
-  [project.scripts]
-    chattr = "chattr.__main__:main"
 
 [build-system]
   build-backend = "uv_build"
@@ -36,6 +33,3 @@
     "ty>=0.0.15",
     "uv-build>=0.10.0",
   ]
-
-[tool.ruff]
-  extend = ".github/lint/.ruff.toml"
