@@ -17,4 +17,6 @@ def setup_vector_database(vectordb: VectorDatabaseSettings) -> Qdrant:
                 settings.
     """
     log_info("Setting up vector database.")
-    return Qdrant(collection=vectordb.name, url=vectordb.url.host, port=vectordb.url.port)
+    return Qdrant(
+        collection=vectordb.name, url=vectordb.url.host, port=vectordb.url.port
+    )
