@@ -293,7 +293,7 @@ wheels = [
 
 [[package]]
 name = "chattr"
-version = "0.0.112"
+version = "0.0.113"
 source = { editable = "." }
 dependencies = [
     { name = "agno", extra = ["google", "qdrant"] },
@@ -339,7 +339,7 @@ dev = [
     { name = "pytest-mergify", specifier = ">=2026.1.26.1" },
     { name = "ruff", specifier = ">=0.15.2" },
     { name = "ty", specifier = ">=0.0.15" },
-    { name = "uv-build", specifier = ">=0.10.0" },
+    { name = "uv-build", specifier = ">=0.10.4" },
 ]
 
 [[package]]
