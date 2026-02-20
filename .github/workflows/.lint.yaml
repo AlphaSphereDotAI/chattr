@@ -149,7 +149,7 @@ jobs:
             ${{matrix.output == 'sarif' && '--output-file ruff.sarif' || ''}}
       - name: upload Ruff scan SARIF report
         if: matrix.output == 'sarif' && ( success() || failure() )
-        uses: github/codeql-action/upload-sarif@45cbd0c69e560cd9e7cd7f8c32362050c9b7ded2 # v4.32.2
+        uses: github/codeql-action/upload-sarif@89a39a4e59826350b863aa6b6252a07ad50cf83e # v4.32.4
         with:
           sarif_file: ruff.sarif
       - name: Commit and push applied Ruff fixes
@@ -226,7 +226,7 @@ jobs:
           cache-db: true
       - name: upload Anchore scan SARIF report
         if: success() || failure()
-        uses: github/codeql-action/upload-sarif@45cbd0c69e560cd9e7cd7f8c32362050c9b7ded2 # v4.32.2
+        uses: github/codeql-action/upload-sarif@89a39a4e59826350b863aa6b6252a07ad50cf83e # v4.32.4
         with:
           sarif_file: ${{ steps.scan.outputs.sarif }}
   trivy:
@@ -269,7 +269,7 @@ jobs:
           scanners: vuln,secret,misconfig
       - name: Upload Trivy scan results to GitHub Security tab
         if: matrix.scan-type != 'fs' && ( success() || failure() )
-        uses: github/codeql-action/upload-sarif@45cbd0c69e560cd9e7cd7f8c32362050c9b7ded2 # v4.32.2
+        uses: github/codeql-action/upload-sarif@89a39a4e59826350b863aa6b6252a07ad50cf83e # v4.32.4
         with:
           sarif_file: ${{ matrix.output }}
           category: ${{ matrix.scan-type }}
@@ -337,7 +337,7 @@ jobs:
           output-file: hadolint.sarif
       - name: upload Hadolint scan SARIF report
         if: success() || failure()
-        uses: github/codeql-action/upload-sarif@45cbd0c69e560cd9e7cd7f8c32362050c9b7ded2 # v4.32.2
+        uses: github/codeql-action/upload-sarif@89a39a4e59826350b863aa6b6252a07ad50cf83e # v4.32.4
         with:
           sarif_file: hadolint.sarif
   actionlint:
