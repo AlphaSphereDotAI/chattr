@@ -10,7 +10,7 @@
     "m3u8>=6.0.0",
     "mem0ai>=1.0.3",
     "poml>=0.0.8",
-    "rich>=14.3.2",
+    "rich>=14.3.3",
   ]
   description = "App part of the Chatacter Backend"
   name = "chattr"
