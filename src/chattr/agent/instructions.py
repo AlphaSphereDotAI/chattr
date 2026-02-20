@@ -3,9 +3,7 @@ from agno.tools.mcp import MultiMCPTools
 from chattr.app.exceptions import CharacterNameMissingError
 
 
-def setup_instructions(
-    character: str | None, tools: list[MultiMCPTools | None]
-) -> list[str]:
+def setup_instructions(character: str | None, tools: list[MultiMCPTools | None]) -> list[str]:
     """Return a list of instructions to mimic a given character."""
     if not character:
         raise CharacterNameMissingError
