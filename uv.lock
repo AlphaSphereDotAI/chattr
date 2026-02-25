@@ -9,7 +9,7 @@ resolution-markers = [
 
 [[package]]
 name = "agno"
-version = "2.5.3"
+version = "2.5.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "docstring-parser" },
@@ -26,9 +26,9 @@ dependencies = [
     { name = "typer" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c3/f5/9a3974f40c99ed86fd379a9e386d05e1eca9280d816396a2fa5ef86cf203/agno-2.5.3.tar.gz", hash = "sha256:790a4332b9b94feda911f979fab533ac579d5dbe87fc45b6ce4337a0d3c6cd0a", size = 1668587, upload-time = "2026-02-19T21:00:27.889Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/b3/37/064bc6b0da9edc84ae64c420a68faa87077dc45d2240bb80a1e2e9f3e61a/agno-2.5.4.tar.gz", hash = "sha256:281da800f27690a598ffdade467f39948a2d7174f73c0cfac746b42a910a2b6a", size = 1713725, upload-time = "2026-02-24T20:17:18.071Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/33/3d/2e1d33a5eca9755eca4ed326ab8c83bdc97dde648b42747967546913ac3c/agno-2.5.3-py3-none-any.whl", hash = "sha256:fece1aa685e29f50d596c104ae11876b6940cbc802f47b364f67d339ddd18341", size = 2003661, upload-time = "2026-02-19T21:00:24.615Z" },
+    { url = "https://files.pythonhosted.org/packages/42/e1/d10ed0b13f6a16e5a174c3b6b59392c1698fba78612a0fe035cb5179f3d0/agno-2.5.4-py3-none-any.whl", hash = "sha256:008c9df0fff44e027bf9cc6cb110d0669a3f1a1d19b876f80ec0bade314e2b6a", size = 2050538, upload-time = "2026-02-24T20:17:15.771Z" },
 ]
 
 [package.optional-dependencies]
@@ -320,7 +320,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "agno", extras = ["google", "qdrant"], specifier = ">=2.5.3" },
+    { name = "agno", extras = ["google", "qdrant"], specifier = ">=2.5.4" },
     { name = "ddgs", specifier = ">=9.10.0" },
     { name = "fastembed", specifier = ">=0.7.4" },
     { name = "gradio", extras = ["mcp"], specifier = ">=6.6.0" },
