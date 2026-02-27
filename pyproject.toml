@@ -16,7 +16,7 @@
   name = "chattr"
   readme = "README.md"
   requires-python = ">=3.13,<3.14"
-  version = "0.0.124"
+  version = "0.0.125"
 
   [project.scripts]
     chattr = "chattr.__main__:main"
@@ -34,7 +34,7 @@
     "pytest-mergify>=2026.1.26.1",
     "ruff>=0.15.2",
     "ty>=0.0.15",
-    "uv-build>=0.10.6",
+    "uv-build>=0.10.7",
   ]
 
 [tool.ruff]
