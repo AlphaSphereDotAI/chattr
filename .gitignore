@@ -10,3 +10,16 @@ assets/audio/
 assets/video/
 agno/
 .vscode/settings.json
+.devenv*
+devenv.local.nix
+devenv.local.yaml
+.direnv
+.pre-commit-config.yaml
+*.py[cod]
+assets/external/
+.web
+.states
+*.db
+.ruff.toml
+.yamllint.yaml
+.vscode/
