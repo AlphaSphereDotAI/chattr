@@ -9,7 +9,7 @@ resolution-markers = [
 
 [[package]]
 name = "agno"
-version = "2.5.6"
+version = "2.5.7"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "docstring-parser" },
@@ -26,9 +26,9 @@ dependencies = [
     { name = "typer" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/69/8a/d895e291b4404b22ef645acd40944fc6bc4d1e77a1c8bfba7098fa1ad648/agno-2.5.6.tar.gz", hash = "sha256:394f104c070c1be8dfff7494e6d7ba79d35f718af1351ce8b12ac524f3cadfad", size = 1745754, upload-time = "2026-03-02T20:21:03.343Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/8c/6d/5d0243de74f199eb8c9a81b9cc06379e92e5af72ce35ae302581652f3008/agno-2.5.7.tar.gz", hash = "sha256:80fe70563bafd308f6d75bb8e3edbf804bbd0ef43a96532f712787ee78e16836", size = 1747830, upload-time = "2026-03-04T17:48:14.954Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/71/37/f68c93153c1da33958c77f6925c4397e624beccecc0acff1b78e0574149d/agno-2.5.6-py3-none-any.whl", hash = "sha256:8fc6415664405731619ea056bef8236f2af144ac10c0f99176eeca2c4f1c46c3", size = 2084652, upload-time = "2026-03-02T20:21:01.347Z" },
+    { url = "https://files.pythonhosted.org/packages/cb/5e/cd91bba2a633817575b9b1ed3fa808961e2b045caa0cb682c2d0344a8668/agno-2.5.7-py3-none-any.whl", hash = "sha256:0ec25eb33b0dc02da267145c586679a45e395969b8d14d273b60f0dedc8af662", size = 2086987, upload-time = "2026-03-04T17:48:12.608Z" },
 ]
 
 [package.optional-dependencies]
@@ -222,7 +222,7 @@ wheels = [
 
 [[package]]
 name = "chattr"
-version = "0.0.134"
+version = "0.0.138"
 source = { editable = "." }
 dependencies = [
     { name = "agno", extra = ["google", "qdrant"] },
@@ -249,12 +249,12 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "agno", extras = ["google", "qdrant"], specifier = ">=2.5.6" },
-    { name = "ddgs", specifier = ">=9.11.1" },
+    { name = "agno", extras = ["google", "qdrant"], specifier = ">=2.5.7" },
+    { name = "ddgs", specifier = ">=9.11.2" },
     { name = "fastembed", specifier = ">=0.7.4" },
     { name = "gradio", extras = ["mcp"], specifier = ">=6.8.0" },
     { name = "m3u8", specifier = ">=6.0.0" },
-    { name = "mem0ai", specifier = ">=1.0.4" },
+    { name = "mem0ai", specifier = ">=1.0.5" },
     { name = "poml", specifier = ">=0.0.8" },
     { name = "rich", specifier = ">=14.3.3" },
 ]
@@ -333,16 +333,16 @@ wheels = [
 
 [[package]]
 name = "ddgs"
-version = "9.11.1"
+version = "9.11.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
     { name = "lxml" },
     { name = "primp" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/fa/06/b148a33eb074ef0cde6f82a83dc2af2ec60d2a63f3e39b049dd8abdfaf39/ddgs-9.11.1.tar.gz", hash = "sha256:f01aec85e59ffe73dbab4517628d24702fb6ce2c345d2f5e6dd4b120526b56c7", size = 34442, upload-time = "2026-03-02T06:45:23.341Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/6b/80/eb387dd4291d1624e773f455fd1dfc54596e06469d680fe3b3f8c326ba1a/ddgs-9.11.2.tar.gz", hash = "sha256:b5f072149580773291fd3eb6e9f4de47fa9d910ebd5ef85845a37e59cfe24c40", size = 34722, upload-time = "2026-03-05T05:17:31.574Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/92/6b/446ce962d40f243c90f704aceadaa1f577e35db11677323e35b7c4b55867/ddgs-9.11.1-py3-none-any.whl", hash = "sha256:404382a17c6055f28aa752809bd100ca23167611bb77368aa4c7012e254a16b8", size = 43304, upload-time = "2026-03-02T06:45:22.283Z" },
+    { url = "https://files.pythonhosted.org/packages/2c/fe/7591bfa694ee26fcf0dd8035811994e28a9699402d3861eea7754958c1bd/ddgs-9.11.2-py3-none-any.whl", hash = "sha256:0023a3633d271e72cdd1da757d3fcea2d996608da3f3c9da2cc0c0607b219c76", size = 43646, upload-time = "2026-03-05T05:17:30.469Z" },
 ]
 
 [[package]]
@@ -997,7 +997,7 @@ wheels = [
 
 [[package]]
 name = "mem0ai"
-version = "1.0.4"
+version = "1.0.5"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "openai" },
@@ -1008,9 +1008,9 @@ dependencies = [
     { name = "qdrant-client" },
     { name = "sqlalchemy" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/51/be/bb17c05e5a752ca79df2fbdcef83c7eaa249004029da9fd9488def574806/mem0ai-1.0.4.tar.gz", hash = "sha256:c6201130be46c9dc2b5cf0836e7811fd604430bb39c55c9c454045722d1ed21b", size = 182968, upload-time = "2026-02-17T22:34:46.247Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/f3/79/2307e5fe1610d2ad0d08688af10cd5163861390deeb070f83449c0b65417/mem0ai-1.0.5.tar.gz", hash = "sha256:0835a0001ecac40ba2667bbf17629329c1b2f33eaa585e93a6be54d868a82f79", size = 182982, upload-time = "2026-03-03T22:27:09.488Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b0/da/67f023b4269d77336bce950c7419ebd554272a5bfe1bc9c8ed79e8907eaa/mem0ai-1.0.4-py3-none-any.whl", hash = "sha256:06b31a2d98364ff6ae35abe4ee2ad2aea60fe43b20bad09c3ec6c1a9c031b753", size = 275979, upload-time = "2026-02-17T22:34:43.887Z" },
+    { url = "https://files.pythonhosted.org/packages/78/0e/43ec9f125ebe6e8390805aa56237ee7165fc4f2b796122644cb0043e6631/mem0ai-1.0.5-py3-none-any.whl", hash = "sha256:0526814d2ec9134e21a628cc04ae0e6dc1779a579af92c481cb9fd7f7b8d17aa", size = 275991, upload-time = "2026-03-03T22:27:07.73Z" },
 ]
 
 [[package]]
