@@ -34,7 +34,7 @@
     "pytest-mergify>=2026.1.26.1",
     "ruff>=0.15.4",
     "ty>=0.0.15",
-    "uv-build>=0.10.8",
+    "uv-build>=0.10.9",
   ]
 
 [tool.ruff]
