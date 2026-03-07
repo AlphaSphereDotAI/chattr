@@ -8,9 +8,7 @@ def main() -> None:
     application = App(settings)
     gradio_application = application.gradio_app()
     gradio_application.queue(api_open=True)
-    gradio_application.launch(
-        debug=True, enable_monitoring=True, show_error=True, pwa=True
-    )
+    gradio_application.launch(debug=True, enable_monitoring=True, show_error=True, pwa=True)
 
 
 if __name__ == "__main__":
