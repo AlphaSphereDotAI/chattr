@@ -107,7 +107,6 @@
   processes = {
     compatibility-check = {
       exec = "${lib.getExe pkgs.uv} sync --frozen --no-install-project";
-      ready.notify = true;
     };
     start-dev = {
       exec = "${lib.getExe pkgs.uv} run chattr";
