@@ -71,6 +71,7 @@
   env = {
     UV_PYTHON_DOWNLOADS = lib.mkDefault "automatic";
     UV_PYTHON_PREFERENCE = lib.mkDefault "managed";
+    SARIF_DIR = "../results";
   };
 
   # https://devenv.sh/packages/
