@@ -1,19 +1,25 @@
-from logging import INFO, WARNING, Logger, basicConfig, getLogger
+"""A module that handles the configuration of logging for the application."""
 
+from logging import WARNING, Formatter, Logger, getLogger
+
+from rich.console import Console
 from rich.logging import RichHandler
 
-from chattr import APP_NAME, console
+from chattr.app.settings import LoggerSettings
 
-basicConfig(
-    level=INFO,
-    handlers=[
-        RichHandler(
-            level=INFO,
-            console=console,
-            rich_tracebacks=True,
-        ),
-    ],
-    format="%(name)s | %(process)d | %(message)s",
-)
 getLogger("httpx").setLevel(WARNING)
-logger: Logger = getLogger(APP_NAME)
+
+
+def setup_logger(log: LoggerSettings) -> Logger:
+    """Initialize the logger for the application."""
+    logger: Logger = getLogger(log.name)
+    console: Console = Console()
+    handler: RichHandler = RichHandler(
+        level=log.level.value, console=console, rich_tracebacks=True
+    )
+    formatter: Formatter = Formatter(log.format)
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    logger.setLevel(log.level.value)
+    logger.propagate = log.propagate
+    return logger
