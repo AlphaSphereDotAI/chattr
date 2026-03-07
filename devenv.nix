@@ -100,28 +100,28 @@
     };
   };
 
-  # https://devenv.sh/processes/
-  # processes.dev.exec = "${lib.getExe pkgs.watchexec} -n -- ls -la";
-
   # https://devenv.sh/services/
   # services.postgres.enable = true;
 
-  # https://devenv.sh/scripts/
-  scripts = {
-    compatibility-check.exec = ''
-      echo "Checking compatibility"
-      ${lib.getExe pkgs.uv} sync --frozen --no-install-project
-    '';
-    start-dev.exec = ''
-      echo "Starting development server"
-      ${lib.getExe pkgs.uv} run chattr
-    '';
+  # https://devenv.sh/processes/
+  processes = {
+    compatibility-check = {
+      exec = "${lib.getExe pkgs.uv} sync --frozen --no-install-project";
+      ready.notify = true;
+    };
+    start-dev = {
+      exec = "${lib.getExe pkgs.uv} run chattr";
+      after = [ "devenv:processes:compatibility-check" ];
+      watch = {
+        paths = [ ./src ];
+        extensions = [ "py" ];
+        ignore = [
+          "__pycache__"
+          "*.pyc"
+        ];
+      };
+    };
   };
-
-  # https://devenv.sh/basics/
-  # enterShell = ''
-  #   git --version # Use packages
-  # '';
 
   # https://devenv.sh/tasks/
   tasks = {
