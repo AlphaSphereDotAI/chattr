@@ -1,8 +1,4 @@
-{
-  pkgs,
-  lib,
-  ...
-}:
+{ pkgs, lib, ... }:
 {
   files = {
     ".yamllint.yaml".yaml = {
@@ -51,6 +47,7 @@
       };
     };
   };
+
   # https://devenv.sh/basics/
   env = {
     UV_PYTHON_DOWNLOADS = lib.mkDefault "automatic";
@@ -140,10 +137,7 @@
   treefmt = {
     enable = true;
     config.programs = {
-      ruff-check = {
-        enable = true;
-        # extendSelect = [ "I" ];
-      };
+      ruff-check.enable = true;
     };
   };
 
