@@ -1,4 +1,10 @@
-{ pkgs, lib, ... }:
+{
+  pkgs,
+  lib,
+  config,
+  ...
+}:
+
 {
   files = {
     ".yamllint.yaml".yaml = {
@@ -7,7 +13,7 @@
         document-start = "disable";
         truthy = "disable";
         comments = "disable";
-        line-length.max = 120;
+        line-length.max = 140;
       };
     };
     ".ruff.toml".toml = {
@@ -46,6 +52,19 @@
         skip-magic-trailing-comma = false;
       };
     };
+    ".ls-lint.yml".yaml = {
+      ls = {
+        ".py" = "snake_case";
+        ".yaml" = "snake_case | kebab-case";
+        ".yml" = "snake_case | kebab-case";
+        ".toml" = "snake_case";
+        ".md" = "SCREAMING_SNAKE_CASE";
+      };
+      ignore = [
+        ".devenv"
+        ".git"
+      ];
+    };
   };
 
   # https://devenv.sh/basics/
@@ -55,17 +74,37 @@
   };
 
   # https://devenv.sh/packages/
-  packages = [ ];
+  packages = with pkgs; [
+    taplo
+    ls-lint
+    trufflehog
+    yq-go
+    semver
+    uv
+    commitizen
+  ];
 
   # https://devenv.sh/languages/
-  languages.python = {
-    enable = true;
-    # version = "3.14";
-    uv = {
+  languages = {
+    nix = {
       enable = true;
-      sync.enable = true;
+      lsp.enable = true;
+    };
+    python = {
+      enable = true;
+      # version = "3.14";
+      uv = {
+        enable = true;
+        sync.enable = true;
+      };
     };
   };
+
+  # https://devenv.sh/processes/
+  # processes.dev.exec = "${lib.getExe pkgs.watchexec} -n -- ls -la";
+
+  # https://devenv.sh/services/
+  # services.postgres.enable = true;
 
   # https://devenv.sh/scripts/
   scripts = {
@@ -85,10 +124,21 @@
   # '';
 
   # https://devenv.sh/tasks/
-  # tasks = {
-  #   "myproj:setup".exec = "mytool build";
-  #   "devenv:enterShell".after = [ "myproj:setup" ];
-  # };
+  tasks = {
+    "mkdir:results".exec = "mkdir -p ${config.env.SARIF_DIR}";
+    "lint:ruff" = {
+      exec = "${lib.getExe pkgs.ruff} check --output-format sarif --output-file ${config.env.SARIF_DIR}/ruff.sarif";
+      after = [ "mkdir:results" ];
+    };
+    "lint:uv_lock_check".exec = "${lib.getExe pkgs.uv} lock --check";
+    "lint:ls-lint".exec = "${lib.getExe pkgs.ls-lint}";
+    "lint:taplo".exec = "${lib.getExe pkgs.taplo} lint --default-schema-catalogs";
+    "lint:ty".exec = "${lib.getExe pkgs.ty} check --output-format github";
+    "lint:hadolint" = {
+      exec = "${lib.getExe pkgs.hadolint} -f sarif ./repo/Dockerfile > ${config.env.SARIF_DIR}/hadolint.sarif";
+      after = [ "mkdir:results" ];
+    };
+  };
 
   # https://devenv.sh/tests/
   # enterTest = ''
@@ -119,7 +169,7 @@
     markdownlint.enable = true;
     mixed-line-endings.enable = true;
     name-tests-test.enable = true;
-    prettier.enable = true;
+    yamlfmt.enable = true;
     python-debug-statements.enable = true;
     ripsecrets.enable = true;
     ruff.enable = true;
@@ -129,18 +179,50 @@
     trim-trailing-whitespace.enable = true;
     trufflehog.enable = true;
     uv-check.enable = true;
-    # uv-export.enable = true;
     uv-lock.enable = true;
     yamllint.enable = true;
+    hadolint.enable = true;
+    flynt.enable = true;
   };
 
   treefmt = {
     enable = true;
-    config.programs = {
-      ruff-check.enable = true;
+    config = {
+      programs = {
+        ruff-format.enable = true;
+        ruff-check.enable = true;
+        actionlint.enable = true;
+        dockfmt.enable = true;
+        # dprint = {
+        #   enable = true;
+        #   settings = {
+        #     newLineKind = "lf";
+        #   };
+        # };
+        jsonfmt.enable = true;
+        nixf-diagnose.enable = true;
+        nixfmt.enable = true;
+        deadnix.enable = true;
+        oxipng.enable = true;
+        statix.enable = true;
+        taplo.enable = true;
+        xmllint.enable = true;
+        yamlfmt.enable = true;
+      };
+      settings = {
+        formatter = {
+          taplo-format = {
+            command = "${lib.getExe pkgs.taplo}";
+            options = [ "format" ];
+            includes = [ "*.toml" ];
+            excludes = [
+              ".git/*"
+              ".devenv/*"
+            ];
+          };
+        };
+      };
     };
   };
-
-  difftastic.enable = true;
   # See full reference at https://devenv.sh/reference/options/
 }
