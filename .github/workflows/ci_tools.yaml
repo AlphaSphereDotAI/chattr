@@ -6,33 +6,8 @@ on:
       - edited
   workflow_dispatch:
 permissions:
-  id-token: write
   contents: write
-  pull-requests: read
-  issues: read
 jobs:
-  opencode:
-    if: |
-      github.event_name == 'issue_comment' &&
-      (
-        contains(github.event.comment.body, ' /oc') ||
-        startsWith(github.event.comment.body, '/oc') ||
-        contains(github.event.comment.body, ' /opencode') ||
-        startsWith(github.event.comment.body, '/opencode')
-      )
-    name: Opencode
-    runs-on: ubuntu-latest
-    environment:
-      name: ai_agent
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - name: Run opencode
-        uses: sst/opencode/github@bfb736e94ad366b544cb29bf1063269d17d5a62c # v1.2.25
-        env:
-          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
-        with:
-          model: opencode/grok-code
   uv_lock_sync:
     if: |
       github.event_name == 'workflow_dispatch' ||
@@ -53,7 +28,7 @@ jobs:
         with:
           token: ${{ secrets.GH_TOKEN }}
       - name: Install uv
-        uses: astral-sh/setup-uv@e06108dd0aef18192324c70427afc47652e63a82 # v7.5.0
+        uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7.6.0
         with:
           enable-cache: true
           activate-environment: true
