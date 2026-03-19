@@ -31,26 +31,23 @@
 # Schedule frequency is automatically determined by the shortest expiration time.
 #
 name: Agentic Maintenance
-
 on:
   schedule:
-    - cron: "37 */2 * * *"  # Every 2 hours (based on minimum expires: 1 days)
+    - cron: 37 */2 * * *    # Every 2 hours (based on minimum expires: 1 days)
   workflow_dispatch:
     inputs:
       operation:
-        description: 'Optional maintenance operation to run'
+        description: Optional maintenance operation to run
         required: false
         type: choice
         default: ''
         options:
           - ''
-          - 'disable'
-          - 'enable'
-          - 'update'
-          - 'upgrade'
-
+          - disable
+          - enable
+          - update
+          - upgrade
 permissions: {}
-
 jobs:
   close-expired-entities:
     if: ${{ !github.event.repository.fork && (github.event_name != 'workflow_dispatch' || github.event.inputs.operation == '') }}
@@ -64,7 +61,6 @@ jobs:
         uses: github/gh-aw-actions/setup@cb2bf21eadb070848fd3fe6edfa4a5af2e73e93a # v0.61.2
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
-
       - name: Close expired discussions
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
         with:
@@ -73,7 +69,6 @@ jobs:
             setupGlobals(core, github, context, exec, io);
             const { main } = require('${{ runner.temp }}/gh-aw/actions/close_expired_discussions.cjs');
             await main();
-
       - name: Close expired issues
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
         with:
@@ -82,7 +77,6 @@ jobs:
             setupGlobals(core, github, context, exec, io);
             const { main } = require('${{ runner.temp }}/gh-aw/actions/close_expired_issues.cjs');
             await main();
-
       - name: Close expired pull requests
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
         with:
@@ -91,7 +85,6 @@ jobs:
             setupGlobals(core, github, context, exec, io);
             const { main } = require('${{ runner.temp }}/gh-aw/actions/close_expired_pull_requests.cjs');
             await main();
-
   run_operation:
     if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.operation != '' && !github.event.repository.fork }}
     runs-on: ubuntu-slim
@@ -104,12 +97,10 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
-
       - name: Setup Scripts
         uses: github/gh-aw-actions/setup@cb2bf21eadb070848fd3fe6edfa4a5af2e73e93a # v0.61.2
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
-
       - name: Check admin/maintainer permissions
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
         with:
@@ -119,12 +110,10 @@ jobs:
             setupGlobals(core, github, context, exec, io);
             const { main } = require('${{ runner.temp }}/gh-aw/actions/check_team_member.cjs');
             await main();
-
       - name: Install gh-aw
         uses: github/gh-aw-actions/setup-cli@cb2bf21eadb070848fd3fe6edfa4a5af2e73e93a # v0.61.2
         with:
           version: v0.61.2
-
       - name: Run operation
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
         env:
@@ -133,7 +122,7 @@ jobs:
           GH_AW_CMD_PREFIX: gh aw
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
+          script: |-
             const { setupGlobals } = require('${{ runner.temp }}/gh-aw/actions/setup_globals.cjs');
             setupGlobals(core, github, context, exec, io);
             const { main } = require('${{ runner.temp }}/gh-aw/actions/run_operation_update_upgrade.cjs');
