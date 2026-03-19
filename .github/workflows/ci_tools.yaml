@@ -5,6 +5,9 @@ on:
       - created
       - edited
   workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/*.md
 permissions:
   contents: write
 jobs:
@@ -38,4 +41,22 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@04702edda442b2e678b25b537cec683a1493fcb9 # v7.1.0
         with:
           commit_message: Sync uv.lock
+          commit_options: --no-verify
+  gh-aw-compile:
+    if: github.event_name == 'push'
+    name: GH AW Compile
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+      - name: Install GH AW CLI
+        uses: github/gh-aw-actions/setup-cli@v0.61.2
+      - name: Compile
+        run: gh aw compile
+      - name: Commit and push changes
+        uses: stefanzweifel/git-auto-commit-action@04702edda442b2e678b25b537cec683a1493fcb9 # v7.1.0
+        with:
+          commit_message: Compile GH AW
           commit_options: --no-verify
