@@ -60,3 +60,4 @@ jobs:
         with:
           commit_message: Compile GH AW
           commit_options: --no-verify
+          push_options: --force
