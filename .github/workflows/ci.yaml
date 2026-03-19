@@ -1,0 +1,32 @@
+name: CI
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+      - '[0-9]+.[0-9]+.[0-9]+a[0-9]+'
+      - '[0-9]+.[0-9]+.[0-9]+b[0-9]+'
+  pull_request:
+  issue_comment:
+    types:
+      - created
+      - edited
+  workflow_dispatch:
+  release:
+    types:
+      - published
+jobs:
+  test:
+    name: Test
+    if: ${{ github.event_name == 'push' || github.event_name == 'pull_request' || github.ref_name == 'main' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5.0.0
+      - name: Test
+        uses: AlphaSphereDotAI/helpr_action@test
+        with:
+          is_test: true
+          test_code: true
+          linter: lint
