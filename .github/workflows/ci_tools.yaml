@@ -61,4 +61,4 @@ jobs:
           commit_message: Compile GH AW
           commit_options: --no-verify
           push_options: --force
-          file_pattern: '.github/workflows/**.lock.yml'
+          file_pattern: .github/workflows/**.lock.yml
