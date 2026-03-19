@@ -201,7 +201,9 @@ class App:
                             metadata=MetadataDict(
                                 title=response.tool.tool_name,
                                 id=response.tool.tool_call_id,
-                                log="Tool Call Failed" if is_error else "Tool Call Succeeded",
+                                log="Tool Call Failed"
+                                if is_error
+                                else "Tool Call Succeeded",
                                 duration=response.tool.metrics.duration,
                             ),
                         ),
