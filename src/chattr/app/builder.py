@@ -194,31 +194,24 @@ class App:
                     )
                 elif isinstance(response, ToolCallCompletedEvent):
                     if response.tool.tool_call_error:
-                        history.append(
-                            ChatMessage(
-                                role="assistant",
-                                content=dumps(response.tool.tool_args, indent=4),
-                                metadata=MetadataDict(
-                                    title=response.tool.tool_name,
-                                    id=response.tool.tool_call_id,
-                                    log="Tool Call Failed",
-                                    duration=response.tool.metrics.duration,
-                                ),
-                            ),
-                        )
+                        log_msg = "Tool Call Failed"
                     else:
-                        history.append(
-                            ChatMessage(
-                                role="assistant",
-                                content=dumps(response.tool.tool_args, indent=4),
-                                metadata=MetadataDict(
-                                    title=response.tool.tool_name,
-                                    id=response.tool.tool_call_id,
-                                    log="Tool Call Succeeded",
-                                    duration=response.tool.metrics.duration,
-                                ),
+                        log_msg = "Tool Call Succeeded"
+
+                    history.append(
+                        ChatMessage(
+                            role="assistant",
+                            content=dumps(response.tool.tool_args, indent=4),
+                            metadata=MetadataDict(
+                                title=response.tool.tool_name,
+                                id=response.tool.tool_call_id,
+                                log=log_msg,
+                                duration=response.tool.metrics.duration,
                             ),
-                        )
+                        ),
+                    )
+
+                    if not response.tool.tool_call_error:
                         if response.tool.tool_name == "generate_audio_for_text":
                             history.append(
                                 Audio(
@@ -258,14 +251,14 @@ class App:
         Returns:
             bool: True if the string is a valid URL, False otherwise.
         """
-        if value is None:
+        if not value:
             return False
 
         try:
-            _ = HttpUrl(value)
+            HttpUrl(value)
+            return True
         except ValidationError:
             return False
-        return True
 
     def _download_file(self, url: HttpUrl, path: Path) -> None:
         """
