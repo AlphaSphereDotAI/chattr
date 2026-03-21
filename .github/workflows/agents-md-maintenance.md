@@ -4,8 +4,8 @@ on:
   schedule: weekly
   workflow_dispatch:
 permissions:
-  contents: write
-  pull-requests: write
+   contents: read
+   pull-requests: read
 tracker-id: agents-md-maintenance
 tools:
   github:
