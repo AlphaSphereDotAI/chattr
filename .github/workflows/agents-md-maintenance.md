@@ -4,8 +4,8 @@ on:
   schedule: weekly
   workflow_dispatch:
 permissions:
-  contents: write
-  pull-requests: write
+   contents: read
+   pull-requests: read
 tracker-id: agents-md-maintenance
 tools:
   github:
@@ -15,6 +15,8 @@ safe-outputs:
   create-pull-request:
     title-prefix: "[AGENTS.md] "
     labels: [ automation ]
+    allowed-files:
+       - AGENTS.md
 timeout-minutes: 30
 engine: gemini
 ---
