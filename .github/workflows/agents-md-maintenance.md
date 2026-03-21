@@ -16,7 +16,6 @@ safe-outputs:
     title-prefix: "[AGENTS.md] "
     labels: [ automation ]
 timeout-minutes: 30
-strict: true
 engine: gemini
 ---
 
