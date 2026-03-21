@@ -15,6 +15,8 @@ safe-outputs:
   create-pull-request:
     title-prefix: "[AGENTS.md] "
     labels: [ automation ]
+    allowed-files:
+       - AGENTS.md
 timeout-minutes: 30
 engine: gemini
 ---
