@@ -12,9 +12,9 @@ tools:
   github:
     toolsets: [ repos, pull_requests ]
   bash: true
+  web-fetch:
 safe-outputs:
   create-pull-request:
-    title-prefix: "[AGENTS.md] "
     labels: [ automation, agents-md ]
     allowed-files:
        - AGENTS.md
