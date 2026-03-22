@@ -193,33 +193,23 @@ class App:
                         ),
                     )
                 elif isinstance(response, ToolCallCompletedEvent):
-                    if response.tool.tool_call_error:
-                        history.append(
-                            ChatMessage(
-                                role="assistant",
-                                content=dumps(response.tool.tool_args, indent=4),
-                                metadata=MetadataDict(
-                                    title=response.tool.tool_name,
-                                    id=response.tool.tool_call_id,
-                                    log="Tool Call Failed",
-                                    duration=response.tool.metrics.duration,
-                                ),
+                    log_status = "Tool Call Failed" if response.tool.tool_call_error else "Tool Call Succeeded"
+                    history.append(
+                        ChatMessage(
+                            role="assistant",
+                            content=dumps(response.tool.tool_args, indent=4),
+                            metadata=MetadataDict(
+                                title=response.tool.tool_name,
+                                id=response.tool.tool_call_id,
+                                log=log_status,
+                                duration=response.tool.metrics.duration,
                             ),
-                        )
-                    else:
-                        history.append(
-                            ChatMessage(
-                                role="assistant",
-                                content=dumps(response.tool.tool_args, indent=4),
-                                metadata=MetadataDict(
-                                    title=response.tool.tool_name,
-                                    id=response.tool.tool_call_id,
-                                    log="Tool Call Succeeded",
-                                    duration=response.tool.metrics.duration,
-                                ),
-                            ),
-                        )
-                        if response.tool.tool_name == "generate_audio_for_text":
+                        ),
+                    )
+
+                    if not response.tool.tool_call_error:
+                        tool_name = response.tool.tool_name
+                        if tool_name == "generate_audio_for_text":
                             history.append(
                                 Audio(
                                     response.tool.result,
@@ -228,7 +218,7 @@ class App:
                                     show_share_button=True,
                                 ),
                             )
-                        elif response.tool.tool_name == "generate_video_mcp":
+                        elif tool_name == "generate_video_mcp":
                             history.append(
                                 Video(
                                     response.tool.result,
@@ -238,7 +228,7 @@ class App:
                                 ),
                             )
                         else:
-                            msg = f"Unknown tool name: {response.tool.tool_name}"
+                            msg = f"Unknown tool name: {tool_name}"
                             raise Error(msg)
                 yield history
         except Exception as e:
@@ -258,14 +248,14 @@ class App:
         Returns:
             bool: True if the string is a valid URL, False otherwise.
         """
-        if value is None:
+        if not value:
             return False
 
         try:
-            _ = HttpUrl(value)
+            HttpUrl(value)
+            return True
         except ValidationError:
             return False
-        return True
 
     def _download_file(self, url: HttpUrl, path: Path) -> None:
         """
@@ -282,17 +272,19 @@ class App:
             requests.RequestException: If the HTTP request fails.
             IOError: If file writing fails.
         """
-        if str(url).endswith(".m3u8"):
-            _playlist: M3U8 = load(url)
-            url: str = str(url).replace("playlist.m3u8", _playlist.segments[0].uri)
-        logger.info(f"Downloading {url} to {path}")
-        session = Session()
-        response = session.get(url, stream=True, timeout=30)
-        response.raise_for_status()
-        with path.open("wb") as f:
-            for chunk in response.iter_content(chunk_size=8192):
-                if chunk:
-                    f.write(chunk)
+        url_str = str(url)
+        if url_str.endswith(".m3u8"):
+            _playlist: M3U8 = load(url_str)
+            url_str = url_str.replace("playlist.m3u8", _playlist.segments[0].uri)
+
+        logger.info(f"Downloading {url_str} to {path}")
+        with Session() as session:
+            response = session.get(url_str, stream=True, timeout=30)
+            response.raise_for_status()
+            with path.open("wb") as f:
+                for chunk in response.iter_content(chunk_size=8192):
+                    if chunk:
+                        f.write(chunk)
         logger.info(f"File downloaded to {path}")
 
     async def _close(self) -> None:

@@ -139,16 +139,10 @@ class ModelSettings(BaseModel):
         """
         if self.url:
             if not self.api_key or not self.api_key.get_secret_value():
-                _msg: str = (
-                    "You need to provide API Key for the Model provider:"
-                    " Set via `MODEL__API_KEY`"
-                )
+                _msg = "You need to provide API Key for the Model provider: Set via `MODEL__API_KEY`"
                 raise ValueError(_msg)
             if not self.name:
-                _msg: str = (
-                    "You need to provide Model name for the Model provider:"
-                    " Set via `MODEL__NAME`"
-                )
+                _msg = "You need to provide Model name for the Model provider: Set via `MODEL__NAME`"
                 raise ValueError(_msg)
         return self
 
