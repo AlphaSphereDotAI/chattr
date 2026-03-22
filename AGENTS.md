@@ -17,8 +17,7 @@ uv build  # Build source and wheel distributions
 ### Linting & Formatting
 
 ```bash
-trunk fmt --all --no-progress  # Auto-format code
-trunk check  # Run all linters and checks
+uvx pre-commit run --all-files  # Run all linters and formatting checks
 ```
 
 ### Testing
