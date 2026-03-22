@@ -12,6 +12,7 @@ tools:
   github:
     toolsets: [ repos, pull_requests ]
   bash: true
+  web-fetch:
 safe-outputs:
   create-pull-request:
     labels: [ automation, agents-md ]
