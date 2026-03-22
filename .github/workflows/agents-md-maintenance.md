@@ -20,6 +20,10 @@ safe-outputs:
        - AGENTS.md
 checkout:
    - fetch-depth: 0
+network:
+   allowed:
+      - defaults
+      - github
 timeout-minutes: 30
 engine: gemini
 ---
