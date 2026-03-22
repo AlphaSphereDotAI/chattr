@@ -19,7 +19,10 @@ if: ${{ github.event.workflow_run.conclusion == 'failure' }}
 
 permissions: read-all
 
-network: defaults
+network:
+   allowed:
+      - defaults
+      - github
 
 safe-outputs:
    create-issue:
@@ -31,7 +34,7 @@ tools:
    cache-memory: true
    web-fetch:
 
-timeout-minutes: 10
+timeout-minutes: 30
 
 source: githubnext/agentics/workflows/ci-doctor.md@main
 engine: gemini
