@@ -14,7 +14,6 @@ tools:
   bash: true
 safe-outputs:
   create-pull-request:
-    title-prefix: "[AGENTS.md] "
     labels: [ automation, agents-md ]
     allowed-files:
        - AGENTS.md
