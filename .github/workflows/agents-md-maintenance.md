@@ -1,7 +1,7 @@
 ---
 description: Weekly maintenance of AGENTS.md to keep agent guidelines accurate and current
 on:
-  schedule: weekly
+   schedule: daily
   workflow_dispatch:
 permissions:
    contents: read
