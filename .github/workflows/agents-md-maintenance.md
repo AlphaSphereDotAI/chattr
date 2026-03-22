@@ -15,7 +15,7 @@ tools:
 safe-outputs:
   create-pull-request:
     title-prefix: "[AGENTS.md] "
-    labels: [ automation ]
+    labels: [ automation, agents-md ]
     allowed-files:
        - AGENTS.md
 timeout-minutes: 30
