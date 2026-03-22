@@ -18,6 +18,8 @@ safe-outputs:
     labels: [ automation, agents-md ]
     allowed-files:
        - AGENTS.md
+checkout:
+   - fetch-depth: 0
 timeout-minutes: 30
 engine: gemini
 ---
