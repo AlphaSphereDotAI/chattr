@@ -1,8 +1,8 @@
 ---
-description: Weekly maintenance of AGENTS.md to keep agent guidelines accurate and current
+description: Daily maintenance of AGENTS.md to keep agent guidelines accurate and current
 on:
-  schedule: weekly
-  workflow_dispatch:
+   schedule: daily
+   workflow_dispatch:
 permissions:
    contents: read
    pull-requests: read
@@ -35,7 +35,7 @@ in the repository.
 
 ## Mission
 
-Every week, you will review merged pull requests and updated source files from the last 7 days. You will analyze these changes to
+Every day, you will review merged pull requests and updated source files from the last 7 days. You will analyze these changes to
 determine if `AGENTS.md` needs to be updated to reflect new patterns, commands or guidelines. If updates are required, you will
 open a pull request.
 
