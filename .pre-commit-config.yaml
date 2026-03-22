@@ -98,10 +98,15 @@ repos:
     rev: 1.19.1
     hooks:
       - id: yamlfix
-        exclude: ^\.github/workflows/.*\.lock\.ya?ml$
         args:
           - -c
           - .github/lint/.yamlfix.toml
+          - -e
+          - '**/*.lock.yml'
+          - -e
+          - .github/workflows/agentics-maintenance.yml
+          - -e
+          - .venv/
   - repo: https://github.com/rhysd/actionlint
     rev: v1.7.11
     hooks:
