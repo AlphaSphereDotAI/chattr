@@ -1,17 +1,18 @@
 ---
 description: |
-  This workflow is an automated CI failure investigator that triggers when monitored workflows fail.
-  Performs deep analysis of GitHub Actions workflow failures to identify root causes,
-  patterns, and provide actionable remediation steps. Analyzes logs, error messages,
-  and workflow configuration to help diagnose and resolve CI issues efficiently.
+   This workflow is an automated CI failure investigator that triggers when monitored workflows fail.
+   Performs deep analysis of GitHub Actions workflow failures to identify root causes,
+   patterns, and provide actionable remediation steps. Analyzes logs, error messages,
+   and workflow configuration to help diagnose and resolve CI issues efficiently.
 
 on:
-  workflow_run:
-    workflows: ["Daily Perf Improver", "Daily Test Coverage Improver"]  # Monitor the CI workflow specifically
-    types:
-      - completed
-    branches:
-      - main
+   workflow_run:
+      # Monitor the CI workflow specifically
+      workflows: [ "Daily Perf Improver", "Daily Test Coverage Improver", "Version", "Test", "Release", "Build" ]
+      types:
+         - completed
+      branches:
+         - main
 
 # Only trigger for failures - check in the workflow body
 if: ${{ github.event.workflow_run.conclusion == 'failure' }}
@@ -21,14 +22,14 @@ permissions: read-all
 network: defaults
 
 safe-outputs:
-  create-issue:
-    title-prefix: "${{ github.workflow }}"
-    labels: [automation, ci]
-  add-comment:
+   create-issue:
+      title-prefix: "${{ github.workflow }}"
+      labels: [ automation, ci ]
+   add-comment:
 
 tools:
-  cache-memory: true
-  web-fetch:
+   cache-memory: true
+   web-fetch:
 
 timeout-minutes: 10
 
