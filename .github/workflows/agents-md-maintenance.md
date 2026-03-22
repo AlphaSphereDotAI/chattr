@@ -7,6 +7,7 @@ permissions:
    contents: read
    pull-requests: read
 tracker-id: agents-md-maintenance
+name: 'AGENTS.md Maintenance'
 tools:
   github:
     toolsets: [ repos, pull_requests ]
