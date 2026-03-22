@@ -1,7 +1,7 @@
 ---
 description: Weekly maintenance of AGENTS.md to keep agent guidelines accurate and current
 on:
-  schedule: weekly
+   schedule: daily
   workflow_dispatch:
 permissions:
    contents: read
@@ -12,12 +12,18 @@ tools:
   github:
     toolsets: [ repos, pull_requests ]
   bash: true
+  web-fetch:
 safe-outputs:
   create-pull-request:
-    title-prefix: "[AGENTS.md] "
     labels: [ automation, agents-md ]
     allowed-files:
        - AGENTS.md
+checkout:
+   - fetch-depth: 0
+network:
+   allowed:
+      - defaults
+      - github
 timeout-minutes: 30
 engine: gemini
 ---
