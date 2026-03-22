@@ -193,7 +193,11 @@ class App:
                         ),
                     )
                 elif isinstance(response, ToolCallCompletedEvent):
-                    log_status = "Tool Call Failed" if response.tool.tool_call_error else "Tool Call Succeeded"
+                    log_status = (
+                        "Tool Call Failed"
+                        if response.tool.tool_call_error
+                        else "Tool Call Succeeded"
+                    )
                     history.append(
                         ChatMessage(
                             role="assistant",
