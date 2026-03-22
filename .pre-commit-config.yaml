@@ -98,7 +98,7 @@ repos:
     rev: 1.19.1
     hooks:
       - id: yamlfix
-        exclude: ^.github/workflows/.*\.lock\.ya?ml$
+        exclude: '^\.github/workflows/.*\.lock\.ya?ml$'
         args:
           - -c
           - .github/lint/.yamlfix.toml
