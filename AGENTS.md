@@ -23,8 +23,8 @@ uvx pre-commit run --all-files  # Run all linters and formatting checks
 ### Testing
 
 ```bash
-pytest  # Run all tests
-pytest tests/test_app.py::test_app  # Run single test
+uv run pytest  # Run all tests
+uv run pytest tests/test_app.py::test_app  # Run single test
 ```
 
 ## Code Style Guidelines
@@ -89,3 +89,13 @@ pytest tests/test_app.py::test_app  # Run single test
 - Test functions named `test_*`
 - Use descriptive assertions
 - Mock external dependencies when needed
+
+## Agentic Workflows
+
+The repository uses several automated agentic workflows:
+- **`agents-md-maintenance`**: Daily maintenance of this `AGENTS.md` file.
+- **`ci-coach`**: Daily CI optimization coach for workflow efficiency.
+- **`ci-doctor`**: Monitors and triages failed CI runs.
+- **`code-simplifier`**: Daily code simplification coach.
+- **`daily-malicious-code-scan`**: Daily scan for malicious code or dependencies.
+
