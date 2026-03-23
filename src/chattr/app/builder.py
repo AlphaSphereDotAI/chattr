@@ -193,32 +193,20 @@ class App:
                         ),
                     )
                 elif isinstance(response, ToolCallCompletedEvent):
-                    if response.tool.tool_call_error:
-                        history.append(
-                            ChatMessage(
-                                role="assistant",
-                                content=dumps(response.tool.tool_args, indent=4),
-                                metadata=MetadataDict(
-                                    title=response.tool.tool_name,
-                                    id=response.tool.tool_call_id,
-                                    log="Tool Call Failed",
-                                    duration=response.tool.metrics.duration,
-                                ),
+                    log_status = "Failed" if response.tool.tool_call_error else "Succeeded"
+                    history.append(
+                        ChatMessage(
+                            role="assistant",
+                            content=dumps(response.tool.tool_args, indent=4),
+                            metadata=MetadataDict(
+                                title=response.tool.tool_name,
+                                id=response.tool.tool_call_id,
+                                log=f"Tool Call {log_status}",
+                                duration=response.tool.metrics.duration,
                             ),
-                        )
-                    else:
-                        history.append(
-                            ChatMessage(
-                                role="assistant",
-                                content=dumps(response.tool.tool_args, indent=4),
-                                metadata=MetadataDict(
-                                    title=response.tool.tool_name,
-                                    id=response.tool.tool_call_id,
-                                    log="Tool Call Succeeded",
-                                    duration=response.tool.metrics.duration,
-                                ),
-                            ),
-                        )
+                        ),
+                    )
+                    if not response.tool.tool_call_error:
                         if response.tool.tool_name == "generate_audio_for_text":
                             history.append(
                                 Audio(
