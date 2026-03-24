@@ -23,7 +23,7 @@ class AgentConfiguration(NamedTuple):
     debug_mode: bool
 
 
-async def setup_agent(agent_config: AgentConfiguration) -> Agent:
+def setup_agent(agent_config: AgentConfiguration) -> Agent:
     """
     Initialize the Chattr agent.
 
