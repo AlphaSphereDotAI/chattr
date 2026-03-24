@@ -14,6 +14,12 @@ uv sync  # Install dependencies
 uv build  # Build source and wheel distributions
 ```
 
+### Execution
+
+```bash
+uv run chattr  # Launch the Gradio app
+```
+
 ### Linting & Formatting
 
 ```bash
@@ -41,7 +47,7 @@ pytest tests/test_app.py::test_app  # Run single test
 - Use `from __future__ import annotations` when needed
 - Group imports: standard library, third-party, local
 - Use `TYPE_CHECKING` for conditional imports
-- Combine as imports: `from typing import Dict, List` → `from typing import Dict, List`
+- Combine multiple imports from the same module (e.g., `from typing import Any, Sequence`)
 
 ### Type Hints
 
@@ -49,6 +55,7 @@ pytest tests/test_app.py::test_app  # Run single test
 - Use `Self` for methods returning the same class instance
 - Use `Sequence`, `list`, `dict` instead of bare generics
 - Use `Path` from `pathlib` for file paths
+- Use `Pydantic` models for data validation and configuration
 
 ### Naming Conventions
 
@@ -69,7 +76,13 @@ pytest tests/test_app.py::test_app  # Run single test
 
 - Use `async def` for coroutines
 - Use `await` for async operations
-- Return `AsyncGenerator` for streaming responses
+- Return `AsyncGenerator` from `collections.abc` for streaming responses
+
+### Frameworks & Tools
+
+- Use `agno` framework for defining agents and toolkits
+- Use `gradio` for the web interface
+- Use `pydantic` and `pydantic-settings` for configuration management
 
 ### Documentation
 
