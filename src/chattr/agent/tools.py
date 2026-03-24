@@ -6,7 +6,7 @@ from agno.utils.log import log_info, log_warning
 from chattr.app.settings import MCPSettings
 
 
-async def setup_mcp_tools(mcp: MCPSettings) -> MultiMCPTools | None:
+def setup_mcp_tools(mcp: MCPSettings) -> MultiMCPTools | None:
     """Return and setup MCP tools connection."""
     if not mcp.path.exists():
         log_warning("MCP config file not found.")
@@ -27,13 +27,4 @@ async def setup_mcp_tools(mcp: MCPSettings) -> MultiMCPTools | None:
     if not mcp_tools.tools or len(mcp_tools.tools) == 0:
         log_info("No MCP servers available.")
         return None
-    await mcp_tools.connect()
     return mcp_tools
-
-
-async def close_mcp_tools(mcp_tools: MultiMCPTools | None) -> None:
-    """Close the MCP tools connection."""
-    log_info("Closing MCP tools...")
-    if not mcp_tools:
-        return
-    await mcp_tools.close()
