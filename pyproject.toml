@@ -6,7 +6,7 @@
     "agno[google,qdrant]>=2.5.10",
     "ddgs>=9.11.4",
     "fastembed>=0.8.0",
-    "gradio[mcp]>=6.9.0",
+    "gradio[mcp]>=6.10.0",
     "m3u8>=6.0.0",
     "mem0ai>=1.0.7",
     "poml>=0.0.8",
