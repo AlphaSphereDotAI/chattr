@@ -42,6 +42,7 @@ class App:
 
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
+        self.mcp_tools = None
 
     async def _setup_agent(self) -> Agent:
         return Agent(
@@ -71,11 +72,10 @@ class App:
         )
 
     async def _setup_tools(self) -> list[Toolkit]:
-        mcp_servers: list[dict] = loads(self.settings.mcp.path.read_text()).get(
-            "mcp_servers",
-            [],
-        )
+        mcp_config = loads(self.settings.mcp.path.read_text())
+        mcp_servers = mcp_config.get("mcp_servers", [])
         url_servers = [m for m in mcp_servers if m.get("type") == "url"]
+
         self.mcp_tools = MultiMCPTools(
             urls=[m.get("url") for m in url_servers],
             urls_transports=[m.get("transport") for m in url_servers],
@@ -150,21 +150,19 @@ class App:
         self,
         message: str,
         history: list[ChatMessage],
-    ) -> AsyncGenerator[tuple[str, list[ChatMessage], Path | None, Path | None]]:
+    ) -> AsyncGenerator[list[ChatMessage], None]:
         """
         Generate a response to a user message and update the conversation history.
 
-        This asynchronous method streams responses from the state graph and
-        yields updated history and audio file paths as needed.
+        This asynchronous method streams responses from the agent and
+        yields updated history.
 
         Args:
-            message: The user's input message as a string.
-            history: The conversation history as a list of ChatMessage objects.
+            message: The user's input message.
+            history: The conversation history.
 
-        Returns:
-            AsyncGenerator: Yields a tuple containing an
-                            empty string, the updated history, and
-                            a Path to an audio file if generated.
+        Yields:
+            list[ChatMessage]: Updated conversation history.
         """
         try:
             agent: Agent = await self._setup_agent()
@@ -174,12 +172,7 @@ class App:
             ):
                 pprint(response)
                 if isinstance(response, RunContentEvent):
-                    history.append(
-                        ChatMessage(
-                            role="assistant",
-                            content=response.content,
-                        ),
-                    )
+                    history.append(ChatMessage(role="assistant", content=response.content))
                 elif isinstance(response, ToolCallStartedEvent):
                     history.append(
                         ChatMessage(
@@ -193,52 +186,40 @@ class App:
                         ),
                     )
                 elif isinstance(response, ToolCallCompletedEvent):
-                    if response.tool.tool_call_error:
-                        history.append(
-                            ChatMessage(
-                                role="assistant",
-                                content=dumps(response.tool.tool_args, indent=4),
-                                metadata=MetadataDict(
-                                    title=response.tool.tool_name,
-                                    id=response.tool.tool_call_id,
-                                    log="Tool Call Failed",
-                                    duration=response.tool.metrics.duration,
-                                ),
+                    tool = response.tool
+                    history.append(
+                        ChatMessage(
+                            role="assistant",
+                            content=dumps(tool.tool_args, indent=4),
+                            metadata=MetadataDict(
+                                title=tool.tool_name,
+                                id=tool.tool_call_id,
+                                log="Tool Call " + ("Failed" if tool.tool_call_error else "Succeeded"),
+                                duration=tool.metrics.duration,
                             ),
-                        )
-                    else:
-                        history.append(
-                            ChatMessage(
-                                role="assistant",
-                                content=dumps(response.tool.tool_args, indent=4),
-                                metadata=MetadataDict(
-                                    title=response.tool.tool_name,
-                                    id=response.tool.tool_call_id,
-                                    log="Tool Call Succeeded",
-                                    duration=response.tool.metrics.duration,
-                                ),
-                            ),
-                        )
-                        if response.tool.tool_name == "generate_audio_for_text":
+                        ),
+                    )
+                    if not tool.tool_call_error:
+                        if tool.tool_name == "generate_audio_for_text":
                             history.append(
                                 Audio(
-                                    response.tool.result,
+                                    tool.result,
                                     autoplay=True,
                                     show_download_button=True,
                                     show_share_button=True,
                                 ),
                             )
-                        elif response.tool.tool_name == "generate_video_mcp":
+                        elif tool.tool_name == "generate_video_mcp":
                             history.append(
                                 Video(
-                                    response.tool.result,
+                                    tool.result,
                                     autoplay=True,
                                     show_download_button=True,
                                     show_share_button=True,
                                 ),
                             )
                         else:
-                            msg = f"Unknown tool name: {response.tool.tool_name}"
+                            msg = f"Unknown tool name: {tool.tool_name}"
                             raise Error(msg)
                 yield history
         except Exception as e:
@@ -249,62 +230,37 @@ class App:
             await self._close()
 
     def _is_url(self, value: str | None) -> bool:
-        """
-        Check if a string is a valid URL.
-
-        Args:
-            value: The string to check. Can be None.
-
-        Returns:
-            bool: True if the string is a valid URL, False otherwise.
-        """
-        if value is None:
-            return False
-
+        """Check if a string is a valid URL."""
         try:
-            _ = HttpUrl(value)
+            return bool(value and HttpUrl(value))
         except ValidationError:
             return False
-        return True
 
     def _download_file(self, url: HttpUrl, path: Path) -> None:
-        """
-        Download a file from a URL and save it to a local path.
-
-        Args:
-            url: The URL to download the file from.
-            path: The local file path where the downloaded file will be saved.
-
-        Returns:
-            None
-
-        Raises:
-            requests.RequestException: If the HTTP request fails.
-            IOError: If file writing fails.
-        """
+        """Download a file from a URL and save it to a local path."""
         if str(url).endswith(".m3u8"):
             _playlist: M3U8 = load(url)
-            url: str = str(url).replace("playlist.m3u8", _playlist.segments[0].uri)
+            url = str(url).replace("playlist.m3u8", _playlist.segments[0].uri)
+
         logger.info(f"Downloading {url} to {path}")
-        session = Session()
-        response = session.get(url, stream=True, timeout=30)
-        response.raise_for_status()
-        with path.open("wb") as f:
-            for chunk in response.iter_content(chunk_size=8192):
-                if chunk:
-                    f.write(chunk)
+        with Session() as session:
+            response = session.get(url, stream=True, timeout=30)
+            response.raise_for_status()
+            with path.open("wb") as f:
+                for chunk in response.iter_content(chunk_size=8192):
+                    if chunk:
+                        f.write(chunk)
         logger.info(f"File downloaded to {path}")
 
     async def _close(self) -> None:
-        try:
-            logger.info("Closing MCP tools...")
-            await self.mcp_tools.close()
-        except Exception as e:
-            msg: str = (
-                f"Error closing MCP tools: {e}, Check if the Tool services are running."
-            )
-            logger.error(msg)
-            raise Error(msg) from e
+        if self.mcp_tools:
+            try:
+                logger.info("Closing MCP tools...")
+                await self.mcp_tools.close()
+            except Exception as e:
+                msg: str = f"Error closing MCP tools: {e}"
+                logger.error(msg)
+                raise Error(msg) from e
 
 
 async def test() -> None:
