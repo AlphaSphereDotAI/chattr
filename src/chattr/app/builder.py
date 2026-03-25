@@ -172,7 +172,9 @@ class App:
             ):
                 pprint(response)
                 if isinstance(response, RunContentEvent):
-                    history.append(ChatMessage(role="assistant", content=response.content))
+                    history.append(
+                        ChatMessage(role="assistant", content=response.content)
+                    )
                 elif isinstance(response, ToolCallStartedEvent):
                     history.append(
                         ChatMessage(
@@ -194,7 +196,8 @@ class App:
                             metadata=MetadataDict(
                                 title=tool.tool_name,
                                 id=tool.tool_call_id,
-                                log="Tool Call " + ("Failed" if tool.tool_call_error else "Succeeded"),
+                                log="Tool Call "
+                                + ("Failed" if tool.tool_call_error else "Succeeded"),
                                 duration=tool.metrics.duration,
                             ),
                         ),
