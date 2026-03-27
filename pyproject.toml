@@ -3,7 +3,7 @@
     { email = "mohamed.hisham.abdelzaher@gmail.com", name = "Mohamed Hisham Abdelzaher" },
   ]
   dependencies = [
-    "agno[google,qdrant]>=2.5.10",
+    "agno[google,qdrant]>=2.5.11",
     "ddgs>=9.11.4",
     "fastembed>=0.8.0",
     "gradio[mcp]>=6.10.0",
