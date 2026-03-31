@@ -55,7 +55,7 @@ jobs:
       secret_verification_result: ${{ steps.validate-secret.outputs.verification_result }}
     steps:
       - name: Setup Scripts
-        uses: github/gh-aw-actions/setup@18f7fa4a5dda2ecd6a94d3b3be234d80568f3508 # v0.64.5
+        uses: github/gh-aw-actions/setup@b5ca5364ba36e64b34a20b8e273d2c5d0e1220ec # v0.65.2
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
       - name: Generate agentic run info
@@ -257,7 +257,7 @@ jobs:
       output_types: ${{ steps.collect_output.outputs.output_types }}
     steps:
       - name: Setup Scripts
-        uses: github/gh-aw-actions/setup@18f7fa4a5dda2ecd6a94d3b3be234d80568f3508 # v0.64.5
+        uses: github/gh-aw-actions/setup@b5ca5364ba36e64b34a20b8e273d2c5d0e1220ec # v0.65.2
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
       - name: Set runtime paths
@@ -741,7 +741,7 @@ jobs:
       total_count: ${{ steps.missing_tool.outputs.total_count }}
     steps:
       - name: Setup Scripts
-        uses: github/gh-aw-actions/setup@18f7fa4a5dda2ecd6a94d3b3be234d80568f3508 # v0.64.5
+        uses: github/gh-aw-actions/setup@b5ca5364ba36e64b34a20b8e273d2c5d0e1220ec # v0.65.2
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
       - name: Download agent output artifact
@@ -867,7 +867,7 @@ jobs:
       sarif_file: ${{ steps.process_safe_outputs.outputs.sarif_file }}
     steps:
       - name: Setup Scripts
-        uses: github/gh-aw-actions/setup@18f7fa4a5dda2ecd6a94d3b3be234d80568f3508 # v0.64.5
+        uses: github/gh-aw-actions/setup@b5ca5364ba36e64b34a20b8e273d2c5d0e1220ec # v0.65.2
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
       - name: Download agent output artifact
@@ -913,7 +913,7 @@ jobs:
       - name: Upload SARIF to GitHub Code Scanning
         id: upload_code_scanning_sarif
         if: steps.process_safe_outputs.outputs.sarif_file != ''
-        uses: github/codeql-action/upload-sarif@38697555549f1db7851b81482ff19f1fa5c4fedc # v4.34.1
+        uses: github/codeql-action/upload-sarif@c10b8064de6f491fea524254123dbe5e09572f13 # v4.35.1
         with:
           github-token: ${{ secrets.GH_AW_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           sarif_file: ${{ steps.process_safe_outputs.outputs.sarif_file }}
