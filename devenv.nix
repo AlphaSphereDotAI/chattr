@@ -57,8 +57,6 @@
     ".taplo.toml".toml = {
       exclude = [ ".venv/**" ];
       formatting = {
-        indent_entries = true;
-        indent_tables = true;
         reorder_arrays = true;
         reorder_inline_tables = true;
         reorder_keys = true;
