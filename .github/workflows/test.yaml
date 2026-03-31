@@ -25,7 +25,7 @@ jobs:
       - name: Setup Devenv
         uses: AlphaSphereDotAI/helpr_action/ci/setup/devenv@6ec511f0006c474d28b395b0aa523869e4df0ab7 # v0.0.50
       - name: Check
-        shell: devenv shell bash -- -e {0}
+        shell: devenv shell --quiet bash -- -e {0}
         run: ty check --output-format github
   lint:
     name: Lint
@@ -61,7 +61,7 @@ jobs:
       - name: Setup Devenv
         uses: AlphaSphereDotAI/helpr_action/ci/setup/devenv@6ec511f0006c474d28b395b0aa523869e4df0ab7 # v0.0.50
       - name: Git Secret Scanning
-        shell: devenv shell bash -- -e {0}
+        shell: devenv shell --quiet bash -- -e {0}
         run: >-
           trufflehog git ${{github.event.repository.html_url}} --branch=${{github.head_ref || github.ref_name}} --fail --github-actions --results=verified,unknown --log-level=4 --no-update
   syft:
