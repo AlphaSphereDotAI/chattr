@@ -140,7 +140,7 @@
     "lint:uv_lock_check".exec = "${lib.getExe pkgs.uv} lock --check";
     "lint:ls-lint".exec = "${lib.getExe pkgs.ls-lint}";
     "lint:taplo".exec = "${lib.getExe pkgs.taplo} lint --default-schema-catalogs";
-    "lint:ty".exec = "${lib.getExe pkgs.ty} check --output-format github";
+    "lint:ty".exec = "${lib.getExe pkgs.ty} check";
     "lint:hadolint" = {
       exec = "${lib.getExe pkgs.hadolint} -f sarif ./repo/Dockerfile > ${config.env.SARIF_DIR}/hadolint.sarif";
       after = [ "mkdir:results" ];
