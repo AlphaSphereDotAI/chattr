@@ -105,6 +105,7 @@
         sync.enable = true;
       };
     };
+    rust.enable = true;
   };
 
   # https://devenv.sh/services/
