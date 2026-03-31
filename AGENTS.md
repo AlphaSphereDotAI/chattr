@@ -106,9 +106,9 @@ uv run pytest tests/test_app.py::test_app  # Run single test
 ## Agentic Workflows
 
 The repository uses several automated agentic workflows:
+
 - **`agents-md-maintenance`**: Daily maintenance of this `AGENTS.md` file.
 - **`ci-coach`**: Daily CI optimization coach for workflow efficiency.
 - **`ci-doctor`**: Monitors and triages failed CI runs.
 - **`code-simplifier`**: Daily code simplification coach.
 - **`daily-malicious-code-scan`**: Daily scan for malicious code or dependencies.
-
