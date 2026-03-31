@@ -15,6 +15,7 @@ tools:
   web-fetch:
 safe-outputs:
   create-pull-request:
+    title-prefix: "[agents-md-maintenance] "
     labels: [ automation, agents-md ]
     allowed-files:
        - AGENTS.md
