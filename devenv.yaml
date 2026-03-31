@@ -17,8 +17,3 @@ inputs:
     inputs:
       nixpkgs:
         follows: nixpkgs
-nixpkgs:
-  cudaSupport: true
-  cudaCapabilities:
-    - '8.0'
-    - '7.5'
