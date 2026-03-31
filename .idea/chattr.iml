@@ -5,6 +5,10 @@
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/.venv" />
       <excludeFolder url="file://$MODULE_DIR$/apm_modules" />
+      <excludeFolder url="file://$MODULE_DIR$/.devenv" />
+      <excludeFolder url="file://$MODULE_DIR$/.direnv" />
+      <excludeFolder url="file://$MODULE_DIR$/assets/audio" />
+      <excludeFolder url="file://$MODULE_DIR$/assets/video" />
     </content>
     <orderEntry type="jdk" jdkName="uv (chattr)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
