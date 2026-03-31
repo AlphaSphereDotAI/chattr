@@ -52,7 +52,7 @@
     };
     ".markdownlint.yaml".yaml = {
       "$schema" = "https://raw.githubusercontent.com/DavidAnson/markdownlint/main/schema/markdownlint-config-schema-strict.json";
-      line-length = { tables = false; };
+      line-length = { tables = false; line_length = 120; };
     };
     ".taplo.toml".toml = {
       exclude = [ ".venv/**" ];
