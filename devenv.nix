@@ -111,6 +111,9 @@
 
   # https://devenv.sh/processes/
   processes = {
+    vectordb = {
+      exec = "${lib.getExe pkgs.python3} -m http.server 3000 --directory ${pkgs.qdrant-web-ui}";
+    };
     start-dev = {
       exec = "${lib.getExe pkgs.uv} run chattr";
       watch = {
