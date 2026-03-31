@@ -87,6 +87,7 @@
     yq-go
     semver
     uv
+    ty
     commitizen
   ];
 

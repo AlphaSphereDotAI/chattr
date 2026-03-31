@@ -14,6 +14,19 @@ permissions:
   security-events: write
   actions: read
 jobs:
+  ty:
+    name: Ty
+    runs-on: ubuntu-latest
+    environment:
+      name: code_quality
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Setup Devenv
+        uses: AlphaSphereDotAI/helpr_action/ci/setup/devenv@6ec511f0006c474d28b395b0aa523869e4df0ab7 # v0.0.50
+      - name: Check
+        shell: devenv shell bash -- -e {0}
+        run: ty check --output-format github
   lint:
     name: Lint
     runs-on: ubuntu-latest
