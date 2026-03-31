@@ -1,10 +1,4 @@
-{
-  pkgs,
-  lib,
-  config,
-  ...
-}:
-
+{ pkgs, lib, config, ... }:
 {
   files = {
     ".yamllint.yaml".yaml = {
@@ -17,30 +11,16 @@
       };
     };
     ".ruff.toml".toml = {
-      target-version = "py313";
+      target-version = "py314";
       line-length = 120;
       lint = {
         fixable = [ "ALL" ];
-        ignore = [
-          "D100"
-          "D105"
-          "D107"
-          "D212"
-          "D413"
-          "SIM117"
-        ];
+        ignore = [ "D100" "D105" "D107" "D212" "D413" "SIM117" ];
         select = [ "ALL" ];
-        isort = {
-          combine-as-imports = true;
-        };
+        isort = { combine-as-imports = true; };
         per-file-ignores = {
-          "test_app.py" = [
-            "INP001"
-            "S101"
-          ];
-          "__init__.py" = [
-            "D104"
-          ];
+          "test_app.py" = [ "INP001" "S101" ];
+          "__init__.py" = [ "D104" ];
         };
       };
       format = {
@@ -60,10 +40,7 @@
         ".toml" = "snake_case";
         ".md" = "SCREAMING_SNAKE_CASE";
       };
-      ignore = [
-        ".devenv"
-        ".git"
-      ];
+      ignore = [ ".devenv" ".git" ];
     };
   };
 
@@ -115,10 +92,7 @@
       watch = {
         paths = [ ./src ];
         extensions = [ "py" ];
-        ignore = [
-          "__pycache__"
-          "*.pyc"
-        ];
+        ignore = [ "__pycache__" "*.pyc" ];
       };
     };
   };
@@ -215,10 +189,7 @@
             command = "${lib.getExe pkgs.taplo}";
             options = [ "format" ];
             includes = [ "*.toml" ];
-            excludes = [
-              ".git/*"
-              ".devenv/*"
-            ];
+            excludes = [ ".git/*" ".devenv/*" ];
           };
         };
       };
