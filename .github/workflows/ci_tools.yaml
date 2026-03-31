@@ -1,49 +1,17 @@
 name: CI Tools
 on:
-  issue_comment:
-    types:
-      - created
-      - edited
   workflow_dispatch:
+  schedule:
+    - cron: 0 0 * * *
   push:
+    branches:
+      - main
     paths:
-      - .github/workflows/*.md
+      - .github/workflows/**.md
 permissions:
   contents: write
 jobs:
-  uv_lock_sync:
-    if: |
-      github.event_name == 'workflow_dispatch' ||
-      (
-        github.event_name == 'issue_comment' &&
-        (
-          contains(github.event.comment.body, ' /uv-lock-sync') ||
-          startsWith(github.event.comment.body, '/uv-lock-sync')
-        )
-      )
-    name: UV Lock Sync
-    runs-on: ubuntu-latest
-    environment:
-      name: lockfile
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          token: ${{ secrets.GH_TOKEN }}
-      - name: Install uv
-        uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7.6.0
-        with:
-          enable-cache: true
-          activate-environment: true
-      - name: Sync dependencies and uv.lock
-        run: uv lock
-      - name: Commit and push changes
-        uses: stefanzweifel/git-auto-commit-action@04702edda442b2e678b25b537cec683a1493fcb9 # v7.1.0
-        with:
-          commit_message: Sync uv.lock
-          commit_options: --no-verify
   gh-aw-compile:
-    if: github.event_name == 'push'
     name: GH AW Compile
     runs-on: ubuntu-latest
     steps:
@@ -52,7 +20,7 @@ jobs:
         with:
           token: ${{ secrets.GH_TOKEN }}
       - name: Install GH AW CLI
-        uses: github/gh-aw-actions/setup-cli@v0.61.2
+        uses: github/gh-aw-actions/setup-cli@d478fe1c5f5e4030bb8a29a64a68aef198507267 # v0.65.1
       - name: Compile
         run: gh aw compile
       - name: Commit and push changes
@@ -60,3 +28,5 @@ jobs:
         with:
           commit_message: Compile GH AW
           commit_options: --no-verify
+          push_options: --force
+          file_pattern: .github/workflows/**.lock.yml
