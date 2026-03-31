@@ -9,6 +9,23 @@ permissions:
   security-events: write
   actions: read
 jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    environment:
+      name: code_quality
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Setup Devenv
+        uses: AlphaSphereDotAI/helpr_action/ci/setup/devenv@6ec511f0006c474d28b395b0aa523869e4df0ab7 # v0.0.50
+      - name: Check
+        run: devenv tasks run lint
+      - name: upload SARIF report
+        if: success() || failure()
+        uses: github/codeql-action/upload-sarif@c10b8064de6f491fea524254123dbe5e09572f13 # v4.35.1
+        with:
+          sarif_file: ${{ env.SARIF_DIR }}
   taplo:
     name: Taplo ${{ matrix.command }}
     runs-on: ubuntu-latest
