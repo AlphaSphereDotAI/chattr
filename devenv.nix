@@ -77,8 +77,6 @@
 
   # https://devenv.sh/basics/
   env = {
-    UV_PYTHON_DOWNLOADS = lib.mkDefault "automatic";
-    UV_PYTHON_PREFERENCE = lib.mkDefault "managed";
     SARIF_DIR = "${config.git.root}/sarif";
   };
 
@@ -101,7 +99,7 @@
     };
     python = {
       enable = true;
-      # version = "3.14";
+      version = "3.14";
       uv = {
         enable = true;
         sync.enable = true;
