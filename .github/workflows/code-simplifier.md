@@ -34,7 +34,6 @@ tools:
     toolsets: [default]
 
 timeout-minutes: 30
-strict: true
 source: githubnext/agentics/workflows/code-simplifier.md@8f9734b7e64b80cc29497af03eaf1e0d9e7625da
 engine: gemini
 ---
