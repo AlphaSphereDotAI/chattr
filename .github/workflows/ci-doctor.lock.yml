@@ -33,8 +33,10 @@ name: CI Failure Doctor
 on:
   workflow_run:
     # zizmor: ignore[dangerous-triggers] - workflow_run trigger is secured with role and fork validation
-    branches: [main]
-    types: [completed]
+    branches:
+      - main
+    types:
+      - completed
     workflows:
       - Daily Perf Improver
       - Daily Test Coverage Improver
@@ -67,7 +69,7 @@ jobs:
       secret_verification_result: ${{ steps.validate-secret.outputs.verification_result }}
     steps:
       - name: Setup Scripts
-        uses: github/gh-aw-actions/setup@v0.64.5
+        uses: github/gh-aw-actions/setup@18f7fa4a5dda2ecd6a94d3b3be234d80568f3508 # v0.64.5
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
       - name: Generate agentic run info
@@ -89,7 +91,7 @@ jobs:
           GH_AW_INFO_AWMG_VERSION: ''
           GH_AW_INFO_FIREWALL_TYPE: squid
           GH_AW_COMPILED_STRICT: 'true'
-        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd  # v8
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
         with:
           script: |
             const { setupGlobals } = require('${{ runner.temp }}/gh-aw/actions/setup_globals.cjs');
@@ -167,13 +169,13 @@ jobs:
           - **workspace**: __GH_AW_GITHUB_WORKSPACE__
           {{/if}}
           {{#if __GH_AW_GITHUB_EVENT_ISSUE_NUMBER__ }}
-          - **issue-number**:  # __GH_AW_GITHUB_EVENT_ISSUE_NUMBER__
+          - **issue-number**: # __GH_AW_GITHUB_EVENT_ISSUE_NUMBER__
           {{/if}}
           {{#if __GH_AW_GITHUB_EVENT_DISCUSSION_NUMBER__ }}
-          - **discussion-number**:  # __GH_AW_GITHUB_EVENT_DISCUSSION_NUMBER__
+          - **discussion-number**: # __GH_AW_GITHUB_EVENT_DISCUSSION_NUMBER__
           {{/if}}
           {{#if __GH_AW_GITHUB_EVENT_PULL_REQUEST_NUMBER__ }}
-          - **pull-request-number**:  # __GH_AW_GITHUB_EVENT_PULL_REQUEST_NUMBER__
+          - **pull-request-number**: # __GH_AW_GITHUB_EVENT_PULL_REQUEST_NUMBER__
           {{/if}}
           {{#if __GH_AW_GITHUB_EVENT_COMMENT_ID__ }}
           - **comment-id**: __GH_AW_GITHUB_EVENT_COMMENT_ID__
@@ -299,7 +301,7 @@ jobs:
       output_types: ${{ steps.collect_output.outputs.output_types }}
     steps:
       - name: Setup Scripts
-        uses: github/gh-aw-actions/setup@v0.64.5
+        uses: github/gh-aw-actions/setup@18f7fa4a5dda2ecd6a94d3b3be234d80568f3508 # v0.64.5
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
       - name: Set runtime paths
@@ -839,7 +841,7 @@ jobs:
       total_count: ${{ steps.missing_tool.outputs.total_count }}
     steps:
       - name: Setup Scripts
-        uses: github/gh-aw-actions/setup@v0.64.5
+        uses: github/gh-aw-actions/setup@18f7fa4a5dda2ecd6a94d3b3be234d80568f3508 # v0.64.5
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
       - name: Download agent output artifact
@@ -945,7 +947,7 @@ jobs:
       detection_success: ${{ steps.detection_conclusion.outputs.success }}
     steps:
       - name: Setup Scripts
-        uses: github/gh-aw-actions/setup@v0.64.5
+        uses: github/gh-aw-actions/setup@18f7fa4a5dda2ecd6a94d3b3be234d80568f3508 # v0.64.5
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
       - name: Download agent output artifact
@@ -1095,7 +1097,7 @@ jobs:
       matched_command: ''
     steps:
       - name: Setup Scripts
-        uses: github/gh-aw-actions/setup@v0.64.5
+        uses: github/gh-aw-actions/setup@18f7fa4a5dda2ecd6a94d3b3be234d80568f3508 # v0.64.5
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
       - name: Check team membership for workflow
@@ -1111,7 +1113,9 @@ jobs:
             const { main } = require('${{ runner.temp }}/gh-aw/actions/check_membership.cjs');
             await main();
   safe_outputs:
-    needs: [agent, detection]
+    needs:
+      - agent
+      - detection
     if: (!cancelled()) && needs.agent.result != 'skipped' && needs.detection.result
       == 'success'
     runs-on: ubuntu-slim
@@ -1142,7 +1146,7 @@ jobs:
       process_safe_outputs_temporary_id_map: ${{ steps.process_safe_outputs.outputs.temporary_id_map }}
     steps:
       - name: Setup Scripts
-        uses: github/gh-aw-actions/setup@v0.64.5
+        uses: github/gh-aw-actions/setup@18f7fa4a5dda2ecd6a94d3b3be234d80568f3508 # v0.64.5
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
       - name: Download agent output artifact
@@ -1192,7 +1196,9 @@ jobs:
           path: /tmp/gh-aw/safe-output-items.jsonl
           if-no-files-found: ignore
   update_cache_memory:
-    needs: [agent, detection]
+    needs:
+      - agent
+      - detection
     if: always() && (needs.detection.result == 'success' || needs.detection.result
       == 'skipped')
     runs-on: ubuntu-slim
@@ -1201,7 +1207,7 @@ jobs:
       GH_AW_WORKFLOW_ID_SANITIZED: cidoctor
     steps:
       - name: Setup Scripts
-        uses: github/gh-aw-actions/setup@v0.64.5
+        uses: github/gh-aw-actions/setup@18f7fa4a5dda2ecd6a94d3b3be234d80568f3508 # v0.64.5
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
       - name: Download cache-memory artifact (default)

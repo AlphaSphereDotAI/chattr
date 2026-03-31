@@ -63,7 +63,7 @@ jobs:
       secret_verification_result: ${{ steps.validate-secret.outputs.verification_result }}
     steps:
       - name: Setup Scripts
-        uses: github/gh-aw-actions/setup@v0.64.5
+        uses: github/gh-aw-actions/setup@18f7fa4a5dda2ecd6a94d3b3be234d80568f3508 # v0.64.5
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
       - name: Generate agentic run info
@@ -85,7 +85,7 @@ jobs:
           GH_AW_INFO_AWMG_VERSION: ''
           GH_AW_INFO_FIREWALL_TYPE: squid
           GH_AW_COMPILED_STRICT: 'true'
-        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd  # v8
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
         with:
           script: |
             const { setupGlobals } = require('${{ runner.temp }}/gh-aw/actions/setup_globals.cjs');
@@ -159,13 +159,13 @@ jobs:
           - **workspace**: __GH_AW_GITHUB_WORKSPACE__
           {{/if}}
           {{#if __GH_AW_GITHUB_EVENT_ISSUE_NUMBER__ }}
-          - **issue-number**:  # __GH_AW_GITHUB_EVENT_ISSUE_NUMBER__
+          - **issue-number**: # __GH_AW_GITHUB_EVENT_ISSUE_NUMBER__
           {{/if}}
           {{#if __GH_AW_GITHUB_EVENT_DISCUSSION_NUMBER__ }}
-          - **discussion-number**:  # __GH_AW_GITHUB_EVENT_DISCUSSION_NUMBER__
+          - **discussion-number**: # __GH_AW_GITHUB_EVENT_DISCUSSION_NUMBER__
           {{/if}}
           {{#if __GH_AW_GITHUB_EVENT_PULL_REQUEST_NUMBER__ }}
-          - **pull-request-number**:  # __GH_AW_GITHUB_EVENT_PULL_REQUEST_NUMBER__
+          - **pull-request-number**: # __GH_AW_GITHUB_EVENT_PULL_REQUEST_NUMBER__
           {{/if}}
           {{#if __GH_AW_GITHUB_EVENT_COMMENT_ID__ }}
           - **comment-id**: __GH_AW_GITHUB_EVENT_COMMENT_ID__
@@ -274,7 +274,7 @@ jobs:
       output_types: ${{ steps.collect_output.outputs.output_types }}
     steps:
       - name: Setup Scripts
-        uses: github/gh-aw-actions/setup@v0.64.5
+        uses: github/gh-aw-actions/setup@18f7fa4a5dda2ecd6a94d3b3be234d80568f3508 # v0.64.5
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
       - name: Set runtime paths
@@ -738,7 +738,11 @@ jobs:
             /tmp/gh-aw/sandbox/firewall/audit/
           if-no-files-found: ignore
   conclusion:
-    needs: [activation, agent, detection, safe_outputs]
+    needs:
+      - activation
+      - agent
+      - detection
+      - safe_outputs
     if: always() && (needs.agent.result != 'skipped' || needs.activation.outputs.lockdown_check_failed
       == 'true')
     runs-on: ubuntu-slim
@@ -755,7 +759,7 @@ jobs:
       total_count: ${{ steps.missing_tool.outputs.total_count }}
     steps:
       - name: Setup Scripts
-        uses: github/gh-aw-actions/setup@v0.64.5
+        uses: github/gh-aw-actions/setup@18f7fa4a5dda2ecd6a94d3b3be234d80568f3508 # v0.64.5
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
       - name: Download agent output artifact
@@ -885,7 +889,7 @@ jobs:
       detection_success: ${{ steps.detection_conclusion.outputs.success }}
     steps:
       - name: Setup Scripts
-        uses: github/gh-aw-actions/setup@v0.64.5
+        uses: github/gh-aw-actions/setup@18f7fa4a5dda2ecd6a94d3b3be234d80568f3508 # v0.64.5
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
       - name: Download agent output artifact
@@ -1032,7 +1036,7 @@ jobs:
       matched_command: ''
     steps:
       - name: Setup Scripts
-        uses: github/gh-aw-actions/setup@v0.64.5
+        uses: github/gh-aw-actions/setup@18f7fa4a5dda2ecd6a94d3b3be234d80568f3508 # v0.64.5
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
       - name: Check team membership for workflow
@@ -1061,7 +1065,10 @@ jobs:
             const { main } = require('${{ runner.temp }}/gh-aw/actions/check_skip_if_match.cjs');
             await main();
   safe_outputs:
-    needs: [activation, agent, detection]
+    needs:
+      - activation
+      - agent
+      - detection
     if: (!cancelled()) && needs.agent.result != 'skipped' && needs.detection.result
       == 'success'
     runs-on: ubuntu-slim
@@ -1090,7 +1097,7 @@ jobs:
       process_safe_outputs_temporary_id_map: ${{ steps.process_safe_outputs.outputs.temporary_id_map }}
     steps:
       - name: Setup Scripts
-        uses: github/gh-aw-actions/setup@v0.64.5
+        uses: github/gh-aw-actions/setup@18f7fa4a5dda2ecd6a94d3b3be234d80568f3508 # v0.64.5
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
       - name: Download agent output artifact
@@ -1116,7 +1123,7 @@ jobs:
       - name: Checkout repository
         if: (!cancelled()) && needs.agent.result != 'skipped' && contains(needs.agent.outputs.output_types,
           'create_pull_request')
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ github.base_ref || github.event.pull_request.base.ref || github.ref_name || github.event.repository.default_branch }}
           token: ${{ secrets.GH_AW_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
