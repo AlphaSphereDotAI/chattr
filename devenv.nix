@@ -113,7 +113,6 @@
   processes = {
     start-dev = {
       exec = "${lib.getExe pkgs.uv} run chattr";
-      after = [ "devenv:processes:compatibility-check" ];
       watch = {
         paths = [ ./src ];
         extensions = [ "py" ];
