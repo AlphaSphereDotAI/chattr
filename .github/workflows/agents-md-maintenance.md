@@ -3,6 +3,7 @@ description: Daily maintenance of AGENTS.md to keep agent guidelines accurate an
 on:
    schedule: daily
    workflow_dispatch:
+   skip-if-match: 'is:pr is:open in:title "[agents-md-maintenance]"'
 permissions:
    contents: read
    pull-requests: read
