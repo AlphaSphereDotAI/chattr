@@ -1,13 +1,11 @@
+---
 pull_request_rules:
   - name: Automatically queue pre-commit Updates
-    conditions:
-      - files ~= .pre-commit-config.yaml
-      - author = renovate[bot]
+    conditions: [files ~= .pre-commit-config.yaml, 'author = renovate[bot]']
     actions:
       queue:
       label:
-        add:
-          - pre-commit
+        add: [pre-commit]
   - name: Automatically queue Dockerfile Updates
     conditions:
       - files ~= Dockerfile
@@ -16,22 +14,16 @@ pull_request_rules:
     actions:
       queue:
   - name: Automatically label Dockerfile Updates
-    conditions:
-      - files ~= Dockerfile
-      - author = renovate[bot]
+    conditions: [files ~= Dockerfile, 'author = renovate[bot]']
     actions:
       label:
-        add:
-          - docker
+        add: [docker]
   - name: Automatically queue Github Actions Updates
-    conditions:
-      - files ~= ^.github/workflows
-      - author = renovate[bot]
+    conditions: [files ~= ^.github/workflows, 'author = renovate[bot]']
     actions:
       queue:
       label:
-        add:
-          - github-actions
+        add: [github-actions]
   - name: Automatically queue valid Python Dependency Updates
     conditions:
       - files ~= ^(uv.lock|pyproject.toml)$
@@ -47,10 +39,7 @@ pull_request_rules:
       - author = renovate[bot]
     actions:
       label:
-        add:
-          - uv
-          - python
-          - dependencies
+        add: [uv, python, dependencies]
   - name: Automatically queue Docker Compose Updates
     conditions:
       - files ~= ^(docker-compose-dev.yaml|docker-compose.yaml)$
@@ -58,8 +47,7 @@ pull_request_rules:
     actions:
       queue:
       label:
-        add:
-          - docker-compose
+        add: [docker-compose]
   - name: Merge pull request when the configuration of Mergify is valid
     conditions:
       - author = MH0386
@@ -68,34 +56,28 @@ pull_request_rules:
     actions:
       merge:
   - name: Comment when a pull request is merged
-    conditions:
-      - merged
+    conditions: [merged]
     actions:
       comment:
         message: >-
           Thank you for your contribution @{{author}}! Your pull request has been
           merged.
   - name: Comment if there is a conflict
-    conditions:
-      - conflict
+    conditions: [conflict]
     actions:
       comment:
         message: Hi @{{author}}, Your PR is in conflict and cannot be merged.
       label:
-        add:
-          - conflict
+        add: [conflict]
   - name: Automatic update of the pull requests
-    conditions:
-      - -merged
+    conditions: [-merged]
     actions:
       update:
   - name: Add a queue label when PR is queued
-    conditions:
-      - queue-position > 0
+    conditions: [queue-position > 0]
     actions:
       label:
-        toggle:
-          - merge-queued
+        toggle: [merge-queued]
   - name: Notify when a PR is removed from the queue
     conditions:
       - queue-dequeue-reason != none

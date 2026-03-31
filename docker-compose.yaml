@@ -1,3 +1,4 @@
+---
 name: Chattr
 services:
   chattr:
@@ -12,8 +13,7 @@ services:
       MODEL__API_KEY: ${MODEL__API_KEY}
       VECTOR_DATABASE__URL: http://vector_database:6333
       VECTOR_DATABASE__NAME: main
-    ports:
-      - 7860:7860
+    ports: [7860:7860]
     restart: on-failure:3
     healthcheck:
       test:
@@ -37,11 +37,8 @@ services:
         user: root
   vector_database:
     image: qdrant/qdrant:latest@sha256:94728574965d17c6485dd361aa3c0818b325b9016dac5ea6afec7b4b2700865f
-    volumes:
-      - qdrant_storage:/qdrant/storage
-    ports:
-      - 6333:6333
-      - 6334:6334
+    volumes: [qdrant_storage:/qdrant/storage]
+    ports: [6333:6333, 6334:6334]
     restart: on-failure:3
   video_generator:
     image: alphaspheredotai/visualizr:latest@sha256:d1f5c97d9babdbdd45ca26b6ec42a128b612921295de13d77cb7e36fe638bb55
@@ -49,8 +46,7 @@ services:
       - assets:/home/nonroot/assets
       - checkpoint:/home/nonroot/ckpts
       - gfpgan:/home/nonroot/gfpgan
-    ports:
-      - 7862:7860
+    ports: [7862:7860]
     restart: on-failure:3
     healthcheck:
       test:
@@ -73,8 +69,7 @@ services:
           devices:
             - driver: nvidia
               count: all
-              capabilities:
-                - gpu
+              capabilities: [gpu]
     post_start:
       - command: chown -R nonroot:nonroot /home/nonroot
         user: root
@@ -86,8 +81,7 @@ services:
       - huggingface:/home/nonroot/hf
       - results:/home/nonroot/results
       - logs:/home/nonroot/logs
-    ports:
-      - 7861:7860
+    ports: [7861:7860]
     restart: on-failure:3
     healthcheck:
       test:
@@ -110,8 +104,7 @@ services:
           devices:
             - driver: nvidia
               count: all
-              capabilities:
-                - gpu
+              capabilities: [gpu]
     post_start:
       - command: chown -R nonroot:nonroot /home/nonroot
         user: root

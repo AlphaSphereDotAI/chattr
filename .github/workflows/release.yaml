@@ -1,8 +1,8 @@
+---
 name: Release
 on:
   release:
-    types:
-      - published
+    types: [published]
 permissions: read-all
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}
@@ -19,13 +19,13 @@ jobs:
       url: https://pypi.org/project/${{github.event.repository.name}}/${{github.event.release.tag_name}}
     steps:
       - name: Retrieve release distributions
-        uses: robinraju/release-downloader@daf26c55d821e836577a15f77d86ddc078948b05 # v1.12
+        uses: robinraju/release-downloader@daf26c55d821e836577a15f77d86ddc078948b05  # v1.12
         with:
           tag: ${{ github.event.release.tag_name }}
           out-file-path: dist/
           fileName: '*'
       - name: Publish release distributions to PyPI
-        uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e # release/v1
+        uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e  # release/v1
         with:
           packages-dir: dist/
   image:
@@ -38,9 +38,7 @@ jobs:
       id-token: write
     strategy:
       matrix:
-        registry:
-          - ghcr.io
-          - docker.io
+        registry: [ghcr.io, docker.io]
     uses: ./.github/workflows/.docker.yaml
     with:
       is_test: false

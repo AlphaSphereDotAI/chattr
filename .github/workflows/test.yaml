@@ -1,63 +1,150 @@
 name: Test
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   pull_request:
   workflow_dispatch:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}
   cancel-in-progress: true
-permissions: read-all
+permissions:
+  contents: write
+  pull-requests: write
+  checks: write
+  security-events: write
+  actions: read
 jobs:
-  compatibility:
-    name: Check Dependency Compatibility
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
     environment:
       name: code_quality
-    permissions:
-      checks: write
-      contents: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - name: Install uv
-        uses: astral-sh/setup-uv@cec208311dfd045dd5311c1add060b2062131d57 # v8.0.0
-        with:
-          enable-cache: true
-          activate-environment: true
-      - name: Install the project
-        id: dependency_check
-        run: uv sync --frozen --no-install-project
-      - name: Job Summary
-        uses: jazanne/job-summary-action@690eb386a0b86fe4da7c6f0e543e61330ff09f06 # v1.0.0
+      - name: Setup Devenv
+        uses: AlphaSphereDotAI/helpr_action/ci/setup/devenv@6ec511f0006c474d28b395b0aa523869e4df0ab7 # v0.0.50
+      - name: Check
+        run: devenv tasks run lint
+      - name: Commit and push applied formatter fixes
         if: success() || failure()
+        uses: stefanzweifel/git-auto-commit-action@04702edda442b2e678b25b537cec683a1493fcb9 # v7.1.0
         with:
-          summary: |-
-            ## Dependency Compatibility Check
-              - **Status**: ${{ steps.dependency_check.outcome == 'success' && ':white_check_mark:' || ':x:' }}
-      - name: Show Dependency Tree
-        if: steps.dependency_check.outcome == 'success'
-        run: |
-          echo "## Dependency Tree" >> $GITHUB_STEP_SUMMARY
-          echo "<details>" >> $GITHUB_STEP_SUMMARY
-          echo "<summary> Dependency Tree </summary>" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo "$(uv tree --show-sizes)" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo "</details>" >> $GITHUB_STEP_SUMMARY
-  lint:
-    name: Lint
-    permissions:
-      contents: write
-      pull-requests: write
-      checks: write
-      security-events: write
-      actions: read
-    needs: compatibility
-    uses: ./.github/workflows/.lint.yaml
-    secrets: inherit
+          commit_message: '[devenv] Apply formatter fixes'
+          commit_options: --no-verify
+      - name: upload SARIF report
+        if: success() || failure()
+        uses: github/codeql-action/upload-sarif@c10b8064de6f491fea524254123dbe5e09572f13 # v4.35.1
+        with:
+          sarif_file: ${{ env.SARIF_DIR }}
+  trufflehog:
+    name: TruffleHog
+    runs-on: ubuntu-latest
+    environment:
+      name: code_quality
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Setup Devenv
+        uses: AlphaSphereDotAI/helpr_action/ci/setup/devenv@6ec511f0006c474d28b395b0aa523869e4df0ab7 # v0.0.50
+      - name: Git Secret Scanning
+        shell: devenv shell bash -- -e {0}
+        run: >-
+          trufflehog git ${{github.event.repository.html_url}} --branch=${{github.head_ref || github.ref_name}} --fail --github-actions --results=verified,unknown --log-level=4 --no-update
+  syft:
+    name: Syft
+    runs-on: ubuntu-latest
+    environment:
+      name: code_quality
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: SBOM Generation
+        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610 # v0.24.0
+        with:
+          path: .
+          dependency-snapshot: true
+          output-file: ${{ github.event.repository.name }}-sbom.json
+          format: syft-json
+  grype:
+    name: Grype
+    runs-on: ubuntu-latest
+    environment:
+      name: code_quality
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Scan current project
+        uses: anchore/scan-action@e1165082ffb1fe366ebaf02d8526e7c4989ea9d2 # v7.4.0
+        id: scan
+        with:
+          path: .
+          cache-db: true
+      - name: upload Anchore scan SARIF report
+        if: success() || failure()
+        uses: github/codeql-action/upload-sarif@c10b8064de6f491fea524254123dbe5e09572f13 # v4.35.1
+        with:
+          sarif_file: ${{ steps.scan.outputs.sarif }}
+  trivy:
+    name: Trivy ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    environment:
+      name: code_quality
+    strategy:
+      fail-fast: false
+      matrix:
+        scan-type: [ repo, config, fs ]
+        include:
+          - scan-type: repo
+            format: sarif
+            output: trivy-results-repo.sarif
+            name: Repo
+          - scan-type: config
+            format: sarif
+            output: trivy-results-config.sarif
+            name: IaC
+          - scan-type: fs
+            format: github
+            output: dependency-results.sbom.json
+            name: SBOM
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Run Trivy vulnerability scanner in repo mode
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # 0.35.0
+        with:
+          scan-type: ${{ matrix.scan-type }}
+          trivy-config: .github/lint/.trivy.yaml
+          format: ${{ matrix.format }}
+          output: ${{ matrix.output }}
+          github-pat: ${{ secrets.GH_TOKEN }}
+          exit-code: '1'
+          scanners: vuln,secret,misconfig
+      - name: Upload Trivy scan results to GitHub Security tab
+        if: matrix.scan-type != 'fs' && ( success() || failure() )
+        uses: github/codeql-action/upload-sarif@c10b8064de6f491fea524254123dbe5e09572f13 # v4.35.1
+        with:
+          sarif_file: ${{ matrix.output }}
+          category: ${{ matrix.scan-type }}
+      - name: Upload trivy report as a Github artifact
+        if: matrix.scan-type == 'fs' && ( success() || failure() )
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: trivy-sbom-report
+          path: ${{ matrix.output }}
+  dclint:
+    name: DCLint
+    runs-on: ubuntu-latest
+    environment:
+      name: code_quality
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Lint Docker Compose file
+        uses: docker-compose-linter/dclint-github-action@18659f6a7956706cb67cf9c1ad5e55f4352cbc17 # v1.6.0
+        with:
+          fix: true
+          recursive: true
   image:
     name: Test Image
     permissions:
@@ -67,7 +154,6 @@ jobs:
       id-token: write
       security-events: write
       actions: read
-    needs: compatibility
     uses: ./.github/workflows/.docker.yaml
     with:
       is_test: true
