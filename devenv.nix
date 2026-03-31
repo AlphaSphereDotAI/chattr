@@ -111,9 +111,6 @@
 
   # https://devenv.sh/processes/
   processes = {
-    compatibility-check = {
-      exec = "${lib.getExe pkgs.uv} sync --frozen --no-install-project";
-    };
     start-dev = {
       exec = "${lib.getExe pkgs.uv} run chattr";
       after = [ "devenv:processes:compatibility-check" ];
@@ -127,6 +124,10 @@
 
   # https://devenv.sh/tasks/
   tasks = {
+    "lint:compatibility-check" = {
+      exec = "${lib.getExe pkgs.uv} sync --frozen --no-install-project";
+      before = [ "devenv:processes:vectordb" ];
+    };
     "mkdir:results".exec = "mkdir -p ${config.env.SARIF_DIR}";
     "lint:ruff" = {
       exec = "${lib.getExe pkgs.ruff} check --output-format sarif --output-file ${config.env.SARIF_DIR}/ruff.sarif";
