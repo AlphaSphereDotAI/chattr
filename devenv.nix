@@ -75,6 +75,7 @@
 
   # https://devenv.sh/basics/
   env = {
+    DOPPLER_ENV = 1;
     SARIF_DIR = "${config.git.root}/sarif";
   };
 
