@@ -23,3 +23,10 @@ assets/external/
 .ruff.toml
 .yamllint.yaml
 .vscode/
+/.hadolint.yaml
+/.markdownlint.yaml
+/.ls-lint.yml
+/.taplo.toml
+/.trivy.yaml
+/.trivyignore.yaml
+/.yamlfix.toml

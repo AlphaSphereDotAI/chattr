@@ -42,6 +42,37 @@
       };
       ignore = [ ".devenv" ".git" ];
     };
+    ".hadolint.yaml".yaml = {
+      trustedRegistries = [
+        "docker.io"
+        "ghcr.io"
+        "cgr.dev"
+      ];
+      ignored = [ "DL3018" ];
+    };
+    ".markdownlint.yaml".yaml = {
+      "$schema" = "https://raw.githubusercontent.com/DavidAnson/markdownlint/main/schema/markdownlint-config-schema-strict.json";
+      line-length = { tables = false; };
+    };
+    ".taplo.toml".toml = {
+      exclude = [ ".venv/**" ];
+      formatting = {
+        indent_entries = true;
+        indent_tables = true;
+        reorder_arrays = true;
+        reorder_inline_tables = true;
+        reorder_keys = true;
+      };
+    };
+    ".trivy.yaml".yaml = {
+      ignorefile = ".trivyignore.yaml";
+    };
+    ".trivyignore.yaml".yaml = { misconfigurations = [ "id: AVD-DS-0026" ]; };
+    ".yamlfix.toml".toml = {
+      comments_min_spaces_from_content = 1;
+      explicit_start = false;
+      sequence_style = "block_style";
+    };
   };
 
   # https://devenv.sh/basics/
