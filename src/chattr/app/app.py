@@ -53,4 +53,4 @@ def setup_app(settings: Settings) -> AgentOS:
         ),
     )
 
-    return AgentOS(agents=[agent])
+    return AgentOS(name=settings.log.name.capitalize(), agents=[agent], db=db)
