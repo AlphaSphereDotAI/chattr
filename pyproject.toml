@@ -3,7 +3,7 @@ authors = [
   { email = "mohamed.hisham.abdelzaher@gmail.com", name = "Mohamed Hisham Abdelzaher" },
 ]
 dependencies = [
-  "agno[google,qdrant,os]>=2.5.13",
+  "agno[google,qdrant,os,mcp]>=2.5.13",
   "ddgs>=9.11.2",
   "fastembed>=0.7.4",
   "gradio>=6.5.1",
