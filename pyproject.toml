@@ -14,7 +14,7 @@
   description = "App part of the Chatacter Backend"
   name = "chattr"
   readme = "README.md"
-  requires-python = ">=3.13,<3.14"
+  requires-python = ">=3.14,<3.15"
   scripts = { chattr = "chattr.__main__:main" }
   version = "0.0.157"
 
