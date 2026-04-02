@@ -6,7 +6,6 @@ dependencies = [
   "agno[google,qdrant,os,mcp]>=2.5.13",
   "ddgs>=9.11.2",
   "fastembed>=0.7.4",
-  "gradio>=6.5.1",
   "mem0ai>=1.0.3",
   "poml>=0.0.8",
   "rich>=14.3.3",
