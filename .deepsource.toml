@@ -17,6 +17,3 @@ version = 1
 
 [[analyzers]]
   name = "secrets"
-
-[[transformers]]
-  name = "ruff"
