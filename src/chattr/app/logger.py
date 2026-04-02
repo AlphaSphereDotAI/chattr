@@ -14,9 +14,7 @@ def setup_logger(log: LoggerSettings) -> Logger:
     """Initialize the logger for the application."""
     logger: Logger = getLogger(log.name)
     console: Console = Console()
-    handler: RichHandler = RichHandler(
-        level=log.level.value, console=console, rich_tracebacks=True
-    )
+    handler: RichHandler = RichHandler(level=log.level.value, console=console, rich_tracebacks=True)
     formatter: Formatter = Formatter(log.format)
     handler.setFormatter(formatter)
     logger.addHandler(handler)
