@@ -1,66 +1,32 @@
 name: CI Tools
 on:
-  issue_comment:
-    types:
-      - created
-      - edited
   workflow_dispatch:
+  schedule:
+    - cron: 0 0 * * *
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/**.md
 permissions:
-  id-token: write
   contents: write
-  pull-requests: read
-  issues: read
 jobs:
-  opencode:
-    if: |
-      github.event_name == 'issue_comment' &&
-      (
-        contains(github.event.comment.body, ' /oc') ||
-        startsWith(github.event.comment.body, '/oc') ||
-        contains(github.event.comment.body, ' /opencode') ||
-        startsWith(github.event.comment.body, '/opencode')
-      )
-    name: Opencode
+  gh-aw-compile:
+    name: GH AW Compile
     runs-on: ubuntu-latest
-    environment:
-      name: ai_agent
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - name: Run opencode
-        uses: sst/opencode/github@6c7d968c4423a0cd6c85099c9377a6066313fa0a # v1.2.20
-        env:
-          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
-        with:
-          model: opencode/grok-code
-  uv_lock_sync:
-    if: |
-      github.event_name == 'workflow_dispatch' ||
-      (
-        github.event_name == 'issue_comment' &&
-        (
-          contains(github.event.comment.body, ' /uv-lock-sync') ||
-          startsWith(github.event.comment.body, '/uv-lock-sync')
-        )
-      )
-    name: UV Lock Sync
-    runs-on: ubuntu-latest
-    environment:
-      name: lockfile
     steps:
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           token: ${{ secrets.GH_TOKEN }}
-      - name: Install uv
-        uses: astral-sh/setup-uv@5a095e7a2014a4212f075830d4f7277575a9d098 # v7.3.1
-        with:
-          enable-cache: true
-          activate-environment: true
-      - name: Sync dependencies and uv.lock
-        run: uv lock
+      - name: Install GH AW CLI
+        uses: github/gh-aw-actions/setup-cli@63aa903fe409698e15e5718ad89366a72bfe6a89 # v0.65.5
+      - name: Compile
+        run: gh aw compile
       - name: Commit and push changes
         uses: stefanzweifel/git-auto-commit-action@04702edda442b2e678b25b537cec683a1493fcb9 # v7.1.0
         with:
-          commit_message: Sync uv.lock
+          commit_message: Compile GH AW
           commit_options: --no-verify
+          push_options: --force
+          file_pattern: .github/workflows/**.lock.yml

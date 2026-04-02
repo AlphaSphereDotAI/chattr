@@ -1,6 +1,6 @@
 exclude = [".venv/**"]
 
 [formatting]
-reorder_arrays = true
-reorder_inline_tables = true
-reorder_keys = true
+  reorder_arrays = true
+  reorder_inline_tables = true
+  reorder_keys = true
