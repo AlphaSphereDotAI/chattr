@@ -14,18 +14,23 @@ uv sync  # Install dependencies
 uv build  # Build source and wheel distributions
 ```
 
+### Execution
+
+```bash
+uv run chattr  # Launch the Gradio app
+```
+
 ### Linting & Formatting
 
 ```bash
-trunk fmt --all --no-progress  # Auto-format code
-trunk check  # Run all linters and checks
+uvx pre-commit run --all-files  # Run all linters and formatting checks
 ```
 
 ### Testing
 
 ```bash
-pytest  # Run all tests
-pytest tests/test_app.py::test_app  # Run single test
+uv run pytest  # Run all tests
+uv run pytest tests/test_app.py::test_app  # Run single test
 ```
 
 ## Code Style Guidelines
@@ -42,7 +47,7 @@ pytest tests/test_app.py::test_app  # Run single test
 - Use `from __future__ import annotations` when needed
 - Group imports: standard library, third-party, local
 - Use `TYPE_CHECKING` for conditional imports
-- Combine as imports: `from typing import Dict, List` → `from typing import Dict, List`
+- Combine multiple imports from the same module (e.g., `from typing import Any, Sequence`)
 
 ### Type Hints
 
@@ -50,6 +55,7 @@ pytest tests/test_app.py::test_app  # Run single test
 - Use `Self` for methods returning the same class instance
 - Use `Sequence`, `list`, `dict` instead of bare generics
 - Use `Path` from `pathlib` for file paths
+- Use `Pydantic` models for data validation and configuration
 
 ### Naming Conventions
 
@@ -70,7 +76,13 @@ pytest tests/test_app.py::test_app  # Run single test
 
 - Use `async def` for coroutines
 - Use `await` for async operations
-- Return `AsyncGenerator` for streaming responses
+- Return `AsyncGenerator` from `collections.abc` for streaming responses
+
+### Frameworks & Tools
+
+- Use `agno` framework for defining agents and toolkits
+- Use `gradio` for the web interface
+- Use `pydantic` and `pydantic-settings` for configuration management
 
 ### Documentation
 
@@ -90,3 +102,13 @@ pytest tests/test_app.py::test_app  # Run single test
 - Test functions named `test_*`
 - Use descriptive assertions
 - Mock external dependencies when needed
+
+## Agentic Workflows
+
+The repository uses several automated agentic workflows:
+
+- **`agents-md-maintenance`**: Daily maintenance of this `AGENTS.md` file.
+- **`ci-coach`**: Daily CI optimization coach for workflow efficiency.
+- **`ci-doctor`**: Monitors and triages failed CI runs.
+- **`code-simplifier`**: Daily code simplification coach.
+- **`daily-malicious-code-scan`**: Daily scan for malicious code or dependencies.

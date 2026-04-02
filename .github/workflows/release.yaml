@@ -1,0 +1,49 @@
+name: Release
+on:
+  release:
+    types:
+      - published
+permissions: read-all
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: true
+jobs:
+  pypi:
+    name: Upload Python Package
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    environment:
+      name: pypi
+      url: https://pypi.org/project/${{github.event.repository.name}}/${{github.event.release.tag_name}}
+    steps:
+      - name: Retrieve release distributions
+        uses: robinraju/release-downloader@daf26c55d821e836577a15f77d86ddc078948b05 # v1.12
+        with:
+          tag: ${{ github.event.release.tag_name }}
+          out-file-path: dist/
+          fileName: '*'
+      - name: Publish release distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e # release/v1
+        with:
+          packages-dir: dist/
+  image:
+    name: Release Image
+    needs: pypi
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+    strategy:
+      matrix:
+        registry:
+          - ghcr.io
+          - docker.io
+    uses: ./.github/workflows/.docker.yaml
+    with:
+      is_test: false
+      registry: ${{ matrix.registry }}
+      install_source: ${{github.event.repository.name}}==${{github.event.release.tag_name}}
+    secrets: inherit
