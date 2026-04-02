@@ -24,7 +24,4 @@ def setup_mcp_tools(mcp: MCPSettings) -> MultiMCPTools | None:
         refresh_connection=True,
     )
     log_info(f"MCP servers: {len(mcp_tools.tools)}")
-    if not mcp_tools.tools or len(mcp_tools.tools) == 0:
-        log_info("No MCP servers available.")
-        return None
     return mcp_tools
