@@ -7,7 +7,7 @@
         <option name="envVars">
           <list>
             <DockerEnvVarImpl>
-              <option name="name" value="GRADIO_DEBUG" />
+              <option name="name" value="CHATTR__DEBUG" />
               <option name="value" value="1" />
             </DockerEnvVarImpl>
           </list>
