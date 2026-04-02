@@ -17,6 +17,3 @@ name = "docker"
 
 [[analyzers]]
 name = "secrets"
-
-[[transformers]]
-name = "ruff"
