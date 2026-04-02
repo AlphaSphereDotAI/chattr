@@ -21,7 +21,7 @@ def setup_mcp_tools(mcp: MCPSettings) -> MultiMCPTools | None:
     mcp_tools = MultiMCPTools(
         urls=[m["url"] for m in url_servers],
         urls_transports=[m["transport"] for m in url_servers],
-        allow_partial_failure=True,
+        refresh_connection=True,
     )
     log_info(f"MCP servers: {len(mcp_tools.tools)}")
     if not mcp_tools.tools or len(mcp_tools.tools) == 0:
