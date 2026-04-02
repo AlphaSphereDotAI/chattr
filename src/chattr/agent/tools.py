@@ -18,7 +18,7 @@ def setup_mcp_tools(mcp: MCPSettings) -> MultiMCPTools | None:
     if not url_servers:
         log_info("No Remote MCP servers found.")
         return None
-    mcp_tools = MultiMCPTools(
+    mcp_tools: MultiMCPTools = MultiMCPTools(
         urls=[m["url"] for m in url_servers],
         urls_transports=[m["transport"] for m in url_servers],
         refresh_connection=True,
