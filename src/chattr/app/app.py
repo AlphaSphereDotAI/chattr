@@ -34,7 +34,7 @@ def setup_app(settings: Settings) -> AgentOS:
     description: str = setup_description(settings.character.name)
     instructions: list[str] = setup_instructions(settings.character.name, [tools])
 
-    if not tools or len(tools.tools) == 0:
+    if not tools:
         _msg = "No tools found"
         log_warning(_msg)
     else:
