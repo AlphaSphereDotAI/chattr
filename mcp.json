@@ -1,0 +1,16 @@
+{
+  "mcp_servers": [
+    {
+      "name": "voice_generator",
+      "transport": "streamable-http",
+      "type": "url",
+      "url": "http://localhost:7861/gradio_api/mcp"
+    },
+    {
+      "name": "video_generator",
+      "transport": "streamable-http",
+      "type": "url",
+      "url": "http://localhost:7862/gradio_api/mcp/?tools=generate_video_mcp"
+    }
+  ]
+}
