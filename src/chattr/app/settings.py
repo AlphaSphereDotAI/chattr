@@ -13,10 +13,13 @@ from pydantic import (
     Field,
     FilePath,
     HttpUrl,
+    IPvAnyAddress,
+    PositiveInt,
     SecretStr,
     computed_field,
     model_validator,
 )
+from pydantic_extra_types.timezone_name import TimeZoneName
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from chattr.app.scheme import MCPScheme
@@ -185,7 +188,9 @@ class Settings(BaseSettings):
     character: CharacterSettings = Field(default_factory=CharacterSettings)
     log: LoggerSettings = Field(default_factory=LoggerSettings)
     debug: bool = Field(default=False)
-    timezone: str = Field(default="Africa/Cairo")
+    timezone: TimeZoneName = Field(default="Africa/Cairo")
+    host: IPvAnyAddress = Field(default="0.0.0.0")
+    port: PositiveInt = Field(default=7777)
 
 
 if __name__ == "__main__":
