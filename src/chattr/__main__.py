@@ -1,21 +1,22 @@
-from typing import TYPE_CHECKING
+from logging import Logger
 
-from chattr.app.runner import app
+from agno.os import AgentOS
+from agno.utils.log import configure_agno_logging
+from fastapi import FastAPI
 
-if TYPE_CHECKING:
-    from gradio import Blocks
+from chattr.app.app import setup_app
+from chattr.app.logger import setup_logger
+from chattr.app.settings import Settings
 
 
 def main() -> None:
-    """Launch the Gradio Multi-agent system app."""
-    application: Blocks = app.gui()
-    application.queue(api_open=True)
-    application.launch(
-        debug=True,
-        enable_monitoring=True,
-        show_error=True,
-        pwa=True,
-    )
+    """Launch the app."""
+    settings: Settings = Settings()
+    logger: Logger = setup_logger(settings.log)
+    configure_agno_logging(custom_default_logger=logger)
+    agent_os: AgentOS = setup_app(settings)
+    app: FastAPI = agent_os.get_app()
+    agent_os.serve(app=app, access_log=True)
 
 
 if __name__ == "__main__":
