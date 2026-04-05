@@ -4,7 +4,7 @@ authors = [
 ]
 dependencies = [
   "agno[google,qdrant]>=2.5.14",
-  "ddgs>=9.12.0",
+  "ddgs>=9.12.1",
   "fastembed>=0.8.0",
   "gradio[mcp]>=6.10.0",
   "m3u8>=6.0.0",
@@ -32,7 +32,7 @@ dev = [
   "pytest-emoji>=0.2.0",
   "pytest-md>=0.2.0",
   "pytest-mergify>=2026.1.26.1",
-  "ruff>=0.15.8",
+  "ruff>=0.15.9",
   "ty>=0.0.27",
   "uv-build>=0.11.3",
 ]
