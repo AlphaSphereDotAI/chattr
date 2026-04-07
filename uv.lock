@@ -291,7 +291,7 @@ dev = [
     { name = "pre-commit", specifier = ">=4.5.1" },
     { name = "pytest-emoji", specifier = ">=0.2.0" },
     { name = "pytest-md", specifier = ">=0.2.0" },
-    { name = "pytest-mergify", specifier = ">=2026.1.26.1" },
+    { name = "pytest-mergify", specifier = ">=2026.4.7.1" },
     { name = "ruff", specifier = ">=0.15.9" },
     { name = "ty", specifier = ">=0.0.29" },
     { name = "uv-build", specifier = ">=0.11.3" },
@@ -1753,7 +1753,7 @@ wheels = [
 
 [[package]]
 name = "pytest-mergify"
-version = "2026.1.26.1"
+version = "2026.4.7.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "opentelemetry-exporter-otlp-proto-http" },
@@ -1762,9 +1762,9 @@ dependencies = [
     { name = "pytest-timeout" },
     { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/a1/25/91c8c33ce56daaafbf21e9a9441adecec6c579c501787d9c10bf3625fd2c/pytest_mergify-2026.1.26.1.tar.gz", hash = "sha256:59af92021e78b75b40971d5073bf6d09d7e5f07a47c76a8146e36d0b80b0c646", size = 78426, upload-time = "2026-01-26T17:01:01.391Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/f4/6f/09d2b22bba615d827f366f6b45ea4ac52dc1135b407178abd5d8f7a95b89/pytest_mergify-2026.4.7.1.tar.gz", hash = "sha256:ece630ec69c724fae22f17be6aa73c8dceca745402ca8ee0674cab7afed27fbc", size = 78823, upload-time = "2026-04-07T09:17:20.268Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/49/06/adeeb58764b9953fb35ec9d97e6989debbed41c900dc4549bd16ba0999bd/pytest_mergify-2026.1.26.1-py3-none-any.whl", hash = "sha256:524dcae8e6c2bbe639f8bd82e203221690cc6eaeb30aace04f0c307064bfedfd", size = 32280, upload-time = "2026-01-26T17:00:59.924Z" },
+    { url = "https://files.pythonhosted.org/packages/82/84/66f5dcb353deca059d9b84a9bddefa5c095c48d73d9bd0a311168928be82/pytest_mergify-2026.4.7.1-py3-none-any.whl", hash = "sha256:7e0e4e4451d91e0d59c198fef1399a3f536c99ff8507e1ef2dffd305cd95585c", size = 32348, upload-time = "2026-04-07T09:17:18.764Z" },
 ]
 
 [[package]]
