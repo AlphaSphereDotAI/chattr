@@ -15,7 +15,7 @@ dependencies = [
 description = "App part of the Chatacter Backend"
 name = "chattr"
 readme = "README.md"
-requires-python = ">=3.14.3,<3.15"
+requires-python = ">=3.14.4,<3.15"
 version = "0.0.157"
 
 [project.scripts]
