@@ -32,7 +32,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name: Check Dockerfile
-        uses: docker/build-push-action@d08e5c354a6adb9ed34480a06d141179aa583294 # v7.0.0
+        uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
         id: dockerfile_lint
         with:
           call: check
@@ -75,7 +75,7 @@ jobs:
         with:
           cmd: yq -roy '.project.requires-python' pyproject.toml
       - name: Log in to ${{ inputs.registry }} Registry
-        uses: docker/login-action@b45d80f862d83dbcd57f89517bcf500b2ab88fb2 # v4.0.0
+        uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
         with:
           registry: ${{ inputs.registry }}
           username: mh0386
@@ -95,7 +95,7 @@ jobs:
             type=ref,event=tag
             type=ref,event=branch
       - name: Build and Push to ${{ inputs.registry }}
-        uses: docker/build-push-action@d08e5c354a6adb9ed34480a06d141179aa583294 # v7.0.0
+        uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
         id: push
         with:
           push: true
@@ -135,7 +135,7 @@ jobs:
       name: container_health
     steps:
       - name: Docker Scout
-        uses: docker/scout-action@8910519cee8ac046f3ee99686b0dc6654d5ba1a7 # v1.20.3
+        uses: docker/scout-action@bacf462e8d090c09660de30a6ccc718035f961e3 # v1.20.4
         with:
           command: cves
           dockerhub-user: mh0386
