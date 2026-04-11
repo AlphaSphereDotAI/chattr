@@ -219,7 +219,7 @@ requires-dist = [
     { name = "fastembed", specifier = ">=0.7.4" },
     { name = "mem0ai", specifier = ">=1.0.3" },
     { name = "poml", specifier = ">=0.0.8" },
-    { name = "rich", specifier = ">=14.3.4" },
+    { name = "rich", specifier = ">=14.3.3" },
 ]
 
 [package.metadata.requires-dev]
@@ -228,10 +228,10 @@ dev = [
     { name = "pre-commit", specifier = ">=4.5.1" },
     { name = "pytest-emoji", specifier = ">=0.2.0" },
     { name = "pytest-md", specifier = ">=0.2.0" },
-    { name = "pytest-mergify", specifier = ">=2026.4.7.1" },
-    { name = "ruff", specifier = ">=0.15.10" },
-    { name = "ty", specifier = ">=0.0.29" },
-    { name = "uv-build", specifier = ">=0.11.6" },
+    { name = "pytest-mergify", specifier = ">=2026.1.26.1" },
+    { name = "ruff", specifier = ">=0.15.8" },
+    { name = "ty", specifier = ">=0.0.27" },
+    { name = "uv-build", specifier = ">=0.11.3" },
 ]
 
 [[package]]
