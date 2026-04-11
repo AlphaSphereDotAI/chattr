@@ -6,7 +6,6 @@ dependencies = [
   "agno[google,qdrant,os,mcp,openai]>=2.5.13",
   "ddgs>=9.11.2",
   "fastembed>=0.7.4",
-  "poml>=0.0.8",
   "rich>=14.3.3",
 ]
 description = "App part of the Chatacter Backend"
