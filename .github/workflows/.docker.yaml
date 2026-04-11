@@ -126,7 +126,7 @@ jobs:
           enable-url-completion: true
       - name: Export tag for Testing and Scanning
         id: tag
-        run: echo "TAG=$(echo "${{ steps.meta.outputs.tags }}" | tail -n 1)" >> $GITHUB_OUTPUT
+        run: echo "TAG=$(echo "${{ steps.meta.outputs.tags }}" | tail -n 1)" >> "$GITHUB_OUTPUT"
   docker_scout:
     name: Docker Scout CVEs
     needs: build_image
