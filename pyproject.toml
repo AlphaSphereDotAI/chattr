@@ -10,7 +10,7 @@ dependencies = [
   "m3u8>=6.0.0",
   "mem0ai>=1.0.11",
   "poml>=0.0.8",
-  "rich>=14.3.4",
+  "rich>=15.0.0",
 ]
 description = "App part of the Chatacter Backend"
 name = "chattr"
