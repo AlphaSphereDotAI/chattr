@@ -1,24 +1,20 @@
 [
   {
-    "args": [
-      "run",
-      "chattr"
-    ],
+    "args": ["run", "chattr"],
     "command": "uv",
     "label": "Run Chattr",
     "reveal_target": "center",
-    "shell": "system"
+    "shell": "system",
+    "env": {
+      "DOPPLER_ENV": "1",
+      "DEBUG": "1",
+    },
   },
   {
-    "args": [
-      "compose",
-      "-f",
-      "compose-dev.yaml",
-      "up"
-    ],
+    "args": ["compose", "-f", "compose-dev.yaml", "up"],
     "command": "docker",
     "label": "Run Docker Compose",
     "reveal_target": "center",
-    "shell": "system"
-  }
+    "shell": "system",
+  },
 ]

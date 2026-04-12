@@ -126,7 +126,7 @@ jobs:
           enable-url-completion: true
       - name: Export tag for Testing and Scanning
         id: tag
-        run: echo "TAG=$(echo "${{ steps.meta.outputs.tags }}" | tail -n 1)" >> $GITHUB_OUTPUT
+        run: echo "TAG=$(echo "${{ steps.meta.outputs.tags }}" | tail -n 1)" >> "$GITHUB_OUTPUT"
   docker_scout:
     name: Docker Scout CVEs
     needs: build_image
@@ -229,7 +229,7 @@ jobs:
           format: sarif
           output: dockle.sarif
           accept-file: settings.py
-          accept-key: --chmod,--chown,GRADIO_SERVER_PORT,GRADIO_SERVER_NAME,FASTEMBED_CACHE_PATH,PATH
+          accept-key: --chmod,--chown,FASTEMBED_CACHE_PATH,PATH
           ignore: CIS-DI-0006
       - name: upload Dockle scan SARIF report
         if: success() || failure()

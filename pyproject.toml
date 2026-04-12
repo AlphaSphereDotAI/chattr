@@ -3,23 +3,17 @@ authors = [
   { email = "mohamed.hisham.abdelzaher@gmail.com", name = "Mohamed Hisham Abdelzaher" },
 ]
 dependencies = [
-  "agno[google,qdrant]>=2.5.16",
-  "ddgs>=9.13.0",
-  "fastembed>=0.8.0",
-  "gradio[mcp]>=6.12.0",
-  "m3u8>=6.0.0",
-  "mem0ai>=1.0.11",
-  "poml>=0.0.8",
-  "rich>=14.3.4",
+  "agno[google,qdrant,os,mcp,openai]>=2.5.13",
+  "ddgs>=9.11.2",
+  "fastembed>=0.7.4",
+  "rich>=14.3.3",
 ]
 description = "App part of the Chatacter Backend"
 name = "chattr"
 readme = "README.md"
-requires-python = ">=3.14.4,<3.15"
+requires-python = ">=3.14,<3.15"
+scripts = { chattr = "chattr.__main__:main" }
 version = "0.0.157"
-
-[project.scripts]
-chattr = "chattr.__main__:main"
 
 [build-system]
 build-backend = "uv_build"
@@ -31,11 +25,8 @@ dev = [
   "pre-commit>=4.5.1",
   "pytest-emoji>=0.2.0",
   "pytest-md>=0.2.0",
-  "pytest-mergify>=2026.4.7.1",
-  "ruff>=0.15.10",
-  "ty>=0.0.29",
-  "uv-build>=0.11.6",
+  "pytest-mergify>=2026.1.26.1",
+  "ruff>=0.15.8",
+  "ty>=0.0.27",
+  "uv-build>=0.11.3",
 ]
-
-[tool.ruff]
-extend = ".github/lint/.ruff.toml"
