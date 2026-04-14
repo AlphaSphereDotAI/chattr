@@ -4,7 +4,7 @@ authors = [
 ]
 dependencies = [
   "agno[google,qdrant]>=2.5.16",
-  "ddgs>=9.13.0",
+  "ddgs>=9.13.1",
   "fastembed>=0.8.0",
   "gradio[mcp]>=6.12.0",
   "m3u8>=6.0.0",
