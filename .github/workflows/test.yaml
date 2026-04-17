@@ -24,7 +24,7 @@ jobs:
       - name: Setup Devenv
         uses: AlphaSphereDotAI/helpr_action/ci/setup/devenv@v0.0.62
       - name: Run dependency compatibility check
-        uses: AlphaSphereDotAI/helpr_action/ci/test/dependency_compatibility@v0.0.16
+        uses: AlphaSphereDotAI/helpr_action/ci/test/dependency_compatibility@v0.0.62
         with:
           tool: uv
   lint:
