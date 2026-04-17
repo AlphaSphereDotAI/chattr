@@ -134,13 +134,14 @@ If no significant improvements are found:
 ### Common High-Value Optimizations
 
 1. **Parallel Job Execution**
+
    ```yaml
    # Before: Sequential
    test:
      needs: [build]
    lint:
      needs: [build]
-   
+
    # After: Parallel
    test:
      needs: [build]
@@ -149,6 +150,7 @@ If no significant improvements are found:
    ```
 
 2. **Matrix Balancing**
+
    ```yaml
    # Balance test distribution across matrix jobs
    matrix:
@@ -156,6 +158,7 @@ If no significant improvements are found:
    ```
 
 3. **Path Filtering**
+
    ```yaml
    on:
      push:
@@ -167,11 +170,13 @@ If no significant improvements are found:
 ### Anti-Patterns to Avoid
 
 ❌ **NEVER modify test code to hide failures**
+
 - Don't add `|| true` to failing tests
 - Don't suppress error output
 - Don't skip failing tests without justification
 
 ❌ **Don't over-optimize**
+
 - Avoid changes that save <2% of runtime
 - Don't sacrifice clarity for minor gains
 - Don't add complexity without clear benefit
