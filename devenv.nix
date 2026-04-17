@@ -1,15 +1,6 @@
 { pkgs, lib, config, ... }:
 {
   files = {
-    ".yamllint.yaml".yaml = {
-      extends = "default";
-      rules = {
-        document-start = "disable";
-        truthy = "disable";
-        comments = "disable";
-        line-length.max = 140;
-      };
-    };
     ".ruff.toml".toml = {
       target-version = "py314";
       line-length = 120;
@@ -187,7 +178,6 @@
     trufflehog.enable = true;
     uv-check.enable = true;
     uv-lock.enable = true;
-    yamllint.enable = true;
     hadolint.enable = true;
     flynt.enable = true;
   };
