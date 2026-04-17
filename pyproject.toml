@@ -8,7 +8,7 @@ dependencies = [
   "fastembed>=0.8.0",
   "gradio[mcp]>=6.12.0",
   "m3u8>=6.0.0",
-  "mem0ai>=1.0.11",
+  "mem0ai>=2.0.0",
   "poml>=0.0.8",
   "rich>=15.0.0",
 ]
