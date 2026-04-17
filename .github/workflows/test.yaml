@@ -21,32 +21,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - name: Install uv
-        uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7.6.0
+      - name: Run dependency compatibility check
+        uses: AlphaSphereDotAI/helpr_action/ci/test/dependency_compatibility@v0.0.16
         with:
-          enable-cache: true
-          activate-environment: true
-      - name: Install the project
-        id: dependency_check
-        run: uv sync --frozen --no-install-project
-      - name: Job Summary
-        uses: jazanne/job-summary-action@690eb386a0b86fe4da7c6f0e543e61330ff09f06 # v1.0.0
-        if: success() || failure()
-        with:
-          summary: |-
-            ## Dependency Compatibility Check
-              - **Status**: ${{ steps.dependency_check.outcome == 'success' && ':white_check_mark:' || ':x:' }}
-      - name: Show Dependency Tree
-        if: steps.dependency_check.outcome == 'success'
-        run: |
-          echo "## Dependency Tree" >> $GITHUB_STEP_SUMMARY
-          echo "<details>" >> $GITHUB_STEP_SUMMARY
-          echo "<summary> Dependency Tree </summary>" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo "$(uv tree --show-sizes)" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo "</details>" >> $GITHUB_STEP_SUMMARY
+          tool: uv
   lint:
     name: Lint
     permissions:
