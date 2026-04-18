@@ -22,7 +22,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name: Setup Devenv
-        uses: AlphaSphereDotAI/helpr_action/ci/setup/devenv@v0.0.62
+        uses: AlphaSphereDotAI/helpr_action/ci/setup/devenv@v0.0.63
       - name: Run dependency compatibility check
         uses: AlphaSphereDotAI/helpr_action/ci/testing/dependency_compatibility@main
         with:
