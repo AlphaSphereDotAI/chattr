@@ -58,7 +58,7 @@ jobs:
       pull-requests: write
     steps:
       - name: Setup Scripts
-        uses: github/gh-aw-actions/setup@8825c3e4aa22e8880b872e953853ca2f83b54adf # v0.69.1
+        uses: github/gh-aw-actions/setup@006ffd856b868b71df342dbe0ba082a963249b31 # v0.69.3
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
       - name: Close expired discussions
@@ -98,7 +98,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Setup Scripts
-        uses: github/gh-aw-actions/setup@8825c3e4aa22e8880b872e953853ca2f83b54adf # v0.69.1
+        uses: github/gh-aw-actions/setup@006ffd856b868b71df342dbe0ba082a963249b31 # v0.69.3
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
       - name: Check admin/maintainer permissions
@@ -111,7 +111,7 @@ jobs:
             const { main } = require('${{ runner.temp }}/gh-aw/actions/check_team_member.cjs');
             await main();
       - name: Install gh-aw
-        uses: github/gh-aw-actions/setup-cli@8825c3e4aa22e8880b872e953853ca2f83b54adf # v0.69.1
+        uses: github/gh-aw-actions/setup-cli@006ffd856b868b71df342dbe0ba082a963249b31 # v0.69.3
         with:
           version: v0.61.2
       - name: Run operation
