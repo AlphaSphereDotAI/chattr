@@ -9,7 +9,7 @@ resolution-markers = [
 
 [[package]]
 name = "agno"
-version = "2.5.17"
+version = "2.6.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "docstring-parser" },
@@ -26,9 +26,9 @@ dependencies = [
     { name = "typer" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/de/e9/1b33481bd5a4bdaa42eaea49ca83107910f267effeaf37d0cfae4a2c9099/agno-2.5.17.tar.gz", hash = "sha256:9486efc41cbf6ada9d4217183b10a2c1514263439371836d1b087ac9f5b0567b", size = 1875339, upload-time = "2026-04-15T03:53:32.689Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/6d/a9/59312a91b9a01996f17f555cc87b90d53448c97a68576433b69928a78737/agno-2.6.0.tar.gz", hash = "sha256:3c1bd6ae0388f23cd1a78e2a5e4307e41024e635448cd78c01cc581b99f56ce1", size = 1958570, upload-time = "2026-04-23T12:25:39.907Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/0c/5d/9b423ec515aea897ccb6d9e2d70eeb4b0460c651cde6f37055050dec485f/agno-2.5.17-py3-none-any.whl", hash = "sha256:6601e5f124a30c0c0e6d49d570d06283357d7eb9c63da10c3713a9a0c4c54962", size = 2227607, upload-time = "2026-04-15T03:53:30.058Z" },
+    { url = "https://files.pythonhosted.org/packages/5f/b3/0725bb610ac9d47573f8c7a0d238ab9c79f2680a9b2f84c3c2665a0df23c/agno-2.6.0-py3-none-any.whl", hash = "sha256:e0163684c745b22950a2a43278cbb05d157db727682ddabc0b0ba13cfdb41c5e", size = 2327444, upload-time = "2026-04-23T12:25:37.144Z" },
 ]
 
 [package.optional-dependencies]
@@ -266,7 +266,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "agno", extras = ["google", "qdrant"], specifier = ">=2.5.17" },
+    { name = "agno", extras = ["google", "qdrant"], specifier = ">=2.6.0" },
     { name = "ddgs", specifier = ">=9.14.1" },
     { name = "fastembed", specifier = ">=0.8.0" },
     { name = "gradio", extras = ["mcp"], specifier = ">=6.13.0" },
@@ -698,6 +698,7 @@ dependencies = [
     { name = "gradio-client" },
     { name = "typer" },
 ]
+sdist = { url = "https://files.pythonhosted.org/packages/ce/86/c9694b7cfada5780e75769e60dc161a161f4dd7fc91b61db5e3a3338bef9/hf_gradio-0.4.1.tar.gz", hash = "sha256:a017d942618f0d495a58ee4563047fa04bef614c00e0cb789a9a6d0633cffa7b", size = 6560, upload-time = "2026-04-22T14:01:32.334Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/30/2d/afff2ee87e75d8eb85c92bb8cf0e15b05c23c2ebd8fd8dec781d8601ed7f/hf_gradio-0.4.1-py3-none-any.whl", hash = "sha256:76b8cb8be6abe62d74c1ad2d35b42f0629db89aa9e1a8d033cecfe7c856eeab3", size = 4482, upload-time = "2026-04-17T19:53:31.827Z" },
 ]
