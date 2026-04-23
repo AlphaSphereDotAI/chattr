@@ -52,42 +52,45 @@
 #   - ghcr.io/github/gh-aw-mcpg:v0.2.19
 #   - ghcr.io/github/github-mcp-server:v0.32.0
 #   - node:lts-alpine
-name: CI Failure Doctor
-on:
+
+name: "CI Failure Doctor"
+"on":
   workflow_run:
     # zizmor: ignore[dangerous-triggers] - workflow_run trigger is secured with role and fork validation
     branches:
-      - main
+    - main
     types:
-      - completed
+    - completed
     workflows:
-      - Daily Perf Improver
-      - Daily Test Coverage Improver
-      - Version
-      - Test
-      - Release
-      - Build
+    - Daily Perf Improver
+    - Daily Test Coverage Improver
+    - Version
+    - Test
+    - Release
+    - Build
+
 permissions: {}
+
 concurrency:
-  group: gh-aw-${{ github.workflow }}
-run-name: CI Failure Doctor
+  group: "gh-aw-${{ github.workflow }}"
+
+run-name: "CI Failure Doctor"
+
 jobs:
   activation:
     needs: pre_activation
     # zizmor: ignore[dangerous-triggers] - workflow_run trigger is secured with role and fork validation
     if: >
-      (needs.pre_activation.outputs.activated == 'true' && (github.event.workflow_run.conclusion
-      == 'failure')) &&
-      (github.event_name != 'workflow_run' || github.event.workflow_run.repository.id
-      == github.repository_id &&
+      (needs.pre_activation.outputs.activated == 'true' && (github.event.workflow_run.conclusion == 'failure')) &&
+      (github.event_name != 'workflow_run' || github.event.workflow_run.repository.id == github.repository_id &&
       (!(github.event.workflow_run.repository.fork)))
     runs-on: ubuntu-slim
     permissions:
       actions: read
       contents: read
     outputs:
-      comment_id: ''
-      comment_repo: ''
+      comment_id: ""
+      comment_repo: ""
       lockdown_check_failed: ${{ steps.generate_aw_info.outputs.lockdown_check_failed == 'true' }}
       model: ${{ steps.generate_aw_info.outputs.model }}
       secret_verification_result: ${{ steps.validate-secret.outputs.verification_result }}
@@ -96,7 +99,7 @@ jobs:
     steps:
       - name: Setup Scripts
         id: setup
-        uses: github/gh-aw-actions/setup@006ffd856b868b71df342dbe0ba082a963249b31 # v0.69.3
+        uses: github/gh-aw-actions/setup@v0.68.3
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
           job-name: ${{ github.job }}
@@ -104,23 +107,23 @@ jobs:
       - name: Generate agentic run info
         id: generate_aw_info
         env:
-          GH_AW_INFO_ENGINE_ID: gemini
-          GH_AW_INFO_ENGINE_NAME: Google Gemini CLI
+          GH_AW_INFO_ENGINE_ID: "gemini"
+          GH_AW_INFO_ENGINE_NAME: "Google Gemini CLI"
           GH_AW_INFO_MODEL: ${{ vars.GH_AW_MODEL_AGENT_CUSTOM || 'auto' }}
-          GH_AW_INFO_VERSION: ''
-          GH_AW_INFO_AGENT_VERSION: ''
-          GH_AW_INFO_CLI_VERSION: v0.68.3
-          GH_AW_INFO_WORKFLOW_NAME: CI Failure Doctor
-          GH_AW_INFO_EXPERIMENTAL: 'false'
-          GH_AW_INFO_SUPPORTS_TOOLS_ALLOWLIST: 'true'
-          GH_AW_INFO_STAGED: 'false'
+          GH_AW_INFO_VERSION: ""
+          GH_AW_INFO_AGENT_VERSION: ""
+          GH_AW_INFO_CLI_VERSION: "v0.68.3"
+          GH_AW_INFO_WORKFLOW_NAME: "CI Failure Doctor"
+          GH_AW_INFO_EXPERIMENTAL: "false"
+          GH_AW_INFO_SUPPORTS_TOOLS_ALLOWLIST: "true"
+          GH_AW_INFO_STAGED: "false"
           GH_AW_INFO_ALLOWED_DOMAINS: '["defaults","github"]'
-          GH_AW_INFO_FIREWALL_ENABLED: 'false'
-          GH_AW_INFO_AWF_VERSION: ''
-          GH_AW_INFO_AWMG_VERSION: ''
-          GH_AW_INFO_FIREWALL_TYPE: squid
-          GH_AW_COMPILED_STRICT: 'true'
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
+          GH_AW_INFO_FIREWALL_ENABLED: "false"
+          GH_AW_INFO_AWF_VERSION: ""
+          GH_AW_INFO_AWMG_VERSION: ""
+          GH_AW_INFO_FIREWALL_TYPE: "squid"
+          GH_AW_COMPILED_STRICT: "true"
+        uses: actions/github-script@373c709c69115d41ff229c7e5df9f8788daa9553 # v9
         with:
           script: |
             const { setupGlobals } = require('${{ runner.temp }}/gh-aw/actions/setup_globals.cjs');
@@ -129,8 +132,7 @@ jobs:
             await main(core, context);
       - name: Validate GEMINI_API_KEY secret
         id: validate-secret
-        run: bash "${RUNNER_TEMP}/gh-aw/actions/validate_multi_secret.sh" GEMINI_API_KEY
-          'Gemini CLI' https://geminicli.com/docs/get-started/authentication/
+        run: bash "${RUNNER_TEMP}/gh-aw/actions/validate_multi_secret.sh" GEMINI_API_KEY 'Gemini CLI' https://geminicli.com/docs/get-started/authentication/
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       - name: Checkout .github and .agents folders
@@ -144,10 +146,10 @@ jobs:
           fetch-depth: 1
       - name: Check workflow lock file
         id: check-lock-file
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
+        uses: actions/github-script@373c709c69115d41ff229c7e5df9f8788daa9553 # v9
         env:
-          GH_AW_WORKFLOW_FILE: ci-doctor.lock.yml
-          GH_AW_CONTEXT_WORKFLOW_REF: ${{ github.workflow_ref }}
+          GH_AW_WORKFLOW_FILE: "ci-doctor.lock.yml"
+          GH_AW_CONTEXT_WORKFLOW_REF: "${{ github.workflow_ref }}"
         with:
           script: |
             const { setupGlobals } = require('${{ runner.temp }}/gh-aw/actions/setup_globals.cjs');
@@ -155,9 +157,9 @@ jobs:
             const { main } = require('${{ runner.temp }}/gh-aw/actions/check_workflow_timestamp_api.cjs');
             await main();
       - name: Check compile-agentic version
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
+        uses: actions/github-script@373c709c69115d41ff229c7e5df9f8788daa9553 # v9
         env:
-          GH_AW_COMPILED_VERSION: v0.68.3
+          GH_AW_COMPILED_VERSION: "v0.68.3"
         with:
           script: |
             const { setupGlobals } = require('${{ runner.temp }}/gh-aw/actions/setup_globals.cjs');
@@ -210,13 +212,13 @@ jobs:
           - **workspace**: __GH_AW_GITHUB_WORKSPACE__
           {{/if}}
           {{#if __GH_AW_GITHUB_EVENT_ISSUE_NUMBER__ }}
-          - **issue-number**: # __GH_AW_GITHUB_EVENT_ISSUE_NUMBER__
+          - **issue-number**: #__GH_AW_GITHUB_EVENT_ISSUE_NUMBER__
           {{/if}}
           {{#if __GH_AW_GITHUB_EVENT_DISCUSSION_NUMBER__ }}
-          - **discussion-number**: # __GH_AW_GITHUB_EVENT_DISCUSSION_NUMBER__
+          - **discussion-number**: #__GH_AW_GITHUB_EVENT_DISCUSSION_NUMBER__
           {{/if}}
           {{#if __GH_AW_GITHUB_EVENT_PULL_REQUEST_NUMBER__ }}
-          - **pull-request-number**: # __GH_AW_GITHUB_EVENT_PULL_REQUEST_NUMBER__
+          - **pull-request-number**: #__GH_AW_GITHUB_EVENT_PULL_REQUEST_NUMBER__
           {{/if}}
           {{#if __GH_AW_GITHUB_EVENT_COMMENT_ID__ }}
           - **comment-id**: __GH_AW_GITHUB_EVENT_COMMENT_ID__
@@ -225,6 +227,7 @@ jobs:
           - **workflow-run-id**: __GH_AW_GITHUB_RUN_ID__
           {{/if}}
           </github-context>
+          
           GH_AW_PROMPT_e742e66ff5c63a8e_EOF
           cat "${RUNNER_TEMP}/gh-aw/prompts/github_mcp_tools_with_safeoutputs_prompt.md"
           cat << 'GH_AW_PROMPT_e742e66ff5c63a8e_EOF'
@@ -233,7 +236,7 @@ jobs:
           GH_AW_PROMPT_e742e66ff5c63a8e_EOF
           } > "$GH_AW_PROMPT"
       - name: Interpolate variables and render templates
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
+        uses: actions/github-script@373c709c69115d41ff229c7e5df9f8788daa9553 # v9
         env:
           GH_AW_PROMPT: /tmp/gh-aw/aw-prompts/prompt.txt
           GH_AW_GITHUB_EVENT_WORKFLOW_RUN_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
@@ -250,12 +253,12 @@ jobs:
             const { main } = require('${{ runner.temp }}/gh-aw/actions/interpolate_prompt.cjs');
             await main();
       - name: Substitute placeholders
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
+        uses: actions/github-script@373c709c69115d41ff229c7e5df9f8788daa9553 # v9
         env:
           GH_AW_PROMPT: /tmp/gh-aw/aw-prompts/prompt.txt
           GH_AW_ALLOWED_EXTENSIONS: ''
           GH_AW_CACHE_DESCRIPTION: ''
-          GH_AW_CACHE_DIR: /tmp/gh-aw/cache-memory/
+          GH_AW_CACHE_DIR: '/tmp/gh-aw/cache-memory/'
           GH_AW_GITHUB_ACTOR: ${{ github.actor }}
           GH_AW_GITHUB_EVENT_COMMENT_ID: ${{ github.event.comment.id }}
           GH_AW_GITHUB_EVENT_DISCUSSION_NUMBER: ${{ github.event.discussion.number }}
@@ -275,7 +278,9 @@ jobs:
           script: |
             const { setupGlobals } = require('${{ runner.temp }}/gh-aw/actions/setup_globals.cjs');
             setupGlobals(core, github, context, exec, io, getOctokit);
+            
             const substitutePlaceholders = require('${{ runner.temp }}/gh-aw/actions/substitute_placeholders.cjs');
+            
             // Call the substitution function
             return await substitutePlaceholders({
               file: process.env.GH_AW_PROMPT,
@@ -321,16 +326,17 @@ jobs:
             /tmp/gh-aw/github_rate_limits.jsonl
           if-no-files-found: ignore
           retention-days: 1
+
   agent:
     needs: activation
     runs-on: ubuntu-latest
     permissions: read-all
     concurrency:
-      group: gh-aw-gemini-${{ github.workflow }}
+      group: "gh-aw-gemini-${{ github.workflow }}"
     env:
       DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
-      GH_AW_ASSETS_ALLOWED_EXTS: ''
-      GH_AW_ASSETS_BRANCH: ''
+      GH_AW_ASSETS_ALLOWED_EXTS: ""
+      GH_AW_ASSETS_BRANCH: ""
       GH_AW_ASSETS_MAX_SIZE_KB: 0
       GH_AW_MCP_LOG_DIR: /tmp/gh-aw/mcp-logs/safeoutputs
       GH_AW_WORKFLOW_ID_SANITIZED: cidoctor
@@ -345,7 +351,7 @@ jobs:
     steps:
       - name: Setup Scripts
         id: setup
-        uses: github/gh-aw-actions/setup@006ffd856b868b71df342dbe0ba082a963249b31 # v0.69.3
+        uses: github/gh-aw-actions/setup@v0.68.3
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
           job-name: ${{ github.job }}
@@ -374,8 +380,7 @@ jobs:
       - name: Restore cache-memory file share data
         uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
-          key: memory-none-nopolicy-${{ env.GH_AW_WORKFLOW_ID_SANITIZED }}-${{ github.run_id
-            }}
+          key: memory-none-nopolicy-${{ env.GH_AW_WORKFLOW_ID_SANITIZED }}-${{ github.run_id }}
           path: /tmp/gh-aw/cache-memory
           restore-keys: |
             memory-none-nopolicy-${{ env.GH_AW_WORKFLOW_ID_SANITIZED }}-
@@ -401,7 +406,7 @@ jobs:
         id: checkout-pr
         if: |
           github.event.pull_request || github.event.issue.pull_request
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
+        uses: actions/github-script@373c709c69115d41ff229c7e5df9f8788daa9553 # v9
         env:
           GH_TOKEN: ${{ secrets.GH_AW_GITHUB_MCP_SERVER_TOKEN || secrets.GH_AW_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
         with:
@@ -412,7 +417,7 @@ jobs:
             const { main } = require('${{ runner.temp }}/gh-aw/actions/checkout_pr_branch.cjs');
             await main();
       - name: Setup Node.js
-        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version: '24'
           package-manager-cache: false
@@ -422,7 +427,7 @@ jobs:
         run: npm install --ignore-scripts -g @google/gemini-cli@0.37.2
       - name: Determine automatic lockdown mode for GitHub MCP Server
         id: determine-automatic-lockdown
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
+        uses: actions/github-script@373c709c69115d41ff229c7e5df9f8788daa9553 # v9
         env:
           GH_AW_GITHUB_TOKEN: ${{ secrets.GH_AW_GITHUB_TOKEN }}
           GH_AW_GITHUB_MCP_SERVER_TOKEN: ${{ secrets.GH_AW_GITHUB_MCP_SERVER_TOKEN }}
@@ -431,10 +436,7 @@ jobs:
             const determineAutomaticLockdown = require('${{ runner.temp }}/gh-aw/actions/determine_automatic_lockdown.cjs');
             await determineAutomaticLockdown(github, context, core);
       - name: Download container images
-        run: bash "${RUNNER_TEMP}/gh-aw/actions/download_docker_images.sh" ghcr.io/github/gh-aw-firewall/agent:0.25.20
-          ghcr.io/github/gh-aw-firewall/api-proxy:0.25.20 ghcr.io/github/gh-aw-firewall/squid:0.25.20
-          ghcr.io/github/gh-aw-mcpg:v0.2.19 ghcr.io/github/github-mcp-server:v0.32.0
-          node:lts-alpine
+        run: bash "${RUNNER_TEMP}/gh-aw/actions/download_docker_images.sh" ghcr.io/github/gh-aw-firewall/agent:0.25.20 ghcr.io/github/gh-aw-firewall/api-proxy:0.25.20 ghcr.io/github/gh-aw-firewall/squid:0.25.20 ghcr.io/github/gh-aw-mcpg:v0.2.19 ghcr.io/github/github-mcp-server:v0.32.0 node:lts-alpine
       - name: Write Safe Outputs Config
         env:
           GITHUB_WORKFLOW: ${{ github.workflow }}
@@ -587,7 +589,7 @@ jobs:
                 }
               }
             }
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
+        uses: actions/github-script@373c709c69115d41ff229c7e5df9f8788daa9553 # v9
         with:
           script: |
             const { setupGlobals } = require('${{ runner.temp }}/gh-aw/actions/setup_globals.cjs');
@@ -601,14 +603,17 @@ jobs:
           # Mask immediately to prevent timing vulnerabilities
           API_KEY=$(openssl rand -base64 45 | tr -d '/+=')
           echo "::add-mask::${API_KEY}"
+          
           PORT=3001
-
+          
           # Set outputs for next steps
           {
             echo "safe_outputs_api_key=${API_KEY}"
             echo "safe_outputs_port=${PORT}"
           } >> "$GITHUB_OUTPUT"
+          
           echo "Safe Outputs MCP server will run on port ${PORT}"
+          
       - name: Start Safe Outputs MCP HTTP Server
         id: safe-outputs-start
         env:
@@ -628,7 +633,9 @@ jobs:
           export GH_AW_SAFE_OUTPUTS_TOOLS_PATH
           export GH_AW_SAFE_OUTPUTS_CONFIG_PATH
           export GH_AW_MCP_LOG_DIR
+          
           bash "${RUNNER_TEMP}/gh-aw/actions/start_safe_outputs_server.sh"
+          
       - name: Start MCP Gateway
         id: start-mcp-gateway
         env:
@@ -641,7 +648,7 @@ jobs:
         run: |
           set -eo pipefail
           mkdir -p /tmp/gh-aw/mcp-config
-
+          
           # Export gateway environment variables for MCP config and gateway script
           export MCP_GATEWAY_PORT="80"
           export MCP_GATEWAY_DOMAIN="host.docker.internal"
@@ -652,8 +659,10 @@ jobs:
           mkdir -p "${MCP_GATEWAY_PAYLOAD_DIR}"
           export MCP_GATEWAY_PAYLOAD_SIZE_THRESHOLD="524288"
           export DEBUG="*"
+          
           export GH_AW_ENGINE="gemini"
           export MCP_GATEWAY_DOCKER_COMMAND='docker run -i --rm --network host -v /var/run/docker.sock:/var/run/docker.sock -e MCP_GATEWAY_PORT -e MCP_GATEWAY_DOMAIN -e MCP_GATEWAY_API_KEY -e MCP_GATEWAY_PAYLOAD_DIR -e MCP_GATEWAY_PAYLOAD_SIZE_THRESHOLD -e DEBUG -e MCP_GATEWAY_LOG_DIR -e GH_AW_MCP_LOG_DIR -e GH_AW_SAFE_OUTPUTS -e GH_AW_SAFE_OUTPUTS_CONFIG_PATH -e GH_AW_SAFE_OUTPUTS_TOOLS_PATH -e GH_AW_ASSETS_BRANCH -e GH_AW_ASSETS_MAX_SIZE_KB -e GH_AW_ASSETS_ALLOWED_EXTS -e DEFAULT_BRANCH -e GITHUB_MCP_SERVER_TOKEN -e GITHUB_MCP_GUARD_MIN_INTEGRITY -e GITHUB_MCP_GUARD_REPOS -e GITHUB_REPOSITORY -e GITHUB_SERVER_URL -e GITHUB_SHA -e GITHUB_WORKSPACE -e GITHUB_TOKEN -e GITHUB_RUN_ID -e GITHUB_RUN_NUMBER -e GITHUB_RUN_ATTEMPT -e GITHUB_JOB -e GITHUB_ACTION -e GITHUB_EVENT_NAME -e GITHUB_EVENT_PATH -e GITHUB_ACTOR -e GITHUB_ACTOR_ID -e GITHUB_TRIGGERING_ACTOR -e GITHUB_WORKFLOW -e GITHUB_WORKFLOW_REF -e GITHUB_WORKFLOW_SHA -e GITHUB_REF -e GITHUB_REF_NAME -e GITHUB_REF_TYPE -e GITHUB_HEAD_REF -e GITHUB_BASE_REF -e GH_AW_SAFE_OUTPUTS_PORT -e GH_AW_SAFE_OUTPUTS_API_KEY -v /tmp/gh-aw/mcp-payloads:/tmp/gh-aw/mcp-payloads:rw -v /opt:/opt:ro -v /tmp:/tmp:rw -v '"${GITHUB_WORKSPACE}"':'"${GITHUB_WORKSPACE}"':rw ghcr.io/github/gh-aw-mcpg:v0.2.19'
+          
           cat << GH_AW_MCP_CONFIG_58a854342225a1f9_EOF | bash "${RUNNER_TEMP}/gh-aw/actions/start_mcp_gateway.sh"
           {
             "mcpServers": {
@@ -768,7 +777,7 @@ jobs:
           bash "${RUNNER_TEMP}/gh-aw/actions/stop_mcp_gateway.sh" "$GATEWAY_PID"
       - name: Redact secrets in logs
         if: always()
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
+        uses: actions/github-script@373c709c69115d41ff229c7e5df9f8788daa9553 # v9
         with:
           script: |
             const { setupGlobals } = require('${{ runner.temp }}/gh-aw/actions/setup_globals.cjs');
@@ -776,7 +785,7 @@ jobs:
             const { main } = require('${{ runner.temp }}/gh-aw/actions/redact_secrets.cjs');
             await main();
         env:
-          GH_AW_SECRET_NAMES: GEMINI_API_KEY,GH_AW_GITHUB_MCP_SERVER_TOKEN,GH_AW_GITHUB_TOKEN,GITHUB_TOKEN
+          GH_AW_SECRET_NAMES: 'GEMINI_API_KEY,GH_AW_GITHUB_MCP_SERVER_TOKEN,GH_AW_GITHUB_TOKEN,GITHUB_TOKEN'
           SECRET_GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           SECRET_GH_AW_GITHUB_MCP_SERVER_TOKEN: ${{ secrets.GH_AW_GITHUB_MCP_SERVER_TOKEN }}
           SECRET_GH_AW_GITHUB_TOKEN: ${{ secrets.GH_AW_GITHUB_TOKEN }}
@@ -794,10 +803,10 @@ jobs:
       - name: Ingest agent output
         id: collect_output
         if: always()
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
+        uses: actions/github-script@373c709c69115d41ff229c7e5df9f8788daa9553 # v9
         env:
           GH_AW_SAFE_OUTPUTS: ${{ steps.set-runtime-paths.outputs.GH_AW_SAFE_OUTPUTS }}
-          GH_AW_ALLOWED_DOMAINS: '*.githubusercontent.com,*.googleapis.com,api.snapcraft.io,archive.ubuntu.com,azure.archive.ubuntu.com,codeload.github.com,crl.geotrust.com,crl.globalsign.com,crl.identrust.com,crl.sectigo.com,crl.thawte.com,crl.usertrust.com,crl.verisign.com,crl3.digicert.com,crl4.digicert.com,crls.ssl.com,docs.github.com,generativelanguage.googleapis.com,github-cloud.githubusercontent.com,github-cloud.s3.amazonaws.com,github.blog,github.com,github.githubassets.com,host.docker.internal,json-schema.org,json.schemastore.org,keyserver.ubuntu.com,lfs.github.com,objects.githubusercontent.com,ocsp.digicert.com,ocsp.geotrust.com,ocsp.globalsign.com,ocsp.identrust.com,ocsp.sectigo.com,ocsp.ssl.com,ocsp.thawte.com,ocsp.usertrust.com,ocsp.verisign.com,packagecloud.io,packages.cloud.google.com,packages.microsoft.com,ppa.launchpad.net,raw.githubusercontent.com,registry.npmjs.org,s.symcb.com,s.symcd.com,security.ubuntu.com,ts-crl.ws.symantec.com,ts-ocsp.ws.symantec.com,www.googleapis.com'
+          GH_AW_ALLOWED_DOMAINS: "*.githubusercontent.com,*.googleapis.com,api.snapcraft.io,archive.ubuntu.com,azure.archive.ubuntu.com,codeload.github.com,crl.geotrust.com,crl.globalsign.com,crl.identrust.com,crl.sectigo.com,crl.thawte.com,crl.usertrust.com,crl.verisign.com,crl3.digicert.com,crl4.digicert.com,crls.ssl.com,docs.github.com,generativelanguage.googleapis.com,github-cloud.githubusercontent.com,github-cloud.s3.amazonaws.com,github.blog,github.com,github.githubassets.com,host.docker.internal,json-schema.org,json.schemastore.org,keyserver.ubuntu.com,lfs.github.com,objects.githubusercontent.com,ocsp.digicert.com,ocsp.geotrust.com,ocsp.globalsign.com,ocsp.identrust.com,ocsp.sectigo.com,ocsp.ssl.com,ocsp.thawte.com,ocsp.usertrust.com,ocsp.verisign.com,packagecloud.io,packages.cloud.google.com,packages.microsoft.com,ppa.launchpad.net,raw.githubusercontent.com,registry.npmjs.org,s.symcb.com,s.symcd.com,security.ubuntu.com,ts-crl.ws.symantec.com,ts-ocsp.ws.symantec.com,www.googleapis.com"
           GITHUB_SERVER_URL: ${{ github.server_url }}
           GITHUB_API_URL: ${{ github.api_url }}
         with:
@@ -808,7 +817,7 @@ jobs:
             await main();
       - name: Parse agent logs for step summary
         if: always()
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
+        uses: actions/github-script@373c709c69115d41ff229c7e5df9f8788daa9553 # v9
         env:
           GH_AW_AGENT_OUTPUT: /tmp/gh-aw/agent-stdio.log
         with:
@@ -820,7 +829,7 @@ jobs:
       - name: Parse MCP Gateway logs for step summary
         if: always()
         id: parse-mcp-gateway
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
+        uses: actions/github-script@373c709c69115d41ff229c7e5df9f8788daa9553 # v9
         with:
           script: |
             const { setupGlobals } = require('${{ runner.temp }}/gh-aw/actions/setup_globals.cjs');
@@ -845,7 +854,7 @@ jobs:
       - name: Parse token usage for step summary
         if: always()
         continue-on-error: true
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
+        uses: actions/github-script@373c709c69115d41ff229c7e5df9f8788daa9553 # v9
         with:
           script: |
             const { setupGlobals } = require('${{ runner.temp }}/gh-aw/actions/setup_globals.cjs');
@@ -891,6 +900,7 @@ jobs:
             /tmp/gh-aw/sandbox/firewall/logs/
             /tmp/gh-aw/sandbox/firewall/audit/
           if-no-files-found: ignore
+
   conclusion:
     needs:
       - activation
@@ -899,8 +909,7 @@ jobs:
       - safe_outputs
       - update_cache_memory
     if: >
-      always() && (needs.agent.result != 'skipped' || needs.activation.outputs.lockdown_check_failed
-      == 'true' ||
+      always() && (needs.agent.result != 'skipped' || needs.activation.outputs.lockdown_check_failed == 'true' ||
       needs.activation.outputs.stale_lock_file_failed == 'true')
     runs-on: ubuntu-slim
     permissions:
@@ -909,7 +918,7 @@ jobs:
       issues: write
       pull-requests: write
     concurrency:
-      group: gh-aw-conclusion-ci-doctor
+      group: "gh-aw-conclusion-ci-doctor"
       cancel-in-progress: false
     outputs:
       incomplete_count: ${{ steps.report_incomplete.outputs.incomplete_count }}
@@ -919,7 +928,7 @@ jobs:
     steps:
       - name: Setup Scripts
         id: setup
-        uses: github/gh-aw-actions/setup@006ffd856b868b71df342dbe0ba082a963249b31 # v0.69.3
+        uses: github/gh-aw-actions/setup@v0.68.3
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
           job-name: ${{ github.job }}
@@ -940,17 +949,16 @@ jobs:
           echo "GH_AW_AGENT_OUTPUT=/tmp/gh-aw/agent_output.json" >> "$GITHUB_OUTPUT"
       - name: Process no-op messages
         id: noop
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
+        uses: actions/github-script@373c709c69115d41ff229c7e5df9f8788daa9553 # v9
         env:
           GH_AW_AGENT_OUTPUT: ${{ steps.setup-agent-output-env.outputs.GH_AW_AGENT_OUTPUT }}
-          GH_AW_NOOP_MAX: '1'
-          GH_AW_WORKFLOW_NAME: CI Failure Doctor
-          GH_AW_WORKFLOW_SOURCE: githubnext/agentics/workflows/ci-doctor.md@main
-          GH_AW_WORKFLOW_SOURCE_URL: ${{ github.server_url }}/githubnext/agentics/blob/main/workflows/ci-doctor.md
-          GH_AW_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{
-            github.run_id }}
+          GH_AW_NOOP_MAX: "1"
+          GH_AW_WORKFLOW_NAME: "CI Failure Doctor"
+          GH_AW_WORKFLOW_SOURCE: "githubnext/agentics/workflows/ci-doctor.md@main"
+          GH_AW_WORKFLOW_SOURCE_URL: "${{ github.server_url }}/githubnext/agentics/blob/main/workflows/ci-doctor.md"
+          GH_AW_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           GH_AW_AGENT_CONCLUSION: ${{ needs.agent.result }}
-          GH_AW_NOOP_REPORT_AS_ISSUE: 'true'
+          GH_AW_NOOP_REPORT_AS_ISSUE: "true"
         with:
           github-token: ${{ secrets.GH_AW_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
@@ -960,14 +968,13 @@ jobs:
             await main();
       - name: Log detection run
         id: detection_runs
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
+        uses: actions/github-script@373c709c69115d41ff229c7e5df9f8788daa9553 # v9
         env:
           GH_AW_AGENT_OUTPUT: ${{ steps.setup-agent-output-env.outputs.GH_AW_AGENT_OUTPUT }}
-          GH_AW_WORKFLOW_NAME: CI Failure Doctor
-          GH_AW_WORKFLOW_SOURCE: githubnext/agentics/workflows/ci-doctor.md@main
-          GH_AW_WORKFLOW_SOURCE_URL: ${{ github.server_url }}/githubnext/agentics/blob/main/workflows/ci-doctor.md
-          GH_AW_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{
-            github.run_id }}
+          GH_AW_WORKFLOW_NAME: "CI Failure Doctor"
+          GH_AW_WORKFLOW_SOURCE: "githubnext/agentics/workflows/ci-doctor.md@main"
+          GH_AW_WORKFLOW_SOURCE_URL: "${{ github.server_url }}/githubnext/agentics/blob/main/workflows/ci-doctor.md"
+          GH_AW_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           GH_AW_DETECTION_CONCLUSION: ${{ needs.detection.outputs.detection_conclusion }}
           GH_AW_DETECTION_REASON: ${{ needs.detection.outputs.detection_reason }}
         with:
@@ -979,13 +986,13 @@ jobs:
             await main();
       - name: Record missing tool
         id: missing_tool
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
+        uses: actions/github-script@373c709c69115d41ff229c7e5df9f8788daa9553 # v9
         env:
           GH_AW_AGENT_OUTPUT: ${{ steps.setup-agent-output-env.outputs.GH_AW_AGENT_OUTPUT }}
-          GH_AW_MISSING_TOOL_CREATE_ISSUE: 'true'
-          GH_AW_WORKFLOW_NAME: CI Failure Doctor
-          GH_AW_WORKFLOW_SOURCE: githubnext/agentics/workflows/ci-doctor.md@main
-          GH_AW_WORKFLOW_SOURCE_URL: ${{ github.server_url }}/githubnext/agentics/blob/main/workflows/ci-doctor.md
+          GH_AW_MISSING_TOOL_CREATE_ISSUE: "true"
+          GH_AW_WORKFLOW_NAME: "CI Failure Doctor"
+          GH_AW_WORKFLOW_SOURCE: "githubnext/agentics/workflows/ci-doctor.md@main"
+          GH_AW_WORKFLOW_SOURCE_URL: "${{ github.server_url }}/githubnext/agentics/blob/main/workflows/ci-doctor.md"
         with:
           github-token: ${{ secrets.GH_AW_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
@@ -995,13 +1002,13 @@ jobs:
             await main();
       - name: Record incomplete
         id: report_incomplete
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
+        uses: actions/github-script@373c709c69115d41ff229c7e5df9f8788daa9553 # v9
         env:
           GH_AW_AGENT_OUTPUT: ${{ steps.setup-agent-output-env.outputs.GH_AW_AGENT_OUTPUT }}
-          GH_AW_REPORT_INCOMPLETE_CREATE_ISSUE: 'true'
-          GH_AW_WORKFLOW_NAME: CI Failure Doctor
-          GH_AW_WORKFLOW_SOURCE: githubnext/agentics/workflows/ci-doctor.md@main
-          GH_AW_WORKFLOW_SOURCE_URL: ${{ github.server_url }}/githubnext/agentics/blob/main/workflows/ci-doctor.md
+          GH_AW_REPORT_INCOMPLETE_CREATE_ISSUE: "true"
+          GH_AW_WORKFLOW_NAME: "CI Failure Doctor"
+          GH_AW_WORKFLOW_SOURCE: "githubnext/agentics/workflows/ci-doctor.md@main"
+          GH_AW_WORKFLOW_SOURCE_URL: "${{ github.server_url }}/githubnext/agentics/blob/main/workflows/ci-doctor.md"
         with:
           github-token: ${{ secrets.GH_AW_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
@@ -1012,24 +1019,23 @@ jobs:
       - name: Handle agent failure
         id: handle_agent_failure
         if: always()
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
+        uses: actions/github-script@373c709c69115d41ff229c7e5df9f8788daa9553 # v9
         env:
           GH_AW_AGENT_OUTPUT: ${{ steps.setup-agent-output-env.outputs.GH_AW_AGENT_OUTPUT }}
-          GH_AW_WORKFLOW_NAME: CI Failure Doctor
-          GH_AW_WORKFLOW_SOURCE: githubnext/agentics/workflows/ci-doctor.md@main
-          GH_AW_WORKFLOW_SOURCE_URL: ${{ github.server_url }}/githubnext/agentics/blob/main/workflows/ci-doctor.md
-          GH_AW_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{
-            github.run_id }}
+          GH_AW_WORKFLOW_NAME: "CI Failure Doctor"
+          GH_AW_WORKFLOW_SOURCE: "githubnext/agentics/workflows/ci-doctor.md@main"
+          GH_AW_WORKFLOW_SOURCE_URL: "${{ github.server_url }}/githubnext/agentics/blob/main/workflows/ci-doctor.md"
+          GH_AW_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           GH_AW_AGENT_CONCLUSION: ${{ needs.agent.result }}
-          GH_AW_WORKFLOW_ID: ci-doctor
-          GH_AW_ENGINE_ID: gemini
+          GH_AW_WORKFLOW_ID: "ci-doctor"
+          GH_AW_ENGINE_ID: "gemini"
           GH_AW_SECRET_VERIFICATION_RESULT: ${{ needs.activation.outputs.secret_verification_result }}
           GH_AW_CHECKOUT_PR_SUCCESS: ${{ needs.agent.outputs.checkout_pr_success }}
           GH_AW_LOCKDOWN_CHECK_FAILED: ${{ needs.activation.outputs.lockdown_check_failed }}
           GH_AW_STALE_LOCK_FILE_FAILED: ${{ needs.activation.outputs.stale_lock_file_failed }}
-          GH_AW_GROUP_REPORTS: 'false'
-          GH_AW_FAILURE_REPORT_AS_ISSUE: 'true'
-          GH_AW_TIMEOUT_MINUTES: '30'
+          GH_AW_GROUP_REPORTS: "false"
+          GH_AW_FAILURE_REPORT_AS_ISSUE: "true"
+          GH_AW_TIMEOUT_MINUTES: "30"
         with:
           github-token: ${{ secrets.GH_AW_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
@@ -1037,13 +1043,13 @@ jobs:
             setupGlobals(core, github, context, exec, io, getOctokit);
             const { main } = require('${{ runner.temp }}/gh-aw/actions/handle_agent_failure.cjs');
             await main();
+
   detection:
     needs:
       - activation
       - agent
     if: >
-      always() && needs.agent.result != 'skipped' && (needs.agent.outputs.output_types
-      != '' || needs.agent.outputs.has_patch == 'true')
+      always() && needs.agent.result != 'skipped' && (needs.agent.outputs.output_types != '' || needs.agent.outputs.has_patch == 'true')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -1054,7 +1060,7 @@ jobs:
     steps:
       - name: Setup Scripts
         id: setup
-        uses: github/gh-aw-actions/setup@006ffd856b868b71df342dbe0ba082a963249b31 # v0.69.3
+        uses: github/gh-aw-actions/setup@v0.68.3
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
           job-name: ${{ github.job }}
@@ -1084,8 +1090,7 @@ jobs:
           rm -rf /tmp/gh-aw/sandbox/firewall/logs
           rm -rf /tmp/gh-aw/sandbox/firewall/audit
       - name: Download container images
-        run: bash "${RUNNER_TEMP}/gh-aw/actions/download_docker_images.sh" ghcr.io/github/gh-aw-firewall/agent:0.25.20
-          ghcr.io/github/gh-aw-firewall/api-proxy:0.25.20 ghcr.io/github/gh-aw-firewall/squid:0.25.20
+        run: bash "${RUNNER_TEMP}/gh-aw/actions/download_docker_images.sh" ghcr.io/github/gh-aw-firewall/agent:0.25.20 ghcr.io/github/gh-aw-firewall/api-proxy:0.25.20 ghcr.io/github/gh-aw-firewall/squid:0.25.20
       - name: Check if detection needed
         id: detection_guard
         if: always()
@@ -1122,14 +1127,10 @@ jobs:
           ls -la /tmp/gh-aw/threat-detection/ 2>/dev/null || true
       - name: Setup threat detection
         if: always() && steps.detection_guard.outputs.run_detection == 'true'
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
+        uses: actions/github-script@373c709c69115d41ff229c7e5df9f8788daa9553 # v9
         env:
-          WORKFLOW_NAME: CI Failure Doctor
-          WORKFLOW_DESCRIPTION: "This workflow is an automated CI failure investigator\
-            \ that triggers when monitored workflows fail.\nPerforms deep analysis\
-            \ of GitHub Actions workflow failures to identify root causes,\npatterns,\
-            \ and provide actionable remediation steps. Analyzes logs, error messages,\n\
-            and workflow configuration to help diagnose and resolve CI issues efficiently."
+          WORKFLOW_NAME: "CI Failure Doctor"
+          WORKFLOW_DESCRIPTION: "This workflow is an automated CI failure investigator that triggers when monitored workflows fail.\nPerforms deep analysis of GitHub Actions workflow failures to identify root causes,\npatterns, and provide actionable remediation steps. Analyzes logs, error messages,\nand workflow configuration to help diagnose and resolve CI issues efficiently."
           HAS_PATCH: ${{ needs.agent.outputs.has_patch }}
         with:
           script: |
@@ -1143,7 +1144,7 @@ jobs:
           mkdir -p /tmp/gh-aw/threat-detection
           touch /tmp/gh-aw/threat-detection/detection.log
       - name: Setup Node.js
-        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version: '24'
           package-manager-cache: false
@@ -1199,16 +1200,17 @@ jobs:
       - name: Parse and conclude threat detection
         id: detection_conclusion
         if: always()
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
+        uses: actions/github-script@373c709c69115d41ff229c7e5df9f8788daa9553 # v9
         env:
           RUN_DETECTION: ${{ steps.detection_guard.outputs.run_detection }}
-          GH_AW_DETECTION_CONTINUE_ON_ERROR: 'true'
+          GH_AW_DETECTION_CONTINUE_ON_ERROR: "true"
         with:
           script: |
             const { setupGlobals } = require('${{ runner.temp }}/gh-aw/actions/setup_globals.cjs');
             setupGlobals(core, github, context, exec, io, getOctokit);
             const { main } = require('${{ runner.temp }}/gh-aw/actions/parse_threat_detection_results.cjs');
             await main();
+
   pre_activation:
     if: ${{ github.event.workflow_run.conclusion == 'failure' }}
     runs-on: ubuntu-slim
@@ -1219,15 +1221,15 @@ jobs:
     steps:
       - name: Setup Scripts
         id: setup
-        uses: github/gh-aw-actions/setup@006ffd856b868b71df342dbe0ba082a963249b31 # v0.69.3
+        uses: github/gh-aw-actions/setup@v0.68.3
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
           job-name: ${{ github.job }}
       - name: Check team membership for workflow
         id: check_membership
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
+        uses: actions/github-script@373c709c69115d41ff229c7e5df9f8788daa9553 # v9
         env:
-          GH_AW_REQUIRED_ROLES: admin,maintainer,write
+          GH_AW_REQUIRED_ROLES: "admin,maintainer,write"
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -1235,13 +1237,13 @@ jobs:
             setupGlobals(core, github, context, exec, io, getOctokit);
             const { main } = require('${{ runner.temp }}/gh-aw/actions/check_membership.cjs');
             await main();
+
   safe_outputs:
     needs:
       - activation
       - agent
       - detection
-    if: (!cancelled()) && needs.agent.result != 'skipped' && needs.detection.result
-      == 'success'
+    if: (!cancelled()) && needs.agent.result != 'skipped' && needs.detection.result == 'success'
     runs-on: ubuntu-slim
     permissions:
       contents: read
@@ -1250,16 +1252,16 @@ jobs:
       pull-requests: write
     timeout-minutes: 15
     env:
-      GH_AW_CALLER_WORKFLOW_ID: ${{ github.repository }}/ci-doctor
+      GH_AW_CALLER_WORKFLOW_ID: "${{ github.repository }}/ci-doctor"
       GH_AW_DETECTION_CONCLUSION: ${{ needs.detection.outputs.detection_conclusion }}
       GH_AW_DETECTION_REASON: ${{ needs.detection.outputs.detection_reason }}
       GH_AW_EFFECTIVE_TOKENS: ${{ needs.agent.outputs.effective_tokens }}
-      GH_AW_ENGINE_ID: gemini
+      GH_AW_ENGINE_ID: "gemini"
       GH_AW_ENGINE_MODEL: ${{ needs.agent.outputs.model }}
-      GH_AW_WORKFLOW_ID: ci-doctor
-      GH_AW_WORKFLOW_NAME: CI Failure Doctor
-      GH_AW_WORKFLOW_SOURCE: githubnext/agentics/workflows/ci-doctor.md@main
-      GH_AW_WORKFLOW_SOURCE_URL: ${{ github.server_url }}/githubnext/agentics/blob/main/workflows/ci-doctor.md
+      GH_AW_WORKFLOW_ID: "ci-doctor"
+      GH_AW_WORKFLOW_NAME: "CI Failure Doctor"
+      GH_AW_WORKFLOW_SOURCE: "githubnext/agentics/workflows/ci-doctor.md@main"
+      GH_AW_WORKFLOW_SOURCE_URL: "${{ github.server_url }}/githubnext/agentics/blob/main/workflows/ci-doctor.md"
     outputs:
       code_push_failure_count: ${{ steps.process_safe_outputs.outputs.code_push_failure_count }}
       code_push_failure_errors: ${{ steps.process_safe_outputs.outputs.code_push_failure_errors }}
@@ -1274,7 +1276,7 @@ jobs:
     steps:
       - name: Setup Scripts
         id: setup
-        uses: github/gh-aw-actions/setup@006ffd856b868b71df342dbe0ba082a963249b31 # v0.69.3
+        uses: github/gh-aw-actions/setup@v0.68.3
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
           job-name: ${{ github.job }}
@@ -1304,13 +1306,13 @@ jobs:
           echo "GH_HOST=${GH_HOST}" >> "$GITHUB_ENV"
       - name: Process Safe Outputs
         id: process_safe_outputs
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
+        uses: actions/github-script@373c709c69115d41ff229c7e5df9f8788daa9553 # v9
         env:
           GH_AW_AGENT_OUTPUT: ${{ steps.setup-agent-output-env.outputs.GH_AW_AGENT_OUTPUT }}
-          GH_AW_ALLOWED_DOMAINS: '*.githubusercontent.com,*.googleapis.com,api.snapcraft.io,archive.ubuntu.com,azure.archive.ubuntu.com,codeload.github.com,crl.geotrust.com,crl.globalsign.com,crl.identrust.com,crl.sectigo.com,crl.thawte.com,crl.usertrust.com,crl.verisign.com,crl3.digicert.com,crl4.digicert.com,crls.ssl.com,docs.github.com,generativelanguage.googleapis.com,github-cloud.githubusercontent.com,github-cloud.s3.amazonaws.com,github.blog,github.com,github.githubassets.com,host.docker.internal,json-schema.org,json.schemastore.org,keyserver.ubuntu.com,lfs.github.com,objects.githubusercontent.com,ocsp.digicert.com,ocsp.geotrust.com,ocsp.globalsign.com,ocsp.identrust.com,ocsp.sectigo.com,ocsp.ssl.com,ocsp.thawte.com,ocsp.usertrust.com,ocsp.verisign.com,packagecloud.io,packages.cloud.google.com,packages.microsoft.com,ppa.launchpad.net,raw.githubusercontent.com,registry.npmjs.org,s.symcb.com,s.symcd.com,security.ubuntu.com,ts-crl.ws.symantec.com,ts-ocsp.ws.symantec.com,www.googleapis.com'
+          GH_AW_ALLOWED_DOMAINS: "*.githubusercontent.com,*.googleapis.com,api.snapcraft.io,archive.ubuntu.com,azure.archive.ubuntu.com,codeload.github.com,crl.geotrust.com,crl.globalsign.com,crl.identrust.com,crl.sectigo.com,crl.thawte.com,crl.usertrust.com,crl.verisign.com,crl3.digicert.com,crl4.digicert.com,crls.ssl.com,docs.github.com,generativelanguage.googleapis.com,github-cloud.githubusercontent.com,github-cloud.s3.amazonaws.com,github.blog,github.com,github.githubassets.com,host.docker.internal,json-schema.org,json.schemastore.org,keyserver.ubuntu.com,lfs.github.com,objects.githubusercontent.com,ocsp.digicert.com,ocsp.geotrust.com,ocsp.globalsign.com,ocsp.identrust.com,ocsp.sectigo.com,ocsp.ssl.com,ocsp.thawte.com,ocsp.usertrust.com,ocsp.verisign.com,packagecloud.io,packages.cloud.google.com,packages.microsoft.com,ppa.launchpad.net,raw.githubusercontent.com,registry.npmjs.org,s.symcb.com,s.symcd.com,security.ubuntu.com,ts-crl.ws.symantec.com,ts-ocsp.ws.symantec.com,www.googleapis.com"
           GITHUB_SERVER_URL: ${{ github.server_url }}
           GITHUB_API_URL: ${{ github.api_url }}
-          GH_AW_SAFE_OUTPUTS_HANDLER_CONFIG: '{"add_comment":{"max":1},"create_issue":{"labels":["automation","ci"],"max":1,"title_prefix":"${{ github.workflow }}"},"create_report_incomplete_issue":{},"missing_data":{},"missing_tool":{},"noop":{"max":1,"report-as-issue":"true"},"report_incomplete":{}}'
+          GH_AW_SAFE_OUTPUTS_HANDLER_CONFIG: "{\"add_comment\":{\"max\":1},\"create_issue\":{\"labels\":[\"automation\",\"ci\"],\"max\":1,\"title_prefix\":\"${{ github.workflow }}\"},\"create_report_incomplete_issue\":{},\"missing_data\":{},\"missing_tool\":{},\"noop\":{\"max\":1,\"report-as-issue\":\"true\"},\"report_incomplete\":{}}"
         with:
           github-token: ${{ secrets.GH_AW_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
@@ -1327,14 +1329,14 @@ jobs:
             /tmp/gh-aw/safe-output-items.jsonl
             /tmp/gh-aw/temporary-id-map.json
           if-no-files-found: ignore
+
   update_cache_memory:
     needs:
       - activation
       - agent
       - detection
     if: >
-      always() && (needs.detection.result == 'success' || needs.detection.result ==
-      'skipped') &&
+      always() && (needs.detection.result == 'success' || needs.detection.result == 'skipped') &&
       needs.agent.result == 'success'
     runs-on: ubuntu-slim
     permissions: {}
@@ -1343,7 +1345,7 @@ jobs:
     steps:
       - name: Setup Scripts
         id: setup
-        uses: github/gh-aw-actions/setup@006ffd856b868b71df342dbe0ba082a963249b31 # v0.69.3
+        uses: github/gh-aw-actions/setup@v0.68.3
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
           job-name: ${{ github.job }}
@@ -1368,6 +1370,6 @@ jobs:
         if: steps.check_cache_default.outputs.has_content == 'true'
         uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
-          key: memory-none-nopolicy-${{ env.GH_AW_WORKFLOW_ID_SANITIZED }}-${{ github.run_id
-            }}
+          key: memory-none-nopolicy-${{ env.GH_AW_WORKFLOW_ID_SANITIZED }}-${{ github.run_id }}
           path: /tmp/gh-aw/cache-memory
+
