@@ -32,7 +32,7 @@ dev = [
   "pytest-emoji>=0.2.0",
   "pytest-md>=0.2.0",
   "pytest-mergify>=2026.4.7.1",
-  "ruff>=0.15.11",
+  "ruff>=0.15.12",
   "ty>=0.0.32",
   "uv-build>=0.11.7",
 ]
