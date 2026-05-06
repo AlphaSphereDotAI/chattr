@@ -34,7 +34,7 @@ dev = [
   "pytest-mergify>=2026.4.7.1",
   "ruff>=0.15.12",
   "ty>=0.0.34",
-  "uv-build>=0.11.9",
+  "uv-build>=0.11.10",
 ]
 
 [tool.ruff]
