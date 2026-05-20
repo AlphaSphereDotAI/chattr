@@ -157,19 +157,29 @@ class App:
             ):
                 pprint(response)
                 if isinstance(response, RunContentEvent):
-                    history.append(ChatMessage(role="assistant", content=response.content))
-                elif isinstance(response, (ToolCallStartedEvent, ToolCallCompletedEvent)):
+                    history.append(
+                        ChatMessage(role="assistant", content=response.content)
+                    )
+                elif isinstance(
+                    response, (ToolCallStartedEvent, ToolCallCompletedEvent)
+                ):
                     tool = response.tool
                     is_completed = isinstance(response, ToolCallCompletedEvent)
-                    
+
                     metadata = MetadataDict(
                         title=tool.tool_name,
                         id=tool.tool_call_id,
-                        duration=tool.metrics.duration if is_completed else tool.created_at,
+                        duration=tool.metrics.duration
+                        if is_completed
+                        else tool.created_at,
                     )
                     if is_completed:
-                        metadata["log"] = "Tool Call Failed" if tool.tool_call_error else "Tool Call Succeeded"
-                    
+                        metadata["log"] = (
+                            "Tool Call Failed"
+                            if tool.tool_call_error
+                            else "Tool Call Succeeded"
+                        )
+
                     history.append(
                         ChatMessage(
                             role="assistant",
