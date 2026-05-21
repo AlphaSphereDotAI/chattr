@@ -164,7 +164,9 @@ class App:
                     history.append(
                         ChatMessage(role="assistant", content=response.content),
                     )
-                elif isinstance(response, ToolCallStartedEvent | ToolCallCompletedEvent):
+                elif isinstance(
+                    response, ToolCallStartedEvent | ToolCallCompletedEvent
+                ):
                     tool = response.tool
                     metadata = MetadataDict(
                         title=tool.tool_name,
