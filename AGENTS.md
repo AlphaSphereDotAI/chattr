@@ -37,10 +37,16 @@ uv run pytest tests/test_app.py::test_app  # Run single test
 
 ### General
 
-- **Line length**: 88 characters
+- **Line length**: 120 characters
 - **Indentation**: 4 spaces
 - **Quote style**: Double quotes (`"`)
 - **File encoding**: UTF-8
+
+### Configuration
+
+- Use `pydantic-settings` for configuration management.
+- Use `env_nested_delimiter="__"` for nested settings in environment variables (e.g., `MODEL__API_KEY`).
+- Use `mcp.json` to configure MCP servers.
 
 ### Imports
 
@@ -80,9 +86,12 @@ uv run pytest tests/test_app.py::test_app  # Run single test
 
 ### Frameworks & Tools
 
-- Use `agno` framework for defining agents and toolkits
-- Use `gradio` for the web interface
-- Use `pydantic` and `pydantic-settings` for configuration management
+- Use `agno` framework for defining agents, toolkits, and knowledge bases.
+- Utilize `agno`'s `MultiMCPTools` for connecting to multiple MCP servers.
+- Implement `agno` guardrails (e.g., `PIIDetectionGuardrail`, `PromptInjectionGuardrail`) for safety.
+- Use `gradio` for the web interface and streaming components.
+- Use `pydantic` and `pydantic-settings` for data validation and configuration.
+- Use `poml` for managing prompt templates.
 
 ### Documentation
 
@@ -107,6 +116,7 @@ uv run pytest tests/test_app.py::test_app  # Run single test
 
 The repository uses several automated agentic workflows:
 
+- **`agentic-maintenance`**: Closes expired discussions, issues, and pull requests.
 - **`agents-md-maintenance`**: Daily maintenance of this `AGENTS.md` file.
 - **`ci-coach`**: Daily CI optimization coach for workflow efficiency.
 - **`ci-doctor`**: Monitors and triages failed CI runs.
