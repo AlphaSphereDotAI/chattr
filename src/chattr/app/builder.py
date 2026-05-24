@@ -28,10 +28,6 @@ from gradio import (
     Video,
 )
 from gradio.components.chatbot import MetadataDict
-from m3u8 import M3U8, load
-from poml import poml
-from pydantic import HttpUrl, ValidationError
-from requests import Session
 from rich.pretty import pprint
 
 from chattr.app.settings import Settings, logger
@@ -82,18 +78,6 @@ class App:
         )
         await self.mcp_tools.connect()
         return [self.mcp_tools]
-
-    def _setup_prompt(self) -> str:
-        prompt_template = poml(
-            self.settings.directory.prompts / "template.poml",
-            {"character": "Napoleon"},
-            chat=False,
-            format="dict",
-        )
-        if not isinstance(prompt_template, dict):
-            _msg = "Prompt template must be a string."
-            raise TypeError(_msg)
-        return prompt_template["messages"]
 
     def _setup_model(self) -> OpenAILike:
         """
@@ -247,53 +231,6 @@ class App:
             raise Error(_msg) from e
         finally:
             await self._close()
-
-    def _is_url(self, value: str | None) -> bool:
-        """
-        Check if a string is a valid URL.
-
-        Args:
-            value: The string to check. Can be None.
-
-        Returns:
-            bool: True if the string is a valid URL, False otherwise.
-        """
-        if value is None:
-            return False
-
-        try:
-            _ = HttpUrl(value)
-        except ValidationError:
-            return False
-        return True
-
-    def _download_file(self, url: HttpUrl, path: Path) -> None:
-        """
-        Download a file from a URL and save it to a local path.
-
-        Args:
-            url: The URL to download the file from.
-            path: The local file path where the downloaded file will be saved.
-
-        Returns:
-            None
-
-        Raises:
-            requests.RequestException: If the HTTP request fails.
-            IOError: If file writing fails.
-        """
-        if str(url).endswith(".m3u8"):
-            _playlist: M3U8 = load(url)
-            url: str = str(url).replace("playlist.m3u8", _playlist.segments[0].uri)
-        logger.info(f"Downloading {url} to {path}")
-        session = Session()
-        response = session.get(url, stream=True, timeout=30)
-        response.raise_for_status()
-        with path.open("wb") as f:
-            for chunk in response.iter_content(chunk_size=8192):
-                if chunk:
-                    f.write(chunk)
-        logger.info(f"File downloaded to {path}")
 
     async def _close(self) -> None:
         try:
