@@ -90,8 +90,8 @@ class App:
             chat=False,
             format="dict",
         )
-        if not isinstance(prompt_template, dict):
-            _msg = "Prompt template must be a string."
+        if not isinstance(prompt_template, dict) or "messages" not in prompt_template:
+            _msg = "Prompt template must be a dictionary containing 'messages'."
             raise TypeError(_msg)
         return prompt_template["messages"]
 
@@ -193,32 +193,20 @@ class App:
                         ),
                     )
                 elif isinstance(response, ToolCallCompletedEvent):
-                    if response.tool.tool_call_error:
-                        history.append(
-                            ChatMessage(
-                                role="assistant",
-                                content=dumps(response.tool.tool_args, indent=4),
-                                metadata=MetadataDict(
-                                    title=response.tool.tool_name,
-                                    id=response.tool.tool_call_id,
-                                    log="Tool Call Failed",
-                                    duration=response.tool.metrics.duration,
-                                ),
+                    log_status = "Failed" if response.tool.tool_call_error else "Succeeded"
+                    history.append(
+                        ChatMessage(
+                            role="assistant",
+                            content=dumps(response.tool.tool_args, indent=4),
+                            metadata=MetadataDict(
+                                title=response.tool.tool_name,
+                                id=response.tool.tool_call_id,
+                                log=f"Tool Call {log_status}",
+                                duration=response.tool.metrics.duration,
                             ),
-                        )
-                    else:
-                        history.append(
-                            ChatMessage(
-                                role="assistant",
-                                content=dumps(response.tool.tool_args, indent=4),
-                                metadata=MetadataDict(
-                                    title=response.tool.tool_name,
-                                    id=response.tool.tool_call_id,
-                                    log="Tool Call Succeeded",
-                                    duration=response.tool.metrics.duration,
-                                ),
-                            ),
-                        )
+                        ),
+                    )
+                    if not response.tool.tool_call_error:
                         if response.tool.tool_name == "generate_audio_for_text":
                             history.append(
                                 Audio(
@@ -258,14 +246,10 @@ class App:
         Returns:
             bool: True if the string is a valid URL, False otherwise.
         """
-        if value is None:
-            return False
-
         try:
-            _ = HttpUrl(value)
+            return bool(value and HttpUrl(value))
         except ValidationError:
             return False
-        return True
 
     def _download_file(self, url: HttpUrl, path: Path) -> None:
         """
@@ -282,17 +266,18 @@ class App:
             requests.RequestException: If the HTTP request fails.
             IOError: If file writing fails.
         """
-        if str(url).endswith(".m3u8"):
-            _playlist: M3U8 = load(url)
-            url: str = str(url).replace("playlist.m3u8", _playlist.segments[0].uri)
-        logger.info(f"Downloading {url} to {path}")
-        session = Session()
-        response = session.get(url, stream=True, timeout=30)
-        response.raise_for_status()
-        with path.open("wb") as f:
-            for chunk in response.iter_content(chunk_size=8192):
-                if chunk:
-                    f.write(chunk)
+        download_url = str(url)
+        if download_url.endswith(".m3u8"):
+            _playlist: M3U8 = load(download_url)
+            download_url = download_url.replace("playlist.m3u8", _playlist.segments[0].uri)
+
+        logger.info(f"Downloading {download_url} to {path}")
+        with Session().get(download_url, stream=True, timeout=30) as response:
+            response.raise_for_status()
+            with path.open("wb") as f:
+                for chunk in response.iter_content(chunk_size=8192):
+                    if chunk:
+                        f.write(chunk)
         logger.info(f"File downloaded to {path}")
 
     async def _close(self) -> None:
