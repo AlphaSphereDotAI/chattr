@@ -42,25 +42,22 @@ class MCPSettings(BaseModel):
     path: FilePath = Field(default_factory=lambda: Path.cwd() / "mcp.json")
 
     @model_validator(mode="after")
-    def is_exists(self) -> Self:
-        """Check if the MCP config file exists."""
+    def validate_mcp_config(self) -> Self:
+        """Validate the MCP config file."""
         if not self.path.exists():
             logger.warning("`mcp.json` not found.")
-        return self
+            return self
 
-    @model_validator(mode="after")
-    def is_valid(self) -> Self:
-        """Validate that the MCP config file is a JSON file."""
-        if self.path and self.path.suffix != ".json":
+        if self.path.suffix != ".json":
             msg = "MCP config file must be a JSON file"
             raise ValueError(msg)
-        return self
 
-    @model_validator(mode="after")
-    def is_valid_scheme(self) -> Self:
-        """Validate that the MCP config file has a valid scheme."""
-        if self.path and self.path.exists():
-            _ = MCPScheme.model_validate_json(self.path.read_text())
+        try:
+            MCPScheme.model_validate_json(self.path.read_text())
+        except Exception as e:
+            msg = f"Invalid MCP config scheme: {e}"
+            raise ValueError(msg) from e
+
         return self
 
 
@@ -156,7 +153,7 @@ class ModelSettings(BaseModel):
 class CharacterSettings(BaseModel):
     """Settings related to character configuration."""
 
-    name: str | None = Field(default=None)
+    name: str = Field(default="Napoleon")
 
 
 class Settings(BaseSettings):

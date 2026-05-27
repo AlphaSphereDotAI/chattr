@@ -2,7 +2,6 @@
 
 from collections.abc import AsyncGenerator
 from json import dumps, loads
-from pathlib import Path
 
 from agno.agent import (
     Agent,
@@ -28,10 +27,6 @@ from gradio import (
     Video,
 )
 from gradio.components.chatbot import MetadataDict
-from m3u8 import M3U8, load
-from poml import poml
-from pydantic import HttpUrl, ValidationError
-from requests import Session
 from rich.pretty import pprint
 
 from chattr.app.settings import Settings, logger
@@ -47,11 +42,11 @@ class App:
         return Agent(
             model=self._setup_model(),
             tools=await self._setup_tools(),
-            description="You are a helpful assistant who can act and mimic Napoleon's character and answer questions about the era.",
+            description=f"You are a helpful assistant who can act and mimic {self.settings.character.name}'s character and answer questions about the era.",
             instructions=[
                 "Understand the user's question and context.",
                 "Gather relevant information and resources.",
-                "Formulate a clear and concise response in Napoleon's voice.",
+                f"Formulate a clear and concise response in {self.settings.character.name}'s voice.",
                 "ALWAYS generate audio from the formulated response using the appropriate Tool.",
                 "Generate video from the resulted audio using the appropriate Tool.",
             ],
@@ -82,18 +77,6 @@ class App:
         )
         await self.mcp_tools.connect()
         return [self.mcp_tools]
-
-    def _setup_prompt(self) -> str:
-        prompt_template = poml(
-            self.settings.directory.prompts / "template.poml",
-            {"character": "Napoleon"},
-            chat=False,
-            format="dict",
-        )
-        if not isinstance(prompt_template, dict):
-            _msg = "Prompt template must be a string."
-            raise TypeError(_msg)
-        return prompt_template["messages"]
 
     def _setup_model(self) -> OpenAILike:
         """
@@ -150,7 +133,7 @@ class App:
         self,
         message: str,
         history: list[ChatMessage],
-    ) -> AsyncGenerator[tuple[str, list[ChatMessage], Path | None, Path | None]]:
+    ) -> AsyncGenerator[list[ChatMessage]]:
         """
         Generate a response to a user message and update the conversation history.
 
@@ -162,9 +145,7 @@ class App:
             history: The conversation history as a list of ChatMessage objects.
 
         Returns:
-            AsyncGenerator: Yields a tuple containing an
-                            empty string, the updated history, and
-                            a Path to an audio file if generated.
+            AsyncGenerator: Yields updated history containing responses and tool calls.
         """
         try:
             agent: Agent = await self._setup_agent()
@@ -175,10 +156,7 @@ class App:
                 pprint(response)
                 if isinstance(response, RunContentEvent):
                     history.append(
-                        ChatMessage(
-                            role="assistant",
-                            content=response.content,
-                        ),
+                        ChatMessage(role="assistant", content=response.content),
                     )
                 elif isinstance(response, ToolCallStartedEvent):
                     history.append(
@@ -193,32 +171,24 @@ class App:
                         ),
                     )
                 elif isinstance(response, ToolCallCompletedEvent):
-                    if response.tool.tool_call_error:
-                        history.append(
-                            ChatMessage(
-                                role="assistant",
-                                content=dumps(response.tool.tool_args, indent=4),
-                                metadata=MetadataDict(
-                                    title=response.tool.tool_name,
-                                    id=response.tool.tool_call_id,
-                                    log="Tool Call Failed",
-                                    duration=response.tool.metrics.duration,
-                                ),
+                    log = (
+                        "Tool Call Failed"
+                        if response.tool.tool_call_error
+                        else "Tool Call Succeeded"
+                    )
+                    history.append(
+                        ChatMessage(
+                            role="assistant",
+                            content=dumps(response.tool.tool_args, indent=4),
+                            metadata=MetadataDict(
+                                title=response.tool.tool_name,
+                                id=response.tool.tool_call_id,
+                                log=log,
+                                duration=response.tool.metrics.duration,
                             ),
-                        )
-                    else:
-                        history.append(
-                            ChatMessage(
-                                role="assistant",
-                                content=dumps(response.tool.tool_args, indent=4),
-                                metadata=MetadataDict(
-                                    title=response.tool.tool_name,
-                                    id=response.tool.tool_call_id,
-                                    log="Tool Call Succeeded",
-                                    duration=response.tool.metrics.duration,
-                                ),
-                            ),
-                        )
+                        ),
+                    )
+                    if not response.tool.tool_call_error:
                         if response.tool.tool_name == "generate_audio_for_text":
                             history.append(
                                 Audio(
@@ -237,9 +207,6 @@ class App:
                                     show_share_button=True,
                                 ),
                             )
-                        else:
-                            msg = f"Unknown tool name: {response.tool.tool_name}"
-                            raise Error(msg)
                 yield history
         except Exception as e:
             _msg: str = f"Error generating response: {e}"
@@ -247,53 +214,6 @@ class App:
             raise Error(_msg) from e
         finally:
             await self._close()
-
-    def _is_url(self, value: str | None) -> bool:
-        """
-        Check if a string is a valid URL.
-
-        Args:
-            value: The string to check. Can be None.
-
-        Returns:
-            bool: True if the string is a valid URL, False otherwise.
-        """
-        if value is None:
-            return False
-
-        try:
-            _ = HttpUrl(value)
-        except ValidationError:
-            return False
-        return True
-
-    def _download_file(self, url: HttpUrl, path: Path) -> None:
-        """
-        Download a file from a URL and save it to a local path.
-
-        Args:
-            url: The URL to download the file from.
-            path: The local file path where the downloaded file will be saved.
-
-        Returns:
-            None
-
-        Raises:
-            requests.RequestException: If the HTTP request fails.
-            IOError: If file writing fails.
-        """
-        if str(url).endswith(".m3u8"):
-            _playlist: M3U8 = load(url)
-            url: str = str(url).replace("playlist.m3u8", _playlist.segments[0].uri)
-        logger.info(f"Downloading {url} to {path}")
-        session = Session()
-        response = session.get(url, stream=True, timeout=30)
-        response.raise_for_status()
-        with path.open("wb") as f:
-            for chunk in response.iter_content(chunk_size=8192):
-                if chunk:
-                    f.write(chunk)
-        logger.info(f"File downloaded to {path}")
 
     async def _close(self) -> None:
         try:
