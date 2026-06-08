@@ -290,7 +290,7 @@ requires-dist = [
     { name = "agno", extras = ["google", "qdrant"], specifier = ">=2.6.12" },
     { name = "ddgs", specifier = ">=9.14.4" },
     { name = "fastembed", specifier = ">=0.8.0" },
-    { name = "gradio", extras = ["mcp"], specifier = ">=6.16.0" },
+    { name = "gradio", extras = ["mcp"], specifier = ">=6.17.3" },
     { name = "m3u8", specifier = ">=6.0.0" },
     { name = "mem0ai", specifier = ">=2.0.4" },
     { name = "poml", specifier = ">=0.0.8" },
