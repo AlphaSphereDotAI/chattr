@@ -93,7 +93,7 @@ jobs:
     steps:
       - name: Setup Scripts
         id: setup
-        uses: github/gh-aw-actions/setup@9fba95c4e1e3ce39704ccd39b440f6935715bc09 # v0.81.4
+        uses: github/gh-aw-actions/setup@8b1faefeec0ad565badcc87e5d2db4074dc75557 # v0.81.5
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
           job-name: ${{ github.job }}
@@ -136,7 +136,7 @@ jobs:
         id: restore-daily-aic-cache
         if: ${{ env.GH_AW_MAX_DAILY_AI_CREDITS != '' }}
         continue-on-error: true
-        uses: actions/cache/restore@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # v6.0.0
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           key: agentic-workflow-usage-dailymaliciouscodescan-${{ github.run_id }}
           restore-keys: agentic-workflow-usage-dailymaliciouscodescan-
@@ -402,7 +402,7 @@ jobs:
     steps:
       - name: Setup Scripts
         id: setup
-        uses: github/gh-aw-actions/setup@9fba95c4e1e3ce39704ccd39b440f6935715bc09 # v0.81.4
+        uses: github/gh-aw-actions/setup@8b1faefeec0ad565badcc87e5d2db4074dc75557 # v0.81.5
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
           job-name: ${{ github.job }}
@@ -998,7 +998,7 @@ jobs:
     steps:
       - name: Setup Scripts
         id: setup
-        uses: github/gh-aw-actions/setup@9fba95c4e1e3ce39704ccd39b440f6935715bc09 # v0.81.4
+        uses: github/gh-aw-actions/setup@8b1faefeec0ad565badcc87e5d2db4074dc75557 # v0.81.5
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
           job-name: ${{ github.job }}
@@ -1069,7 +1069,7 @@ jobs:
         id: restore-daily-aic-cache-conclusion
         if: always()
         continue-on-error: true
-        uses: actions/cache/restore@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # v6.0.0
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           key: agentic-workflow-usage-dailymaliciouscodescan-${{ github.run_id }}
           restore-keys: agentic-workflow-usage-dailymaliciouscodescan-
@@ -1090,7 +1090,7 @@ jobs:
         id: save-daily-aic-cache
         if: always()
         continue-on-error: true
-        uses: actions/cache/save@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # v6.0.0
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           key: agentic-workflow-usage-dailymaliciouscodescan-${{ github.run_id }}
           path: /tmp/gh-aw/agentic-workflow-usage-cache.jsonl
@@ -1237,7 +1237,7 @@ jobs:
     steps:
       - name: Setup Scripts
         id: setup
-        uses: github/gh-aw-actions/setup@9fba95c4e1e3ce39704ccd39b440f6935715bc09 # v0.81.4
+        uses: github/gh-aw-actions/setup@8b1faefeec0ad565badcc87e5d2db4074dc75557 # v0.81.5
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
           job-name: ${{ github.job }}
