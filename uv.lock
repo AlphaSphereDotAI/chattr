@@ -293,7 +293,7 @@ requires-dist = [
     { name = "fastembed", specifier = ">=0.8.0" },
     { name = "gradio", extras = ["mcp"], specifier = ">=6.19.0" },
     { name = "m3u8", specifier = ">=6.0.0" },
-    { name = "mem0ai", specifier = ">=2.0.8" },
+    { name = "mem0ai", specifier = ">=2.0.10" },
     { name = "poml", specifier = ">=0.0.8" },
     { name = "rich", specifier = ">=15.0.0" },
 ]
@@ -1090,7 +1090,7 @@ wheels = [
 
 [[package]]
 name = "mem0ai"
-version = "2.0.8"
+version = "2.0.10"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "httpx" },
@@ -1102,9 +1102,9 @@ dependencies = [
     { name = "qdrant-client" },
     { name = "sqlalchemy" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/30/3b/fa5d0f3753d4bb6a3b79645d689186093148208dc780bf00c48669683c58/mem0ai-2.0.8.tar.gz", hash = "sha256:2626cee44b8d60ed0de452ae77929ef629f365ac34695999a9da0b97f0f7cb76", size = 233262, upload-time = "2026-06-24T14:52:44.307Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/90/43/b71a46ea164dbee57d2b436d60bc446179e5829e51759ee199240552701f/mem0ai-2.0.10.tar.gz", hash = "sha256:0d2afcd51f093c915b7d1e6208e86fbf563340de181e5604ff8af9513f3dffc8", size = 236842, upload-time = "2026-06-27T17:10:02.81Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/88/3e/ee7eb577dee0ed4ad7ebb60cf3621455e6122284253ad7b868966a47c394/mem0ai-2.0.8-py3-none-any.whl", hash = "sha256:8cda1c2bd8a3f980859a2449eee26e5d7637c5b6b86476eec26d47164bc0ed35", size = 325737, upload-time = "2026-06-24T14:52:42.578Z" },
+    { url = "https://files.pythonhosted.org/packages/a4/58/9c25e77f06ec3483267f898c42fba783f2dcc411c7234dd34830bef8a372/mem0ai-2.0.10-py3-none-any.whl", hash = "sha256:9a99401c2c57bfbaf6ab780b193e458eb46802b4d75cac42f61eff13c9e34062", size = 329294, upload-time = "2026-06-27T17:10:01.157Z" },
 ]
 
 [[package]]
