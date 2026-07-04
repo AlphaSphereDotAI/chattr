@@ -137,7 +137,7 @@ jobs:
         id: restore-daily-aic-cache
         if: ${{ env.GH_AW_MAX_DAILY_AI_CREDITS != '' }}
         continue-on-error: true
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
         with:
           key: agentic-workflow-usage-dailymaliciouscodescan-${{ github.run_id }}
           restore-keys: agentic-workflow-usage-dailymaliciouscodescan-
@@ -1068,7 +1068,7 @@ jobs:
         id: restore-daily-aic-cache-conclusion
         if: always()
         continue-on-error: true
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
         with:
           key: agentic-workflow-usage-dailymaliciouscodescan-${{ github.run_id }}
           restore-keys: agentic-workflow-usage-dailymaliciouscodescan-
@@ -1089,7 +1089,7 @@ jobs:
         id: save-daily-aic-cache
         if: always()
         continue-on-error: true
-        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
         with:
           key: agentic-workflow-usage-dailymaliciouscodescan-${{ github.run_id }}
           path: /tmp/gh-aw/agentic-workflow-usage-cache.jsonl
@@ -1334,7 +1334,7 @@ jobs:
           path: /tmp/gh-aw/sarif/
       - name: Upload SARIF to GitHub Code Scanning
         id: upload_code_scanning_sarif
-        uses: github/codeql-action/upload-sarif@8aad20d150bbac5944a9f9d289da16a4b0d87c1e # v4.36.2
+        uses: github/codeql-action/upload-sarif@54f647b7e1bb85c95cddabcd46b0c578ec92bc1a # v4.36.3
         with:
           token: ${{ secrets.GH_AW_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           sarif_file: /tmp/gh-aw/sarif/code-scanning-alert.sarif
