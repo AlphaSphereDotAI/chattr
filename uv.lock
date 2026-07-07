@@ -304,7 +304,7 @@ dev = [
     { name = "pre-commit", specifier = ">=4.6.0" },
     { name = "pytest-emoji", specifier = ">=0.2.0" },
     { name = "pytest-md", specifier = ">=0.2.0" },
-    { name = "pytest-mergify", specifier = ">=2026.7.6.1" },
+    { name = "pytest-mergify", specifier = ">=2026.7.7.1" },
     { name = "ruff", specifier = ">=0.15.20" },
     { name = "ty", specifier = ">=0.0.36" },
     { name = "uv-build", specifier = ">=0.11.21" },
@@ -1757,7 +1757,7 @@ wheels = [
 
 [[package]]
 name = "pytest-mergify"
-version = "2026.7.6.1"
+version = "2026.7.7.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "opentelemetry-exporter-otlp-proto-http" },
@@ -1766,9 +1766,9 @@ dependencies = [
     { name = "pytest-timeout" },
     { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/0d/a5/b067c84c3017dee22dacbfe6577602b80f8ae75705d32aad2ade4ffd74c8/pytest_mergify-2026.7.6.1.tar.gz", hash = "sha256:a52f76ba073aac05c0f4244bd7a65ae8343c75f25091e38b76c0f65a6d3dbbda", size = 86903, upload-time = "2026-07-06T14:40:20.729Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/03/fd/6bd757cba217a7eeb6f17dcc6c5ab70e309221680403d157501b214b8df4/pytest_mergify-2026.7.7.1.tar.gz", hash = "sha256:b7cc7187ba5da462a1aa6cbea4741feec015e6293ee2b4b777acf34097085b78", size = 87564, upload-time = "2026-07-07T13:31:32.269Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/48/4d/a50b5e1830e554bf81a3bd346a3b799f79c20390eae2e74886f04b2d764e/pytest_mergify-2026.7.6.1-py3-none-any.whl", hash = "sha256:0e99a6260cc0ad7131b426e3ea6f043567cb963ace867e9d48f2cbb51a5b1061", size = 36632, upload-time = "2026-07-06T14:40:19.487Z" },
+    { url = "https://files.pythonhosted.org/packages/7b/f8/86da7945a1f39460cd3f5452bf9523e9b8956aa60f8bf2a6565f5ab7b811/pytest_mergify-2026.7.7.1-py3-none-any.whl", hash = "sha256:d35432bc0b9ff217940f02fbbf543e6a7c3163885b027afceb35693fb042a56a", size = 37096, upload-time = "2026-07-07T13:31:30.96Z" },
 ]
 
 [[package]]
