@@ -94,7 +94,7 @@ jobs:
     steps:
       - name: Setup Scripts
         id: setup
-        uses: github/gh-aw-actions/setup@cba13b4e136caf371ffda4b9432f43841d6e5ec1 # v0.82.4
+        uses: github/gh-aw-actions/setup@cec6394202d7db187b02310d928812194988eb20 # v0.82.6
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
           job-name: ${{ github.job }}
@@ -407,7 +407,7 @@ jobs:
     steps:
       - name: Setup Scripts
         id: setup
-        uses: github/gh-aw-actions/setup@cba13b4e136caf371ffda4b9432f43841d6e5ec1 # v0.82.4
+        uses: github/gh-aw-actions/setup@cec6394202d7db187b02310d928812194988eb20 # v0.82.6
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
           job-name: ${{ github.job }}
@@ -995,7 +995,7 @@ jobs:
     steps:
       - name: Setup Scripts
         id: setup
-        uses: github/gh-aw-actions/setup@cba13b4e136caf371ffda4b9432f43841d6e5ec1 # v0.82.4
+        uses: github/gh-aw-actions/setup@cec6394202d7db187b02310d928812194988eb20 # v0.82.6
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
           job-name: ${{ github.job }}
@@ -1237,7 +1237,7 @@ jobs:
     steps:
       - name: Setup Scripts
         id: setup
-        uses: github/gh-aw-actions/setup@cba13b4e136caf371ffda4b9432f43841d6e5ec1 # v0.82.4
+        uses: github/gh-aw-actions/setup@cec6394202d7db187b02310d928812194988eb20 # v0.82.6
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
           job-name: ${{ github.job }}
@@ -1334,7 +1334,7 @@ jobs:
           path: /tmp/gh-aw/sarif/
       - name: Upload SARIF to GitHub Code Scanning
         id: upload_code_scanning_sarif
-        uses: github/codeql-action/upload-sarif@54f647b7e1bb85c95cddabcd46b0c578ec92bc1a # v4.36.3
+        uses: github/codeql-action/upload-sarif@99df26d4f13ea111d4ec1a7dddef6063f76b97e9 # v4.37.0
         with:
           token: ${{ secrets.GH_AW_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           sarif_file: /tmp/gh-aw/sarif/code-scanning-alert.sarif
