@@ -28,7 +28,7 @@ requires = ["uv_build"]
 [dependency-groups]
 dev = [
   "doppler-env>=0.3.1",
-  "pre-commit>=4.6.0",
+  "pre-commit>=4.6.1",
   "pytest-emoji>=0.2.0",
   "pytest-md>=0.2.0",
   "pytest-mergify>=2026.7.7.1",
