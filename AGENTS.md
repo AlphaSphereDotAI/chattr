@@ -8,6 +8,12 @@
 uv sync  # Install dependencies
 ```
 
+Or using `devenv` (if available):
+
+```bash
+devenv shell  # Enter the development environment
+```
+
 ### Building
 
 ```bash
@@ -37,7 +43,8 @@ uv run pytest tests/test_app.py::test_app  # Run single test
 
 ### General
 
-- **Line length**: 88 characters
+- **Python Version**: `>=3.14.5, <3.15`
+- **Line length**: 120 characters
 - **Indentation**: 4 spaces
 - **Quote style**: Double quotes (`"`)
 - **File encoding**: UTF-8
@@ -83,12 +90,15 @@ uv run pytest tests/test_app.py::test_app  # Run single test
 - Use `agno` framework for defining agents and toolkits
 - Use `gradio` for the web interface
 - Use `pydantic` and `pydantic-settings` for configuration management
+- Use `poml` (Prompt Object Markup Language) for prompt templating
+- Use `rich` for terminal output and debugging
 
 ### Documentation
 
-- Use docstrings for all public functions, classes, and modules
+- Use docstrings for all public functions and classes
 - Follow Google-style docstring format
 - Document parameters, return values, and exceptions
+- Module docstrings are optional but encouraged
 
 ### Logging
 
@@ -102,6 +112,18 @@ uv run pytest tests/test_app.py::test_app  # Run single test
 - Test functions named `test_*`
 - Use descriptive assertions
 - Mock external dependencies when needed
+
+## Environment Variables
+
+Key environment variables used by the application:
+
+| Variable | Description | Default |
+|:---------|:------------|:--------|
+| `MODEL__API_KEY` | API key for the model provider | **Required** |
+| `MODEL__URL` | OpenAI-compatible endpoint | `https://api.groq.com/openai/v1` |
+| `MODEL__NAME` | Model name (e.g., `llama3-70b-8192`) | `llama3-70b-8192` |
+| `VOICE_GENERATOR_MCP__URL` | MCP service for audio generation | `http://localhost:8001/gradio_api/mcp/sse` |
+| `VIDEO_GENERATOR_MCP__URL` | MCP service for video generation | `http://localhost:8002/gradio_api/mcp/sse` |
 
 ## Agentic Workflows
 
