@@ -311,7 +311,7 @@ dev = [
     { name = "pre-commit", specifier = ">=4.6.1" },
     { name = "pytest-emoji", specifier = ">=0.2.0" },
     { name = "pytest-md", specifier = ">=0.2.0" },
-    { name = "pytest-mergify", specifier = ">=2026.7.7.1" },
+    { name = "pytest-mergify", specifier = ">=2026.7.29.1" },
     { name = "ruff", specifier = ">=0.16.0" },
     { name = "ty", specifier = ">=0.0.36" },
     { name = "uv-build", specifier = ">=0.11.21" },
@@ -1740,7 +1740,7 @@ wheels = [
 
 [[package]]
 name = "pytest-mergify"
-version = "2026.7.7.1"
+version = "2026.7.29.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "opentelemetry-exporter-otlp-proto-http" },
@@ -1749,9 +1749,9 @@ dependencies = [
     { name = "pytest-timeout" },
     { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/03/fd/6bd757cba217a7eeb6f17dcc6c5ab70e309221680403d157501b214b8df4/pytest_mergify-2026.7.7.1.tar.gz", hash = "sha256:b7cc7187ba5da462a1aa6cbea4741feec015e6293ee2b4b777acf34097085b78", size = 87564, upload-time = "2026-07-07T13:31:32.269Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/03/ac/af96ca80f6c4ede2bd32113f24f9b4bef7d449e792a359dc952b7708ea42/pytest_mergify-2026.7.29.1.tar.gz", hash = "sha256:e5e152d239d14e6b5e70b7aad23a2fcba841ee07bae425aee5fccaf434148471", size = 108292, upload-time = "2026-07-29T14:42:08.969Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/7b/f8/86da7945a1f39460cd3f5452bf9523e9b8956aa60f8bf2a6565f5ab7b811/pytest_mergify-2026.7.7.1-py3-none-any.whl", hash = "sha256:d35432bc0b9ff217940f02fbbf543e6a7c3163885b027afceb35693fb042a56a", size = 37096, upload-time = "2026-07-07T13:31:30.96Z" },
+    { url = "https://files.pythonhosted.org/packages/b1/34/209e594e43ee8d0fb5d1fc4eacc3f2d056ece56265a45d8301d3b95ab416/pytest_mergify-2026.7.29.1-py3-none-any.whl", hash = "sha256:92d0463d560f130fea2d16155e4776ab366ed2a142b4d7315a79274960888833", size = 42985, upload-time = "2026-07-29T14:42:07.542Z" },
 ]
 
 [[package]]
