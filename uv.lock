@@ -312,7 +312,7 @@ dev = [
     { name = "pytest-emoji", specifier = ">=0.2.0" },
     { name = "pytest-md", specifier = ">=0.2.0" },
     { name = "pytest-mergify", specifier = ">=2026.8.3.1" },
-    { name = "ruff", specifier = ">=0.16.0" },
+    { name = "ruff", specifier = ">=0.16.1" },
     { name = "ty", specifier = ">=0.0.36" },
     { name = "uv-build", specifier = ">=0.11.21" },
 ]
