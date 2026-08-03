@@ -311,7 +311,7 @@ dev = [
     { name = "pre-commit", specifier = ">=4.6.1" },
     { name = "pytest-emoji", specifier = ">=0.2.0" },
     { name = "pytest-md", specifier = ">=0.2.0" },
-    { name = "pytest-mergify", specifier = ">=2026.7.29.1" },
+    { name = "pytest-mergify", specifier = ">=2026.8.3.1" },
     { name = "ruff", specifier = ">=0.16.0" },
     { name = "ty", specifier = ">=0.0.36" },
     { name = "uv-build", specifier = ">=0.11.21" },
@@ -1740,7 +1740,7 @@ wheels = [
 
 [[package]]
 name = "pytest-mergify"
-version = "2026.7.29.1"
+version = "2026.8.3.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "opentelemetry-exporter-otlp-proto-http" },
@@ -1749,9 +1749,9 @@ dependencies = [
     { name = "pytest-timeout" },
     { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/03/ac/af96ca80f6c4ede2bd32113f24f9b4bef7d449e792a359dc952b7708ea42/pytest_mergify-2026.7.29.1.tar.gz", hash = "sha256:e5e152d239d14e6b5e70b7aad23a2fcba841ee07bae425aee5fccaf434148471", size = 108292, upload-time = "2026-07-29T14:42:08.969Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/17/74/25385493b85279876439a3ca594ffc33ec51ff9aac891238572affb8f543/pytest_mergify-2026.8.3.1.tar.gz", hash = "sha256:728d91b06e324be85c3d5933fd6dec05d7a4e10b8ccb33328cf7410112823a55", size = 103350, upload-time = "2026-08-03T12:05:54.292Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b1/34/209e594e43ee8d0fb5d1fc4eacc3f2d056ece56265a45d8301d3b95ab416/pytest_mergify-2026.7.29.1-py3-none-any.whl", hash = "sha256:92d0463d560f130fea2d16155e4776ab366ed2a142b4d7315a79274960888833", size = 42985, upload-time = "2026-07-29T14:42:07.542Z" },
+    { url = "https://files.pythonhosted.org/packages/c3/19/c9bc9337b61c64fc85677fd88f76fbc250cd6241fe6aec40568deedb05ad/pytest_mergify-2026.8.3.1-py3-none-any.whl", hash = "sha256:93f5ed5d32f0532631ca3c2916c3324d41f5f650d63b9230cac0cffc62458eaf", size = 44049, upload-time = "2026-08-03T12:05:53.16Z" },
 ]
 
 [[package]]
