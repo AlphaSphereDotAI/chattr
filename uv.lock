@@ -9,7 +9,7 @@ resolution-markers = [
 
 [[package]]
 name = "agno"
-version = "2.8.6"
+version = "2.8.7"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "agnoctl" },
@@ -23,9 +23,9 @@ dependencies = [
     { name = "rich" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/a3/b2/67325c4c41cbc35bcd45a8df6f3a144c1c8e28277dbeade2962ded577bab/agno-2.8.6.tar.gz", hash = "sha256:3684a5405b84f2fc6cb0698dc08466686e08eccba43784a7fc26a44e7f04f35e", size = 2546276, upload-time = "2026-07-30T13:52:18.789Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/ea/3e/8ccb64e7468edfa893e10256bcff362f0c0de995ccbf6672ac94f1d3860a/agno-2.8.7.tar.gz", hash = "sha256:d49396a2062ee6994ca82695b9bd1e1b95667fec432c544afa38133e564bf090", size = 2558062, upload-time = "2026-08-05T14:45:46.26Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/e1/3e/43115e86b98512bd057c799d1b98234d7d6cfd030e80ea4becc9af04ecbf/agno-2.8.6-py3-none-any.whl", hash = "sha256:180cd477210ad417d8f66351dacfb0d0b7ede9de75420fb13a8bc8a1c0b37656", size = 2974123, upload-time = "2026-07-30T13:52:16.581Z" },
+    { url = "https://files.pythonhosted.org/packages/c2/70/dd751ae630be7eff6835cb7659fc3d53c19503da060635f1a0af56c1843b/agno-2.8.7-py3-none-any.whl", hash = "sha256:6a2763eb469163f7b79ab1da6ca2f22d8619f6b9d614574f975d9c12bb4323ea", size = 2986771, upload-time = "2026-08-05T14:45:43.508Z" },
 ]
 
 [package.optional-dependencies]
@@ -295,12 +295,12 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "agno", extras = ["google", "qdrant"], specifier = ">=2.8.6" },
+    { name = "agno", extras = ["google", "qdrant"], specifier = ">=2.8.7" },
     { name = "ddgs", specifier = ">=9.14.4" },
     { name = "fastembed", specifier = ">=0.8.0" },
     { name = "gradio", extras = ["mcp"], specifier = ">=6.22.0" },
     { name = "m3u8", specifier = ">=6.0.0" },
-    { name = "mem0ai", specifier = ">=2.0.16" },
+    { name = "mem0ai", specifier = ">=2.0.17" },
     { name = "poml", specifier = ">=0.0.8" },
     { name = "rich", specifier = ">=15.0.0" },
 ]
@@ -1073,7 +1073,7 @@ wheels = [
 
 [[package]]
 name = "mem0ai"
-version = "2.0.16"
+version = "2.0.17"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "httpx" },
@@ -1085,9 +1085,9 @@ dependencies = [
     { name = "qdrant-client" },
     { name = "sqlalchemy" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/51/3b/f62e7612d763fadd6b2f31bc60c9f54325f8a2126805d67928cbbdcf4783/mem0ai-2.0.16.tar.gz", hash = "sha256:a9b4c87a82f25e8961f567574b4f0846771f18bde241bc468dd01870052aef83", size = 247873, upload-time = "2026-08-04T18:52:43.833Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/87/42/4e266867444612ec4069bf57cd7c5e7ffbd53b4ee8216551d8a89d978c7f/mem0ai-2.0.17.tar.gz", hash = "sha256:fc84dcf12b656d63d662d57353d137ddccfcf67665cbe2476793a8115930c262", size = 248132, upload-time = "2026-08-05T16:43:37.648Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/71/ab/a4d7a999a76720a903d9d098a5b726b1b3b57b59fe50dc245b203cd9167a/mem0ai-2.0.16-py3-none-any.whl", hash = "sha256:c918c72d5919ea1957a9e941f27ca6acd4568d1833da4058a5c2fa21d1f72b93", size = 343711, upload-time = "2026-08-04T18:52:41.822Z" },
+    { url = "https://files.pythonhosted.org/packages/f4/bf/f8167f4e9e5d39c698a82c411700fffcbefeced0f8dec6b0e6a718ed0537/mem0ai-2.0.17-py3-none-any.whl", hash = "sha256:1521209f0ab4c77b7e5777aa1b0b5f0104efa06ca5b9eddb804cdd091c17726a", size = 343876, upload-time = "2026-08-05T16:43:36.096Z" },
 ]
 
 [[package]]
