@@ -3,12 +3,12 @@ authors = [
   { email = "mohamed.hisham.abdelzaher@gmail.com", name = "Mohamed Hisham Abdelzaher" },
 ]
 dependencies = [
-  "agno[google,qdrant]>=2.8.6",
+  "agno[google,qdrant]>=2.8.7",
   "ddgs>=9.14.4",
   "fastembed>=0.8.0",
   "gradio[mcp]>=6.22.0",
   "m3u8>=6.0.0",
-  "mem0ai>=2.0.16",
+  "mem0ai>=2.0.17",
   "poml>=0.0.8",
   "rich>=15.0.0",
 ]
