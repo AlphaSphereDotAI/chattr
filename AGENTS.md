@@ -6,6 +6,8 @@
 
 ```bash
 uv sync  # Install dependencies
+# OR
+devenv shell  # Enter development environment
 ```
 
 ### Building
@@ -18,12 +20,16 @@ uv build  # Build source and wheel distributions
 
 ```bash
 uv run chattr  # Launch the Gradio app
+# OR
+devenv up  # Launch all processes including the app
 ```
 
 ### Linting & Formatting
 
 ```bash
 uvx pre-commit run --all-files  # Run all linters and formatting checks
+# OR
+devenv test  # Run all checks and tests
 ```
 
 ### Testing
@@ -37,10 +43,11 @@ uv run pytest tests/test_app.py::test_app  # Run single test
 
 ### General
 
-- **Line length**: 88 characters
+- **Line length**: 120 characters
 - **Indentation**: 4 spaces
 - **Quote style**: Double quotes (`"`)
 - **File encoding**: UTF-8
+- **Python Version**: Target Python 3.14
 
 ### Imports
 
@@ -83,6 +90,9 @@ uv run pytest tests/test_app.py::test_app  # Run single test
 - Use `agno` framework for defining agents and toolkits
 - Use `gradio` for the web interface
 - Use `pydantic` and `pydantic-settings` for configuration management
+- Use `poml` for prompt management and templating
+- Use `MCP` (Model Context Protocol) for tool integration
+- Use `devenv` for development environment and hooks management
 
 ### Documentation
 
