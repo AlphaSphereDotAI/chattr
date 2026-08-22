@@ -1335,7 +1335,7 @@ jobs:
           path: /tmp/gh-aw/sarif/
       - name: Upload SARIF to GitHub Code Scanning
         id: upload_code_scanning_sarif
-        uses: github/codeql-action/upload-sarif@d1ba80a13dd99fba24a470575428917156a28b43 # v4.37.5
+        uses: github/codeql-action/upload-sarif@db488ddef3bf6cb639b32c2e9a7c0a7ea8271d28 # v4.37.8
         with:
           token: ${{ secrets.GH_AW_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           sarif_file: /tmp/gh-aw/sarif/code-scanning-alert.sarif
