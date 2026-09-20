@@ -13,7 +13,7 @@ runtime_version = "3.x.x"
 type_checker = "mypy"
 
 [[analyzers]]
-name = "docker"
+  name = "docker"
 
 [[analyzers]]
 name = "secrets"
