@@ -10,7 +10,6 @@ pull_request_rules:
     conditions:
       - merged
     actions:
-      delete_head_branch:
       comment:
         message: >-
           Thank you for your contribution @{{author}}! Your pull request has been
@@ -60,7 +59,6 @@ queue_rules:
   - name: default
     update_method: merge
     allow_queue_branch_edit: true
-    queue_branch_merge_method: fast-forward
     queue_conditions:
       - and:
           - 'check-success = DeepSource: Secrets'
@@ -72,3 +70,6 @@ queue_rules:
           - check-success = SonarCloud
           - check-success = Test Image / API Test
           - check-success = CodeQL
+    merge_method: fast-forward
+merge_protections_settings:
+  reporting_method: check-runs
