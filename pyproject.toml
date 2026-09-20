@@ -25,7 +25,7 @@ dependencies = [
 dev = [
     "pytest-emoji>=0.2.0",
     "pytest-md>=0.2.0",
-    "pytest-mergify>=2025.9.24.2",
+    "pytest-mergify>=2025.12.29.1",
     "ruff>=0.13.3",
     "ty>=0.0.1a20",
 ]
