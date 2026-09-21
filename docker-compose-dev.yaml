@@ -1,17 +1,18 @@
 name: Chattr Dev
 services:
   vector_database:
-    image: qdrant/qdrant:latest
+    image: qdrant/qdrant:latest@sha256:94728574965d17c6485dd361aa3c0818b325b9016dac5ea6afec7b4b2700865f
     ports:
-      - "6333:6333"
-      - "6334:6334"
+      - 6333:6333
+      - 6334:6334
     volumes:
       - qdrant_storage:/qdrant/storage
     restart: on-failure:3
   voice_generator:
-    image: ghcr.io/alphaspheredotai/vocalizr:latest
+    container_name: VoiceGenerator
+    image: ghcr.io/alphaspheredotai/vocalizr:latest@sha256:df1f4fa0615ae3f34249454ddc3a74e3fd955332da507ff2c7d5373190037863
     ports:
-      - "7861:7860"
+      - 7861:7860
     post_start:
       - command: chown -R nonroot:nonroot /home/nonroot
         user: root
@@ -26,15 +27,15 @@ services:
       GRADIO_DEBUG: 1
     healthcheck:
       test:
-        - "CMD"
-        - "curl"
-        - "-o"
-        - "/dev/null"
-        - "-f"
-        - "-s"
-        - "-w"
+        - CMD
+        - curl
+        - -o
+        - /dev/null
+        - -f
+        - -s
+        - -w
         - "'Status: %{http_code},\tTime: %{time_total}s'"
-        - "http://localhost:7860/"
+        - http://localhost:7860/
       interval: 1m30s
       timeout: 10s
       retries: 5
@@ -48,9 +49,10 @@ services:
               capabilities:
                 - gpu
   video_generator:
-    image: ghcr.io/alphaspheredotai/visualizr:latest
+    container_name: VideoGenerator
+    image: ghcr.io/alphaspheredotai/visualizr:latest@sha256:2c5b096a66c6ebee1a5c0242a8b42c393e0cfdcda086ae6ceba11f92618ec7aa
     ports:
-      - "7862:7860"
+      - 7862:7860
     volumes:
       - assets:/home/nonroot/assets
       - checkpoint:/home/nonroot/ckpts
@@ -65,15 +67,15 @@ services:
       GRADIO_DEBUG: 1
     healthcheck:
       test:
-        - "CMD"
-        - "curl"
-        - "-o"
-        - "/dev/null"
-        - "-f"
-        - "-s"
-        - "-w"
+        - CMD
+        - curl
+        - -o
+        - /dev/null
+        - -f
+        - -s
+        - -w
         - "'Status: %{http_code},\tTime: %{time_total}s'"
-        - "http://localhost:7860/"
+        - http://localhost:7860/
       interval: 1m30s
       timeout: 10s
       retries: 5
