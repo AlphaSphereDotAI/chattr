@@ -1,7 +1,7 @@
 from agno.utils.log import log_info
 from agno.vectordb.qdrant import Qdrant
 
-from chattr.app.settings import VectorDatabaseSettings
+from chattr.settings.vector_database import VectorDatabaseSettings
 
 
 def setup_vector_database(vectordb: VectorDatabaseSettings) -> Qdrant:

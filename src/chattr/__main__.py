@@ -6,7 +6,7 @@ from fastapi import FastAPI
 
 from chattr.app.app import setup_app
 from chattr.app.logger import setup_logger
-from chattr.app.settings import Settings
+from chattr.settings import Settings
 
 
 def main() -> None:

@@ -14,7 +14,7 @@ from chattr.agent.knowledge import setup_knowledge
 from chattr.agent.model import setup_model
 from chattr.agent.tools import setup_mcp_tools
 from chattr.agent.vector_database import setup_vector_database
-from chattr.app.settings import Settings
+from chattr.settings import Settings
 
 if TYPE_CHECKING:
     from agno.db.json import JsonDb
