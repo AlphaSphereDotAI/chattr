@@ -17,7 +17,7 @@ def setup_mcp_tools(
         return None
     return [
         MCPTools(
-            server_params=mcp.model_dump(),
+            server_params=mcp,
             transport="streamable-http",
             refresh_connection=True,
         )
