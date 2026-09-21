@@ -20,9 +20,9 @@ jobs:
       contents: read
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5.0.0
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       - name: Install uv
-        uses: astral-sh/setup-uv@v6.0.0
+        uses: astral-sh/setup-uv@c7f87aa956e4c323abf06d5dec078e358f6b4d04 # v6.0.0
         with:
           enable-cache: true
           activate-environment: true
@@ -30,7 +30,7 @@ jobs:
         id: dependency_check
         run: uv sync --frozen --no-install-project
       - name: Job Summary
-        uses: jazanne/job-summary-action@v1.0.0
+        uses: jazanne/job-summary-action@690eb386a0b86fe4da7c6f0e543e61330ff09f06 # v1.0.0
         if: success() || failure()
         with:
           summary: |-
