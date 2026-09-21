@@ -9,13 +9,13 @@ on:
       - Dockerfile
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 permissions: read-all
 jobs:
   version:
     name: Versioning
     runs-on: ubuntu-latest
-    if: github.actor == 'renovate[bot]'
+    if: github.actor == 'renovate[bot]' || github.actor == 'mergify[bot]'
     permissions:
       contents: write
     environment:
