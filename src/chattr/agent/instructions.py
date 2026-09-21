@@ -4,7 +4,9 @@ from agno.tools.mcp import MCPTools
 from agno.utils.log import log_error
 
 
-def setup_instructions(character: str | None, tools: list[MultiMCPTools | None]) -> list[str]:
+def setup_instructions(
+    character: str | None, tools: list[MCPTools] | None
+) -> list[str]:
     """Return a list of instructions to mimic a given character."""
     if not character:
         log_error("`character` must be provided.")
@@ -14,8 +16,8 @@ def setup_instructions(character: str | None, tools: list[MultiMCPTools | None])
         "Gather relevant information and resources.",
         f"Formulate a clear and concise response in {character}'s voice.",
     ]
-    for tool in tools:
-        if isinstance(tool, MultiMCPTools):
+    if tools:
+        for tool in tools:
             for key in tool.functions:
                 if tool.functions[key].name == "generate_audio_for_text":
                     instructions.append(

@@ -14,7 +14,7 @@ class AgentConfiguration(NamedTuple):
     """Configuration class for the Chattr agent."""
 
     model: OpenAILike
-    tools: MCPTools
+    tools: list[MCPTools]
     description: str
     instructions: list[str]
     db: BaseDb

@@ -44,7 +44,7 @@ class Settings(BaseSettings):
     log: LoggerSettings = Field(default_factory=LoggerSettings)
     debug: bool = Field(default=False)
     timezone: TimeZoneName = Field(default="Africa/Cairo")
-    host: IPvAnyAddress = Field(default="0.0.0.0")
+    host: IPvAnyAddress = Field(default_factory="0.0.0.0")
     port: PositiveInt = Field(default=7777)
 
 

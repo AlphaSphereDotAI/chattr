@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING
 
 from agno.agent import Agent
 from agno.os import AgentOS
-from agno.utils.log import log_warning
 
 from chattr.agent.agent import AgentConfiguration, setup_agent
 from chattr.agent.database import setup_database
@@ -20,7 +19,7 @@ if TYPE_CHECKING:
     from agno.db.json import JsonDb
     from agno.knowledge import Knowledge
     from agno.models.openai import OpenAILike
-    from agno.tools.mcp import MultiMCPTools
+    from agno.tools.mcp import MCPTools
     from agno.vectordb.qdrant import Qdrant
 
 
