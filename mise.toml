@@ -1,0 +1,16 @@
+[tools]
+entire = "latest"
+tombi = "latest"
+"npm:openwiki" = "latest"
+prek = "latest"
+"pipx:commitizen" = "latest"
+github-cli = "latest"
+uv = "latest"
+"github:lukehsiao/pyproject-udeps" = "latest"
+
+[settings]
+minimum_release_age = "0d"
+
+[[watch_files]]
+patterns = ["src/**/*.py"]
+run = "uv format"
