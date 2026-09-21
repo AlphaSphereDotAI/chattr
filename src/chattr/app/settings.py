@@ -1,8 +1,11 @@
 """Settings for the Chattr app."""
 
+from enum import Enum
+from logging import CRITICAL, DEBUG, ERROR, INFO, NOTSET, WARNING
 from pathlib import Path
 from typing import Self
 
+from agno.utils.log import log_error, log_info
 from dotenv import load_dotenv
 from pydantic import (
     BaseModel,
@@ -10,14 +13,15 @@ from pydantic import (
     Field,
     FilePath,
     HttpUrl,
+    IPvAnyAddress,
+    PositiveInt,
     SecretStr,
     computed_field,
     model_validator,
 )
+from pydantic_extra_types.timezone_name import TimeZoneName
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from chattr import APP_NAME
-from chattr.app.logger import logger
 from chattr.app.scheme import MCPScheme
 
 load_dotenv()
@@ -38,24 +42,20 @@ class VectorDatabaseSettings(BaseModel):
 
 
 class MCPSettings(BaseModel):
-    path: FilePath = Field(default=None)
-    schema_path: FilePath = Field(
-        default_factory=lambda: Path.cwd() / "assets" / "mcp-config.json"
-    )
+    """Settings for MCP configuration."""
 
-    @model_validator(mode="after")
-    def is_exists(self) -> Self:
-        """Check if the MCP config file exists."""
-        if not self.path.exists():
-            logger.warning("`mcp.json` not found.")
-        return self
+    path: FilePath = Field(default_factory=lambda: Path.cwd() / "mcp.json")
 
     @model_validator(mode="after")
     def is_valid(self) -> Self:
-        """Validate that the MCP config file is a JSON file."""
-        if self.path and self.path.suffix != ".json":
-            msg = "MCP config file must be a JSON file"
-            raise ValueError(msg)
+        """Validate that the MCP config file is a valid JSON file."""
+        if self.path:
+            if self.path.suffix != ".json":
+                msg = "MCP config file must be a JSON file"
+                raise ValueError(msg)
+            if self.path.stem != "mcp":
+                msg = "MCP config file must be named 'mcp.json'"
+                raise ValueError(msg)
         return self
 
     @model_validator(mode="after")
@@ -70,12 +70,6 @@ class DirectorySettings(BaseModel):
     """Settings for application directories."""
 
     base: DirectoryPath = Field(default_factory=Path.cwd, frozen=True)
-
-    @computed_field
-    @property
-    def log(self) -> DirectoryPath:
-        """Path to the log directory."""
-        return self.base / "logs" / APP_NAME
 
     @computed_field
     @property
@@ -111,20 +105,13 @@ class DirectorySettings(BaseModel):
         Returns:
             Self: The validated DirectorySettings instance.
         """
-        for directory in [
-            self.base,
-            self.assets,
-            self.log,
-            self.audio,
-            self.video,
-            self.prompts,
-        ]:
+        for directory in [self.base, self.assets, self.audio, self.video, self.prompts]:
             if not directory.exists():
                 try:
                     directory.mkdir(parents=True, exist_ok=True)
-                    logger.info("Created directory %s.", directory)
+                    log_info(f"Created directory {directory}.")
                 except OSError as e:
-                    logger.error("Error creating directory %s: %s", directory, e)
+                    log_error(f"Error creating directory {directory}: {e}")
                     raise
         return self
 
@@ -136,35 +123,20 @@ class ModelSettings(BaseModel):
     name: str | None = Field(default=None)
     api_key: SecretStr | None = Field(default=None)
     temperature: float = Field(default=0.0, ge=0.0, le=1.0)
-    system_message: str = Field(
-        default="You are a helpful assistant that can answer questions about the time and generate audio files from text."
-    )
+    cache_response: bool = Field(default=True)
 
     @model_validator(mode="after")
-    def check_api_key_exist(self) -> Self:
-        """
-        Ensure that an API key and model name are provided if a model URL is set.
-
-        This method validates the presence of required
-        credentials for the model provider.
-
-        Returns:
-            Self: The validated ModelSettings instance.
-
-        Raises:
-            ValueError: If the API key or model name is missing
-                        when a model URL is provided.
-        """
+    def check_param_exist(self) -> Self:
+        """Validate the existence of required credentials for the model provider."""
         if self.url:
             if not self.api_key or not self.api_key.get_secret_value():
-                raise ValueError(
-                    "You need to provide API Key for the Model provider via `MODEL__API_KEY`"
+                _msg: str = (
+                    "You need to provide API Key for the Model provider: Set via `MODEL__API_KEY`"
                 )
                 raise ValueError(_msg)
             if not self.name:
                 _msg: str = (
-                    "You need to provide Model name for the Model provider:"
-                    " Set via `MODEL__NAME`"
+                    "You need to provide Model name for the Model provider: Set via `MODEL__NAME`"
                 )
                 raise ValueError(_msg)
         return self
@@ -176,10 +148,30 @@ class CharacterSettings(BaseModel):
     name: str | None = Field(default=None)
 
 
+class LogLevel(Enum):
+    """Logging levels."""
+
+    CRITICAL = CRITICAL
+    ERROR = ERROR
+    WARNING = WARNING
+    INFO = INFO
+    DEBUG = DEBUG
+    NOTSET = NOTSET
+
+
+class LoggerSettings(BaseModel):
+    """Settings related to logger configuration."""
+
+    name: str = Field(default="chattr", frozen=True)
+    level: LogLevel = Field(default=LogLevel.INFO)
+    propagate: bool = Field(default=False)
+    format: str = Field(default="%(name)s | %(process)d | %(message)s")
+
+
 class Settings(BaseSettings):
     """Configuration for the Chattr app."""
 
-    model_config: SettingsConfigDict = SettingsConfigDict(
+    model_config = SettingsConfigDict(
         env_nested_delimiter="__",
         env_parse_none_str="None",
         env_file=".env",
@@ -194,7 +186,11 @@ class Settings(BaseSettings):
     )
     mcp: MCPSettings = Field(default_factory=MCPSettings)
     character: CharacterSettings = Field(default_factory=CharacterSettings)
+    log: LoggerSettings = Field(default_factory=LoggerSettings)
     debug: bool = Field(default=False)
+    timezone: TimeZoneName = Field(default="Africa/Cairo")
+    host: IPvAnyAddress = Field(default="0.0.0.0")
+    port: PositiveInt = Field(default=7777)
 
 
 if __name__ == "__main__":
