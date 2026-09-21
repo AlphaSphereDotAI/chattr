@@ -24,25 +24,24 @@ if TYPE_CHECKING:
 
 
 def setup_app(settings: Settings) -> AgentOS:
-    _tools: list[MultiMCPTools] | None = None
-    tools: MultiMCPTools | None = setup_mcp_tools(settings.mcp)
+    tools: list[MCPTools] | None = setup_mcp_tools(
+        [
+            settings.voice_generator_mcp_server,
+            settings.video_generator_mcp_server,
+            *settings.extra_mcp_servers,
+        ]
+    )
     model: OpenAILike = setup_model(settings.model)
     db: JsonDb = setup_database()
     vectordb: Qdrant = setup_vector_database(settings.vector_database)
     knowledge: Knowledge = setup_knowledge(vectordb, db)
     description: str = setup_description(settings.character.name)
-    instructions: list[str] = setup_instructions(settings.character.name, [tools])
-
-    if not tools:
-        _msg = "No tools found"
-        log_warning(_msg)
-    else:
-        _tools = [tools]
+    instructions: list[str] = setup_instructions(settings.character.name, tools)
 
     agent: Agent = setup_agent(
         AgentConfiguration(
             model=model,
-            tools=_tools,
+            tools=tools if tools else [],
             description=description,
             instructions=instructions,
             db=db,
