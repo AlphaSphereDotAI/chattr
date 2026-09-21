@@ -19,16 +19,5 @@ class VideoGeneratorMCPServer(BaseModel, StreamableHTTPClientParams):
 
 
 class ExtraMCPServer(BaseModel, StreamableHTTPClientParams):
-    name: str = Field("extra", description="Name of the MCP server instance")
-    url: HttpUrl = Field(
-        "http://localhost:7863/gradio_api/mcp/?tools=extra_mcp",
-        description="URL of the Extra MCP server instance",
-    )
-
-
-class MCPSettings(BaseModel):
-    """Settings for MCP configuration."""
-
-    mcp_servers: list[
-        VoiceGeneratorMCPServer | VideoGeneratorMCPServer | ExtraMCPServer
-    ] = Field(default_factory=list, description="List of MCP servers")
+    name: str = Field(..., description="Name of the MCP server instance")
+    url: HttpUrl = Field(..., description="URL of the Extra MCP server instance")

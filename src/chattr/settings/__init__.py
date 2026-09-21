@@ -7,7 +7,11 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from chattr.settings.character import CharacterSettings
 from chattr.settings.directory import DirectorySettings
 from chattr.settings.logger import LoggerSettings
-from chattr.settings.mcp import MCPSettings
+from chattr.settings.mcp import (
+    ExtraMCPServer,
+    VideoGeneratorMCPServer,
+    VoiceGeneratorMCPServer,
+)
 from chattr.settings.memory import MemorySettings
 from chattr.settings.model import ModelSettings
 from chattr.settings.vector_database import VectorDatabaseSettings
@@ -29,7 +33,13 @@ class Settings(BaseSettings):
     vector_database: VectorDatabaseSettings = Field(
         default_factory=VectorDatabaseSettings
     )
-    mcp: MCPSettings = Field(default_factory=MCPSettings)
+    voice_generator_mcp_server: VoiceGeneratorMCPServer = Field(
+        default_factory=VoiceGeneratorMCPServer
+    )
+    video_generator_mcp_server: VideoGeneratorMCPServer = Field(
+        default_factory=VideoGeneratorMCPServer
+    )
+    extra_mcp_servers: list[ExtraMCPServer] = Field(default_factory=list)
     character: CharacterSettings = Field(default_factory=CharacterSettings)
     log: LoggerSettings = Field(default_factory=LoggerSettings)
     debug: bool = Field(default=False)
