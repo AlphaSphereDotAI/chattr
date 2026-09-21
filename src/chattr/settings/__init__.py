@@ -39,6 +39,6 @@ class Settings(BaseSettings):
 
 
 if __name__ == "__main__":
-    from rich.pretty import pprint
+    from rich import print as rprint
 
-    pprint(Settings().model_dump_json(indent=4))
+    rprint(Settings().model_dump_json(indent=4))
