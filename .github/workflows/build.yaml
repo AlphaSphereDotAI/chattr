@@ -23,16 +23,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5.0.0
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           token: ${{ secrets.GH_TOKEN }}
       - name: Get Package version from pyproject.toml
         id: get_package_version
-        uses: mikefarah/yq@v4.48.1
+        uses: mikefarah/yq@0ecdce24e83f0fa127940334be98c86b07b0c488 # v4.48.1
         with:
           cmd: yq -roy '.project.version' pyproject.toml
       - name: Install uv
-        uses: astral-sh/setup-uv@v6.0.0
+        uses: astral-sh/setup-uv@c7f87aa956e4c323abf06d5dec078e358f6b4d04 # v6.0.0
         with:
           enable-cache: true
           activate-environment: true
@@ -44,13 +44,13 @@ jobs:
       - name: Build source and wheel distribution
         run: uv build
       - name: Upload artifacts
-        uses: actions/upload-artifact@v6.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: dist
           path: dist/
       - name: Update the main branch to the updated version
         if: ${{ github.ref_name != steps.get_package_version.outputs.result }}
-        uses: stefanzweifel/git-auto-commit-action@v7.0.0
+        uses: stefanzweifel/git-auto-commit-action@28e16e81777b558cc906c8750092100bbb34c5e3 # v7.0.0
         with:
           commit_message: 'Version: ${{ github.ref_name }}'
           branch: main
@@ -71,14 +71,14 @@ jobs:
       contents: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5.0.0
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       - name: Download artifacts
-        uses: actions/download-artifact@v5.0.0
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
         with:
           name: dist
           path: dist/
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2.5.0
+        uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2.5.0
         with:
           files: dist/*
           generate_release_notes: true
