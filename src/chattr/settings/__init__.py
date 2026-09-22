@@ -14,6 +14,7 @@ from chattr.settings.mcp import (
 )
 from chattr.settings.memory import MemorySettings
 from chattr.settings.model import ModelSettings
+from chattr.settings.queue import QueueSettings
 from chattr.settings.vector_database import VectorDatabaseSettings
 
 
@@ -46,6 +47,7 @@ class Settings(BaseSettings):
     timezone: TimeZoneName = Field(default="Africa/Cairo")
     host: IPvAnyAddress = Field(default="0.0.0.0")
     port: PositiveInt = Field(default=7777)
+    queue: QueueSettings = Field(default_factory=QueueSettings)
 
 
 if __name__ == "__main__":
