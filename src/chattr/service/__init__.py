@@ -3,16 +3,20 @@
 from typing import TYPE_CHECKING
 
 from agno.agent import Agent
-from agno.os import AgentOS
+from agno.os import AgentOS, QueueConfig
 
-from chattr.agent.agent import AgentConfiguration, setup_agent
-from chattr.agent.database import setup_database
-from chattr.agent.description import setup_description
-from chattr.agent.instructions import setup_instructions
-from chattr.agent.knowledge import setup_knowledge
-from chattr.agent.model import setup_model
-from chattr.agent.tools import setup_mcp_tools
-from chattr.agent.vector_database import setup_vector_database
+from chattr.core import (
+    AgentConfiguration,
+    setup_agent,
+    setup_database,
+    setup_description,
+    setup_instructions,
+    setup_knowledge,
+    setup_mcp_tools,
+    setup_model,
+    setup_vector_database,
+)
+from chattr.service.queue import setup_queue
 from chattr.settings import Settings
 
 if TYPE_CHECKING:
@@ -23,7 +27,7 @@ if TYPE_CHECKING:
     from agno.vectordb.qdrant import Qdrant
 
 
-def setup_app(settings: Settings) -> AgentOS:
+def setup_service(settings: Settings) -> AgentOS:
     tools: list[MCPTools] | None = setup_mcp_tools(
         [
             settings.voice_generator_mcp_server,
@@ -37,6 +41,7 @@ def setup_app(settings: Settings) -> AgentOS:
     knowledge: Knowledge = setup_knowledge(vectordb, db)
     description: str = setup_description(settings.character.name)
     instructions: list[str] = setup_instructions(settings.character.name, tools)
+    queue: QueueConfig = setup_queue(settings.queue)
 
     agent: Agent = setup_agent(
         AgentConfiguration(
@@ -51,4 +56,10 @@ def setup_app(settings: Settings) -> AgentOS:
         ),
     )
 
-    return AgentOS(name=settings.log.name.capitalize(), agents=[agent], db=db)
+    return AgentOS(
+        name=settings.log.name.capitalize(),
+        agents=[agent],
+        db=db,
+        tracing=True,
+        queue=queue,
+    )
