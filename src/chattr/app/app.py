@@ -16,7 +16,7 @@ from chattr.agent.vector_database import setup_vector_database
 from chattr.settings import Settings
 
 if TYPE_CHECKING:
-    from agno.db.json import JsonDb
+    from agno.db import BaseDb
     from agno.knowledge import Knowledge
     from agno.models.openai import OpenAILike
     from agno.tools.mcp import MCPTools
@@ -32,7 +32,7 @@ def setup_app(settings: Settings) -> AgentOS:
         ]
     )
     model: OpenAILike = setup_model(settings.model)
-    db: JsonDb = setup_database()
+    db: BaseDb = setup_database()
     vectordb: Qdrant = setup_vector_database(settings.vector_database)
     knowledge: Knowledge = setup_knowledge(vectordb, db)
     description: str = setup_description(settings.character.name)
