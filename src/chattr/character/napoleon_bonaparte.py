@@ -2,7 +2,7 @@ from textwrap import dedent
 
 from pydantic.dataclasses import Field, dataclass
 
-from chattr.character import Character
+from chattr.character.base import Character
 
 
 @dataclass(frozen=True)
