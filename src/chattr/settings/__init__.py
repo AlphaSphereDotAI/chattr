@@ -17,6 +17,18 @@ from chattr.settings.model import ModelSettings
 from chattr.settings.queue import QueueSettings
 from chattr.settings.vector_database import VectorDatabaseSettings
 
+__all__ = [
+    "AgentSettings",
+    "DirectorySettings",
+    "ExtraMCPServerSettings",
+    "LoggerSettings",
+    "MemorySettings",
+    "ModelSettings",
+    "QueueSettings",
+    "VectorDatabaseSettings",
+    "VideoGeneratorMCPServerSettings",
+    "VoiceGeneratorMCPServerSettings",
+]
 
 class Settings(BaseSettings):
     """Configuration for the Chattr app."""

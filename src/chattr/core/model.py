@@ -1,8 +1,7 @@
 from agno.models.openai.like import OpenAILike
 from agno.utils.log import log_info
 
-from chattr.app.utils import is_url
-from chattr.settings.model import ModelSettings
+from chattr.settings import ModelSettings
 
 
 def setup_model(model: ModelSettings) -> OpenAILike:

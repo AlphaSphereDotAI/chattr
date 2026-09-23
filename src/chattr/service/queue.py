@@ -1,6 +1,6 @@
 from agno.os import QueueConfig
 
-from chattr.settings.queue import QueueSettings
+from chattr.settings import QueueSettings
 
 
 def setup_queue(queue: QueueSettings) -> QueueConfig:
