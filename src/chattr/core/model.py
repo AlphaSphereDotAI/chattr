@@ -1,5 +1,6 @@
 from agno.models.openai.like import OpenAILike
 from agno.utils.log import log_info
+from pydantic import HttpUrl, ValidationError
 
 from chattr.settings import ModelSettings
 
@@ -17,7 +18,9 @@ def setup_model(model: ModelSettings) -> OpenAILike:
     if not model.url:
         _msg = "Model URL is missing. Set it with `MODEL__URL`"
         raise ValueError(_msg)
-    if not is_url(model.url.encoded_string()):
+    try:
+        _ = HttpUrl(model.url.encoded_string())
+    except ValidationError:
         _msg = "Model URL is invalid. Set it with `MODEL__URL`"
         raise ValueError(_msg)
     if not model.name:
