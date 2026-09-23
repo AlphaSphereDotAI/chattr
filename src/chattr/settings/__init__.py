@@ -4,7 +4,7 @@ from pydantic import Field, IPvAnyAddress, PositiveInt
 from pydantic_extra_types.timezone_name import TimeZoneName
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from chattr.settings.character import CharacterSettings
+from chattr.settings.agent import AgentSettings
 from chattr.settings.directory import DirectorySettings
 from chattr.settings.logger import LoggerSettings
 from chattr.settings.mcp import (
@@ -59,6 +59,7 @@ class Settings(BaseSettings):
     host: IPvAnyAddress = Field(default="0.0.0.0")
     port: PositiveInt = Field(default=7777)
     queue: QueueSettings = Field(default_factory=QueueSettings)
+    agent: AgentSettings = Field(default_factory=AgentSettings)
 
 
 if __name__ == "__main__":

@@ -3,13 +3,14 @@
 from typing import TYPE_CHECKING
 
 from agno.agent import Agent
+from agno.guardrails import PromptInjectionGuardrail
 from agno.os import AgentOS, QueueConfig
 
+from chattr.character import NapoleonBonaparte
 from chattr.core import (
     AgentConfiguration,
     setup_agent,
     setup_database,
-    setup_description,
     setup_instructions,
     setup_knowledge,
     setup_mcp_tools,
@@ -42,17 +43,13 @@ def setup_service(settings: Settings) -> AgentOS:
     instructions: list[str] = setup_instructions(tools)
     queue: QueueConfig = setup_queue(settings.queue)
 
-    agent: Agent = setup_agent(
-        AgentConfiguration(
-            model=model,
-            tools=tools if tools else [],
-            description=description,
-            instructions=instructions,
-            db=db,
-            knowledge=knowledge,
-            timezone=settings.timezone,
-            debug_mode=settings.debug,
-        ),
+    _agent_config = AgentConfiguration(
+        model=model,
+        tools=tools or [],
+        db=db,
+        knowledge=knowledge,
+        instructions=instructions,
+        pre_hooks=[PromptInjectionGuardrail()],
     )
     napoleon_bonaparte_agent: Agent = setup_agent(NapoleonBonaparte(), _agent_config, settings.agent)
 
