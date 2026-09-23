@@ -17,13 +17,13 @@ uv build  # Build source and wheel distributions
 ### Execution
 
 ```bash
-uv run chattr  # Launch the Gradio app
+uv run chattr  # Launch the service
 ```
 
 ### Linting & Formatting
 
 ```bash
-uvx pre-commit run --all-files  # Run all linters and formatting checks
+uvx prek run --all-files  # Run all linters and formatting checks
 ```
 
 ### Testing
@@ -69,7 +69,6 @@ uv run pytest tests/test_app.py::test_app  # Run single test
 
 - Use specific exception types (e.g., `OSError`, `ValueError`, `ValidationError`)
 - Log errors with appropriate levels (`logger.error`, `logger.warning`)
-- Raise `Error` from gradio for user-facing errors
 - Use try/except blocks with meaningful error messages
 
 ### Async/Await
@@ -81,7 +80,6 @@ uv run pytest tests/test_app.py::test_app  # Run single test
 ### Frameworks & Tools
 
 - Use `agno` framework for defining agents and toolkits
-- Use `gradio` for the web interface
 - Use `pydantic` and `pydantic-settings` for configuration management
 
 ### Documentation
@@ -103,12 +101,21 @@ uv run pytest tests/test_app.py::test_app  # Run single test
 - Use descriptive assertions
 - Mock external dependencies when needed
 
-## Agentic Workflows
+## Learned User Preferences
 
-The repository uses several automated agentic workflows:
+- Prefer the official MCP Python SDK (`streamable_http_client` + `ClientSession.send_ping`) for MCP reachability checks over raw TCP/socket probes.
+- Prefer Agno MCP helpers or the official MCP SDK instead of inventing ad-hoc connectivity utilities.
+- Remote MCP servers should be optional at startup: skip unreachable servers and continue booting rather than failing the app lifespan.
+- For Agno v2→v3 migrations, apply mechanical renames directly; report items marked JUDGMENT instead of guessing.
+- Prefer framework-agnostic package names for process assembly (for example `service` over `agentos` or FastAPI-oriented names).
 
-- **`agents-md-maintenance`**: Daily maintenance of this `AGENTS.md` file.
-- **`ci-coach`**: Daily CI optimization coach for workflow efficiency.
-- **`ci-doctor`**: Monitors and triages failed CI runs.
-- **`code-simplifier`**: Daily code simplification coach.
-- **`daily-malicious-code-scan`**: Daily scan for malicious code or dependencies.
+## Learned Workspace Facts
+
+- Chattr is an Agno v3 + AgentOS app; use one `MCPTools` instance per remote server (`MultiMCPTools` is gone in v3).
+- Package layout: `core/` builds shared pieces (model, MCP tools, db, knowledge, agent), `service/` assembles them into `AgentOS` via `setup_service`, and `character/` holds persona models.
+- Personas live under `chattr.character` as Pydantic `Character` subclasses (for example `NapoleonBonaparte`), not as nested Settings fields.
+- Default remote MCP endpoints are voice on `http://localhost:7861/gradio_api/mcp` and video on `http://localhost:7862/gradio_api/mcp/?tools=generate_video_mcp`; additional servers come from `extra_mcp_servers`.
+- `Settings` uses pydantic-settings with `env_nested_delimiter="__"`; nested fields use `__` (for example `AGENT__DEBUG_MODE`), and list fields like `extra_mcp_servers` are JSON env values.
+- Agent persistence uses `JsonDb(db_path="agno")`.
+- `setup_mcp_tools` only registers MCP servers that pass a reachability probe at process start; bring servers up and restart `uv run chattr` to attach newly available tools.
+- `docker-compose-dev.yaml` can run the voice and video generator MCP services used in local development.
