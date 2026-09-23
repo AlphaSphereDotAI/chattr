@@ -9,4 +9,4 @@ qdrant_storage/
 assets/audio/
 assets/video/
 agno/
-.cursor/hooks/state/continual-learning.json
+.cursor/hooks/state/
