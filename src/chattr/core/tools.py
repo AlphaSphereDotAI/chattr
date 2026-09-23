@@ -5,18 +5,18 @@ from agno.utils.log import log_info, log_warning
 from mcp import ClientSession
 from mcp.client.streamable_http import streamable_http_client
 
-from chattr.settings.mcp import (
-    ExtraMCPServer,
-    VideoGeneratorMCPServer,
-    VoiceGeneratorMCPServer,
+from chattr.settings import (
+    ExtraMCPServerSettings,
+    VideoGeneratorMCPServerSettings,
+    VoiceGeneratorMCPServerSettings,
 )
 
 _INITIALIZE_TIMEOUT_SECONDS = 5.0
 
-type MCPServer = VoiceGeneratorMCPServer | VideoGeneratorMCPServer | ExtraMCPServer
+type MCPServerSettings = VoiceGeneratorMCPServerSettings | VideoGeneratorMCPServerSettings | ExtraMCPServerSettings
 
 
-async def _is_server_reachable(server: MCPServer) -> bool:
+async def _is_server_reachable(server: MCPServerSettings) -> bool:
     """Return whether the MCP server completes the official handshake.
 
     Args:
@@ -41,7 +41,7 @@ async def _is_server_reachable(server: MCPServer) -> bool:
         return False
 
 
-def setup_mcp_tools(mcps: list[MCPServer]) -> list[MCPTools] | None:
+def setup_mcp_tools(mcps: list[MCPServerSettings]) -> list[MCPTools] | None:
     """Return MCP tools for servers that accept a connection.
 
     Servers that are not listening are skipped so application startup can
@@ -58,8 +58,8 @@ def setup_mcp_tools(mcps: list[MCPServer]) -> list[MCPTools] | None:
         log_info("No Remote MCP servers found.")
         return None
 
-    reachable: list[MCPServer] = [mcp for mcp in mcps if run(_is_server_reachable(mcp))]
-    not_reachable: list[MCPServer] = [mcp for mcp in mcps if mcp not in reachable]
+    reachable: list[MCPServerSettings] = [mcp for mcp in mcps if run(_is_server_reachable(mcp))]
+    not_reachable: list[MCPServerSettings] = [mcp for mcp in mcps if mcp not in reachable]
     
     if not_reachable:
         log_warning(f"MCP servers {not_reachable} are unreachable. Skipping.")

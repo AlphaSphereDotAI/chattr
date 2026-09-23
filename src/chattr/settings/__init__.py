@@ -8,9 +8,9 @@ from chattr.settings.character import CharacterSettings
 from chattr.settings.directory import DirectorySettings
 from chattr.settings.logger import LoggerSettings
 from chattr.settings.mcp import (
-    ExtraMCPServer,
-    VideoGeneratorMCPServer,
-    VoiceGeneratorMCPServer,
+    ExtraMCPServerSettings,
+    VideoGeneratorMCPServerSettings,
+    VoiceGeneratorMCPServerSettings,
 )
 from chattr.settings.memory import MemorySettings
 from chattr.settings.model import ModelSettings
@@ -46,14 +46,13 @@ class Settings(BaseSettings):
     vector_database: VectorDatabaseSettings = Field(
         default_factory=VectorDatabaseSettings
     )
-    voice_generator_mcp_server: VoiceGeneratorMCPServer = Field(
-        default_factory=VoiceGeneratorMCPServer
+    voice_generator_mcp_server: VoiceGeneratorMCPServerSettings = Field(
+        default_factory=VoiceGeneratorMCPServerSettings
     )
-    video_generator_mcp_server: VideoGeneratorMCPServer = Field(
-        default_factory=VideoGeneratorMCPServer
+    video_generator_mcp_server: VideoGeneratorMCPServerSettings = Field(
+        default_factory=VideoGeneratorMCPServerSettings
     )
-    extra_mcp_servers: list[ExtraMCPServer] = Field(default_factory=list)
-    character: CharacterSettings = Field(default_factory=CharacterSettings)
+    extra_mcp_servers: list[ExtraMCPServerSettings] = Field(default_factory=list)
     log: LoggerSettings = Field(default_factory=LoggerSettings)
     debug: bool = Field(default=False)
     timezone: TimeZoneName = Field(default="Africa/Cairo")
