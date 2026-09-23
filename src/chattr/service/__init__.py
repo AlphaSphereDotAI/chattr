@@ -39,8 +39,7 @@ def setup_service(settings: Settings) -> AgentOS:
     db: BaseDb = setup_database()
     vectordb: Qdrant = setup_vector_database(settings.vector_database)
     knowledge: Knowledge = setup_knowledge(vectordb, db)
-    description: str = setup_description(settings.character.name)
-    instructions: list[str] = setup_instructions(settings.character.name, tools)
+    instructions: list[str] = setup_instructions(tools)
     queue: QueueConfig = setup_queue(settings.queue)
 
     agent: Agent = setup_agent(

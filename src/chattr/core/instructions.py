@@ -1,20 +1,12 @@
-from sys import exit as sys_exit
-
 from agno.tools.mcp import MCPTools
-from agno.utils.log import log_error
 
 
-def setup_instructions(
-    character: str | None, tools: list[MCPTools] | None
-) -> list[str]:
-    """Return a list of instructions to mimic a given character."""
-    if not character:
-        log_error("`character` must be provided.")
-        sys_exit(1)
+def setup_instructions(tools: list[MCPTools] | None) -> list[str]:
+    """Return a list of instructions to use the tools."""
     instructions: list[str] = [
         "Understand the user's question and context.",
         "Gather relevant information and resources.",
-        f"Formulate a clear and concise response in {character}'s voice.",
+        "Formulate a clear and concise response.",
     ]
     if tools:
         for tool in tools:
