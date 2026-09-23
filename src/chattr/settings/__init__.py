@@ -1,7 +1,5 @@
 """Settings for the Chattr app."""
-
-from pydantic import Field, IPvAnyAddress, PositiveInt
-from pydantic_extra_types.timezone_name import TimeZoneName
+from pydantic import Field, PositiveInt
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from chattr.settings.agent import AgentSettings
@@ -55,8 +53,7 @@ class Settings(BaseSettings):
     extra_mcp_servers: list[ExtraMCPServerSettings] = Field(default_factory=list)
     log: LoggerSettings = Field(default_factory=LoggerSettings)
     debug: bool = Field(default=False)
-    timezone: TimeZoneName = Field(default="Africa/Cairo")
-    host: IPvAnyAddress = Field(default="0.0.0.0")
+    host: str = Field(default="0.0.0.0")
     port: PositiveInt = Field(default=7777)
     queue: QueueSettings = Field(default_factory=QueueSettings)
     agent: AgentSettings = Field(default_factory=AgentSettings)
