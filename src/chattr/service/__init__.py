@@ -55,10 +55,11 @@ def setup_service(settings: Settings) -> AgentOS:
             debug_mode=settings.debug,
         ),
     )
+    napoleon_bonaparte_agent: Agent = setup_agent(NapoleonBonaparte(), _agent_config, settings.agent)
 
     return AgentOS(
         name=settings.log.name.capitalize(),
-        agents=[agent],
+        agents=[napoleon_bonaparte_agent],
         db=db,
         tracing=True,
         queue=queue,
