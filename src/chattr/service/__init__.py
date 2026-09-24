@@ -5,8 +5,9 @@ from typing import TYPE_CHECKING
 from agno.agent import Agent
 from agno.guardrails import PromptInjectionGuardrail
 from agno.os import AgentOS, QueueConfig
+from agno.tools.docling import DoclingTools
 
-from chattr.character import NapoleonBonaparte
+from chattr.character import DocQA, NapoleonBonaparte
 from chattr.core import (
     AgentConfiguration,
     setup_agent,
@@ -29,13 +30,11 @@ if TYPE_CHECKING:
 
 
 def setup_service(settings: Settings) -> AgentOS:
-    tools: list[MCPTools] | None = setup_mcp_tools(
-        [
-            settings.voice_generator_mcp_server,
-            settings.video_generator_mcp_server,
-            *settings.extra_mcp_servers,
-        ]
-    )
+    tools: list[MCPTools] | None = setup_mcp_tools([
+        settings.voice_generator_mcp_server,
+        settings.video_generator_mcp_server,
+        *settings.extra_mcp_servers,
+    ])
     model: OpenAILike = setup_model(settings.model)
     db: BaseDb = setup_database()
     vectordb: Qdrant = setup_vector_database(settings.vector_database)
@@ -45,17 +44,26 @@ def setup_service(settings: Settings) -> AgentOS:
 
     _agent_config = AgentConfiguration(
         model=model,
-        tools=tools or [],
+        tools=[*(tools or [])],
+        db=db,
+        knowledge=knowledge,
+        instructions=instructions,
+        pre_hooks=[PromptInjectionGuardrail()],
+    )
+    _docqa_config = AgentConfiguration(
+        model=model,
+        tools=[*(tools or []), DoclingTools(all=True)],
         db=db,
         knowledge=knowledge,
         instructions=instructions,
         pre_hooks=[PromptInjectionGuardrail()],
     )
     napoleon_bonaparte_agent: Agent = setup_agent(NapoleonBonaparte(), _agent_config, settings.agent)
+    docqa_agent: Agent = setup_agent(DocQA(), _docqa_config, settings.agent)
 
     return AgentOS(
         name=settings.log.name.capitalize(),
-        agents=[napoleon_bonaparte_agent],
+        agents=[napoleon_bonaparte_agent, docqa_agent],
         db=db,
         tracing=True,
         queue=queue,

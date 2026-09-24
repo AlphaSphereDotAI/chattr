@@ -1,5 +1,4 @@
 """Main orchestration graph for the Chattr application."""
-
 from collections.abc import Callable
 from typing import Any, NamedTuple
 
@@ -9,7 +8,7 @@ from agno.eval import BaseEval
 from agno.guardrails import BaseGuardrail
 from agno.knowledge import Knowledge
 from agno.models.openai import OpenAILike
-from agno.tools.mcp import MCPTools
+from agno.tools import Toolkit
 
 from chattr.character import Character
 from chattr.settings import AgentSettings
@@ -19,7 +18,7 @@ class AgentConfiguration(NamedTuple):
     """Configuration class for the Chattr agent."""
 
     model: OpenAILike
-    tools: list[MCPTools]
+    tools: list[Toolkit]
     db: BaseDb
     knowledge: Knowledge
     instructions: list[str]
