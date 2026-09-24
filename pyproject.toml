@@ -9,11 +9,20 @@ authors = [
 requires-python = ">=3.14, <3.15"
 dependencies = [
   "agno[google,qdrant,os,mcp,openai]>=2.5.13",
-  "ddgs>=9.11.2",
-  "fastembed>=0.7.4",
-  "gradio[mcp]>=5.48.0",
+  "ddgs>=9.16.0",
+  "aiofiles>=25.1.0",
+  "arxiv>=4.0.1",
+  "chonkie[semantic]>=1.7.0",
+  "docling>=2.130.0",
+  "easyocr>=1.7.2",
+  "firecrawl-py>=4.44.0",
   "pydantic-extra-types>=2.11.1",
-  "rich>=14.3.3",
+  "fastembed>=0.8.1",
+  "pypdf>=6.19.0",
+  "tavily-python>=0.8.4",
+  "tzdata>=2026.4",
+  "wikipedia>=1.4.0",
+  "youtube-transcript-api>=1.2.4",
 ]
 scripts = { chattr = "chattr.__main__:main" }
 
