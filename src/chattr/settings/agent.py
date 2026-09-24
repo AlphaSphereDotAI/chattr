@@ -33,7 +33,7 @@ class AgentSettings(BaseModel):
     add_search_knowledge_instructions: bool = Field(default=True)
     update_knowledge: bool = Field(default=True)
     read_tool_call_history: bool = Field(default=True)
-    send_media_to_model: bool = Field(default=True)
+    send_media_to_model: bool = Field(default=False)
     store_media: bool = Field(default=True)
     store_tool_messages: bool = Field(default=True)
     store_history_messages: bool = Field(default=True)
