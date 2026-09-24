@@ -4,6 +4,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from chattr.settings.agent import AgentSettings
 from chattr.settings.directory import DirectorySettings
+from chattr.settings.embedder import EmbedderSettings
 from chattr.settings.logger import LoggerSettings
 from chattr.settings.mcp import (
     ExtraMCPServerSettings,
@@ -18,6 +19,7 @@ from chattr.settings.vector_database import VectorDatabaseSettings
 __all__ = [
     "AgentSettings",
     "DirectorySettings",
+    "EmbedderSettings",
     "ExtraMCPServerSettings",
     "LoggerSettings",
     "MemorySettings",

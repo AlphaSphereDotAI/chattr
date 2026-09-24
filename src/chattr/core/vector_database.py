@@ -1,6 +1,7 @@
 from agno.utils.log import log_info
 from agno.vectordb.qdrant import Qdrant
 
+from chattr.core import setup_embedder
 from chattr.settings import VectorDatabaseSettings
 
 
@@ -17,4 +18,9 @@ def setup_vector_database(vectordb: VectorDatabaseSettings) -> Qdrant:
                 settings.
     """
     log_info("Setting up vector database.")
-    return Qdrant(collection=vectordb.name, url=vectordb.url.host, port=vectordb.url.port)
+    return Qdrant(
+        collection=vectordb.name,
+        url=vectordb.url.host,
+        port=vectordb.url.port,
+        embedder=setup_embedder(vectordb.embedder),
+    )
