@@ -11,7 +11,7 @@ dependencies = [
   "agno[google,qdrant,os,mcp,openai]>=2.5.13",
   "ddgs>=9.11.2",
   "fastembed>=0.7.4",
-  "gradio[mcp]>=5.48.0",
+  "gradio[mcp]>=6.28.0",
   "pydantic-extra-types>=2.11.1",
   "rich>=14.3.3",
 ]

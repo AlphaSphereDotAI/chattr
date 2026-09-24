@@ -376,7 +376,7 @@ requires-dist = [
     { name = "agno", extras = ["google", "qdrant", "os", "mcp", "openai"], specifier = ">=2.5.13" },
     { name = "ddgs", specifier = ">=9.11.2" },
     { name = "fastembed", specifier = ">=0.7.4" },
-    { name = "gradio", extras = ["mcp"], specifier = ">=5.48.0" },
+    { name = "gradio", extras = ["mcp"], specifier = ">=6.28.0" },
     { name = "pydantic-extra-types", specifier = ">=2.11.1" },
     { name = "rich", specifier = ">=14.3.3" },
 ]
