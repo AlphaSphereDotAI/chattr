@@ -1,19 +1,20 @@
-from agno.models.openai.like import OpenAILike
+from agno.models.base import Model
+from agno.models.google import Gemini
 from agno.utils.log import log_info
 from pydantic import HttpUrl, ValidationError
 
 from chattr.settings import ModelSettings
 
 
-def setup_model(model: ModelSettings) -> OpenAILike:
+def setup_model(model: ModelSettings) -> Model:
     """
-    Initialize the OpenAILike language model using the provided settings.
+    Initialize the Gemini language model using the provided settings.
 
-    This method creates and returns an OpenAILike instance configured with
+    This method creates and returns an Gemini instance configured with
     the model's URL, name, API key, and temperature.
 
     Returns:
-        OpenAILike: The initialized OpenAILike language model instance.
+        Gemini: The initialized Gemini language model instance.
     """
     if not model.url:
         _msg = "Model URL is missing. Set it with `MODEL__URL`"
@@ -29,9 +30,8 @@ def setup_model(model: ModelSettings) -> OpenAILike:
     if not model.api_key:
         _msg = "API key is missing. Set it with `MODEL__API_KEY`"
         raise ValueError(_msg)
-    log_info("Initializing OpenAILike language model")
-    return OpenAILike(
-        base_url=model.url.encoded_string(),
+    log_info("Initializing Gemini language model")
+    return Gemini(
         id=model.name,
         api_key=model.api_key.get_secret_value(),
         temperature=model.temperature,

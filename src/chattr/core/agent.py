@@ -7,7 +7,7 @@ from agno.db import BaseDb
 from agno.eval import BaseEval
 from agno.guardrails import BaseGuardrail
 from agno.knowledge import Knowledge
-from agno.models.openai import OpenAILike
+from agno.models.base import Model
 from agno.tools import Toolkit
 
 from chattr.character import Character
@@ -17,7 +17,7 @@ from chattr.settings import AgentSettings
 class AgentConfiguration(NamedTuple):
     """Configuration class for the Chattr agent."""
 
-    model: OpenAILike
+    model: Model
     tools: list[Toolkit]
     db: BaseDb
     knowledge: Knowledge
