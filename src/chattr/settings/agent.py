@@ -25,7 +25,7 @@ class AgentSettings(BaseModel):
     num_history_runs: PositiveInt | None = Field(default=None)
     num_history_messages: PositiveInt | None = Field(default=None)
     enable_agentic_knowledge_filters: bool | None = Field(default=None)
-    add_knowledge_to_context: bool = Field(default=True)
+    add_knowledge_to_context: bool = Field(default=False)
     tool_call_limit: PositiveInt | None = Field(default=None)
     max_tool_calls_from_history: PositiveInt | None = Field(default=None)
     read_chat_history: bool = Field(default=True)
