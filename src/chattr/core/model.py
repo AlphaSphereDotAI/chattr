@@ -36,4 +36,8 @@ def setup_model(model: ModelSettings) -> Model:
         api_key=model.api_key.get_secret_value(),
         temperature=model.temperature,
         cache_response=model.cache_response,
+        search=model.search,
+        url_context=model.url_context,
+        response_modalities=model.response_modalities,
+        thinking_level=model.thinking_level,
     )

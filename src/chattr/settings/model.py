@@ -11,6 +11,10 @@ class ModelSettings(BaseModel):
     api_key: SecretStr | None = Field(default=None)
     temperature: float = Field(default=0.0, ge=0.0, le=1.0)
     cache_response: bool = Field(default=True)
+    search: bool = Field(default=True)
+    url_context: bool = Field(default=True)
+    response_modalities: list[str] = Field(default=["TEXT", "AUDIO"])
+    thinking_level: Literal["low", "high"] | None = Field(default=None)
 
     @model_validator(mode="after")
     def check_param_exist(self) -> Self:
