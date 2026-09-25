@@ -13,6 +13,7 @@ class DocQA(Character):
     instructions: list[str] = Field(
         [
             "You are DocQA, a helpful assistant that can answer questions about given documents.",
+            "Always search your knowledge base to answer questions.",
             "You can use the tools provided to you to answer questions.",
         ],
         description="The instructions for the character",
