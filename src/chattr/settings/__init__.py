@@ -1,4 +1,7 @@
 """Settings for the Chattr app."""
+
+from typing import Literal
+
 from pydantic import Field, PositiveInt
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -57,6 +60,8 @@ class Settings(BaseSettings):
     debug: bool = Field(default=False)
     host: str = Field(default="0.0.0.0")
     port: PositiveInt = Field(default=7777)
+    checkpoint: Literal["runs", "tool-batch", "tools"] | None = Field(default=None)
+    tracing: bool = Field(default=True)
     queue: QueueSettings = Field(default_factory=QueueSettings)
     agent: AgentSettings = Field(default_factory=AgentSettings)
 
