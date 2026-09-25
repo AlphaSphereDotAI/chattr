@@ -65,6 +65,7 @@ def setup_service(settings: Settings) -> AgentOS:
         name=settings.log.name.capitalize(),
         agents=[napoleon_bonaparte_agent, docqa_agent],
         db=db,
-        tracing=True,
+        tracing=settings.tracing,
         queue=queue,
+        checkpoint=settings.checkpoint,
     )
