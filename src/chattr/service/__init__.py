@@ -6,7 +6,6 @@ from agno.agent import Agent
 from agno.guardrails import PromptInjectionGuardrail
 from agno.models.base import Model
 from agno.os import AgentOS, QueueConfig
-from agno.tools.docling import DoclingTools
 
 from chattr.character import DocQA, NapoleonBonaparte
 from chattr.core import (
@@ -52,7 +51,7 @@ def setup_service(settings: Settings) -> AgentOS:
     )
     _docqa_config = AgentConfiguration(
         model=model,
-        tools=[*(tools or []), DoclingTools(all=True)],
+        tools=[*(tools or [])],
         db=db,
         knowledge=knowledge,
         instructions=instructions,
