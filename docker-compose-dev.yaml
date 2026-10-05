@@ -1,7 +1,7 @@
 name: Chattr Dev
 services:
   vector_database:
-    image: qdrant/qdrant:latest@sha256:94728574965d17c6485dd361aa3c0818b325b9016dac5ea6afec7b4b2700865f
+    image: qdrant/qdrant:latest@sha256:b7b0444c4c351c970b98e90a6f89c2ee4287c65b44e52b4cb503fa5b2aa927ad
     ports:
       - 6333:6333
       - 6334:6334
