@@ -1,4 +1,4 @@
-FROM cgr.dev/chainguard/wolfi-base:latest@sha256:3e3a125c18346ee7b95980be96529d39eb9f799e140aab2b02218a1bd67bfb18 AS builder
+FROM cgr.dev/chainguard/wolfi-base:latest@sha256:1d95114038f76513a9ace6fca107d5582b08c65981f81f61cb56bf7fd2ef216d AS builder
 
 ARG INSTALL_SOURCE
 ARG PYTHON_VERSION
@@ -11,7 +11,7 @@ USER nonroot
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv tool install ${INSTALL_SOURCE} --python ${PYTHON_VERSION}
 
-FROM cgr.dev/chainguard/wolfi-base:latest@sha256:3e3a125c18346ee7b95980be96529d39eb9f799e140aab2b02218a1bd67bfb18 AS production
+FROM cgr.dev/chainguard/wolfi-base:latest@sha256:1d95114038f76513a9ace6fca107d5582b08c65981f81f61cb56bf7fd2ef216d AS production
 
 ENV GRADIO_SERVER_PORT=7860 \
     GRADIO_SERVER_NAME=0.0.0.0 \
