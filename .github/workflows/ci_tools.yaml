@@ -49,7 +49,7 @@ jobs:
       name: lockfile
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4.0.0
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           token: ${{ secrets.GH_TOKEN }}
       - name: Install uv
