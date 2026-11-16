@@ -36,7 +36,7 @@ services:
       - command: chmod -R 700 /home/nonroot
         user: root
   vector_database:
-    image: qdrant/qdrant:latest@sha256:94728574965d17c6485dd361aa3c0818b325b9016dac5ea6afec7b4b2700865f
+    image: qdrant/qdrant:latest@sha256:d277592721d2e3b73f9b797b53cf05e6a5bb2134f6d13fdbda4ca51782afbcac
     volumes:
       - qdrant_storage:/qdrant/storage
     ports:
